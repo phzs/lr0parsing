@@ -15,6 +15,14 @@ public class CFProduction {
     public CFProduction(char left, String right) {
         this.left = new MetaSymbol(left);
         this.right = new LinkedList<Symbol>();
+
+        for(char c : right.toCharArray()) {
+            if(Character.isUpperCase(c))
+                this.right.add(new MetaSymbol(c));
+            else
+                this.right.add(new TerminalSymbol(c));
+        }
+
     }
 
     public MetaSymbol getLeft() {
