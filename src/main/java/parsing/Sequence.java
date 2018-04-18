@@ -42,4 +42,12 @@ public class Sequence {
     public int getLength() {
         return this.symbols.size();
     }
+
+    public String getRepresentationString() {
+        String result = "";
+        for(Symbol symbol : this.symbols) {
+            result += symbol.getRepresentation();
+        }
+        return result;
+    }
 }
