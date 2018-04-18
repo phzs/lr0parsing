@@ -12,4 +12,17 @@ public class MetaSymbol extends Symbol {
     public char getRepresentation() {
         return Character.toUpperCase(this.representation);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MetaSymbol that = (MetaSymbol) o;
+        return representation == that.representation;
+    }
+
+    @Override
+    public int hashCode() {
+        return Character.hashCode(representation);
+    }
 }

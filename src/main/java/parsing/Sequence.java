@@ -1,7 +1,6 @@
 package parsing;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Sequence {
@@ -21,20 +20,9 @@ public class Sequence {
         boolean success = false;
         if(symbols.contains(cfProduction.getLeft())) {
             int position = symbols.indexOf(cfProduction.getLeft());
-            symbols.addAll(position+1, cfProduction.getRight());
-            /*
-            Iterator<Symbol> iter = symbols.iterator();
-            while (iter.hasNext()) {
-                Symbol currentSymbol = iter.next()
-                        ;
-                int positionInSequence = symbols.indexOf();
-                if (positionInSequence == -1)
-                    return false;
-                // |**Sb**|
-                //    ^
-
-            }
-            */
+            symbols.remove(position);
+            symbols.addAll(position, cfProduction.getRight());
+            success = true;
         }
         return success;
     }
