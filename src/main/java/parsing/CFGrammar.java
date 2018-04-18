@@ -28,9 +28,9 @@ public class CFGrammar {
         int i = 0;
         for(CFProduction p : productionList) {
             if(i != 0) result += "\n";
-            result += "("+i+") ";
+            result += "("+i+++") ";
             result += p.toString();
         }
-        return super.toString();
+        return result;
     }
 }

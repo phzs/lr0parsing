@@ -38,4 +38,9 @@ public class Sequence {
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        return symbols.stream().map(Objects::toString).collect(Collectors.joining());
+    }
 }
