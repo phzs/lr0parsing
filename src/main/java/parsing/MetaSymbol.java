@@ -1,5 +1,8 @@
 package parsing;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class MetaSymbol extends Symbol {
 
     private char representation;
@@ -11,6 +14,15 @@ public class MetaSymbol extends Symbol {
     @Override
     public char getRepresentation() {
         return Character.toUpperCase(this.representation);
+    }
+
+    @Override
+    public Set<Symbol> getFIRST(CFGrammar grammar) {
+        Set<Symbol> result = new HashSet<>();
+
+        //TODO
+
+        return result;
     }
 
     @Override

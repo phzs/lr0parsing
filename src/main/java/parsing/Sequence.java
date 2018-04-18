@@ -1,7 +1,9 @@
 package parsing;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Sequence {
     private List<Symbol> symbols;
@@ -36,6 +38,13 @@ public class Sequence {
         for(Symbol symbol : this.symbols) {
             result += symbol.getRepresentation();
         }
+        return result;
+    }
+
+    public Set<Symbol> getFIRST(CFGrammar grammar) {
+        Set<Symbol> result = new HashSet<>();
+        for(Symbol symbol : symbols)
+            result.addAll(symbol.getFIRST(grammar));
         return result;
     }
 }
