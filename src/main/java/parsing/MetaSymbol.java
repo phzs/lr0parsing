@@ -4,7 +4,15 @@ public class MetaSymbol extends Symbol {
 
     private char representation;
 
+    public MetaSymbol() {
+
+    }
+
     public MetaSymbol(char representation) {
+        this.representation = representation;
+    }
+
+    public void setRepresentation(char representation) {
         this.representation = representation;
     }
 

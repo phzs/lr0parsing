@@ -1,19 +1,34 @@
 package parsing;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Sequence {
     private List<Symbol> symbols;
 
+    public Sequence() {
+        this.symbols = new ArrayList<>();
+    }
+
     public Sequence(String representation) {
-        this.symbols = new ArrayList<Symbol>();
+        this();
         for(char c : representation.toCharArray()) {
             if(Character.isUpperCase(c))
                 this.symbols.add(new MetaSymbol(c));
             else
                 this.symbols.add(new TerminalSymbol(c));
         }
+    }
+
+    public List<Symbol> getSymbols() {
+        return symbols;
+    }
+
+    public void setSymbols(List<Symbol> symbols) {
+        this.symbols = symbols;
     }
 
     public boolean applyLeftmostDerivation(CFProduction cfProduction) {
@@ -27,6 +42,7 @@ public class Sequence {
         return success;
     }
 
+    @JsonIgnore
     public int getLength() {
         return this.symbols.size();
     }

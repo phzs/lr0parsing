@@ -1,6 +1,5 @@
 package parsing;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class CFProduction {
@@ -8,6 +7,9 @@ public class CFProduction {
     private Sequence right;
 
 
+    public CFProduction() {
+
+    }
     public CFProduction(MetaSymbol left, Sequence right) {
         this.left = left;
         this.right = right;

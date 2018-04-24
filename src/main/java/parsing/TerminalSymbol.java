@@ -4,7 +4,15 @@ public class TerminalSymbol extends Symbol {
 
     private char representation;
 
+    public TerminalSymbol() {
+
+    }
+
     public TerminalSymbol(char representation) {
+        this.representation = representation;
+    }
+
+    public void setRepresentation(char representation) {
         this.representation = representation;
     }
 
