@@ -52,4 +52,18 @@ public class CFGrammar {
         }
         return result;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CFGrammar cfGrammar = (CFGrammar) o;
+        return Objects.equals(productionList, cfGrammar.productionList) &&
+                Objects.equals(startSymbol, cfGrammar.startSymbol);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(productionList, startSymbol);
+    }
 }

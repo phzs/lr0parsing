@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CFGrammarTest {
@@ -32,5 +33,21 @@ public class CFGrammarTest {
         assertTrue(productionList.contains(new CFProduction('A', "aAb")));
         assertTrue(productionList.contains(new CFProduction('S', "A")));
         assertTrue(productionList.size() == 2);
+    }
+
+    @Test
+    public void equalityTest() {
+        CFGrammar a = new CFGrammar('S');
+        a.addProduction(new CFProduction('S', "a"));
+
+        CFGrammar b = new CFGrammar('S');
+        b.addProduction(new CFProduction('S', "a"));
+
+        assertTrue(a.equals(b) && a.hashCode() == b.hashCode());
+
+        CFGrammar c = new CFGrammar('A');
+        c.addProduction(new CFProduction('A', "a"));
+
+        assertFalse(a.equals(c) || a.hashCode() == c.hashCode());
     }
 }
