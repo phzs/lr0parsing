@@ -10,7 +10,7 @@ public class SequenceTest {
     public void leftmostDerivationTest() {
         Sequence s = new Sequence("xSbax");
         assertTrue(s.applyLeftmostDerivation(new CFProduction('S', "cba")));
-        assertTrue(s.getRepresentationString().equals("xcbabax"));
-        assertFalse(s.getRepresentationString().equals("xSbax"));
+        assertTrue(s.toString().equals("xcbabax"));
+        assertFalse(s.toString().equals("xSbax"));
     }
 }

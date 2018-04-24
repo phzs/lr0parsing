@@ -5,22 +5,22 @@ import java.util.List;
 
 public class CFProduction {
     private MetaSymbol left;
-    private List<Symbol> right;
+    private Sequence right;
 
 
-    public CFProduction(MetaSymbol left, List<Symbol> right) {
+    public CFProduction(MetaSymbol left, Sequence right) {
         this.left = left;
         this.right = right;
     }
     public CFProduction(char left, String right) {
         this.left = new MetaSymbol(left);
-        this.right = new LinkedList<Symbol>();
+        this.right = new Sequence();
 
         for(char c : right.toCharArray()) {
             if(Character.isUpperCase(c))
-                this.right.add(new MetaSymbol(c));
+                this.right.addSymbol(new MetaSymbol(c));
             else
-                this.right.add(new TerminalSymbol(c));
+                this.right.addSymbol(new TerminalSymbol(c));
         }
 
     }
@@ -33,11 +33,11 @@ public class CFProduction {
         this.left = left;
     }
 
-    public List<Symbol> getRight() {
+    public Sequence getRight() {
         return right;
     }
 
-    public void setRight(List<Symbol> right) {
+    public void setRight(Sequence right) {
         this.right = right;
     }
 
@@ -50,6 +50,6 @@ public class CFProduction {
     }
 
     public String toString() {
-        return left.toString() + " --> " + symbolsToString(right);
+        return left.toString() + " --> " + right.toString();
     }
 }

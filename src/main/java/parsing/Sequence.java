@@ -21,7 +21,7 @@ public class Sequence {
         if(symbols.contains(cfProduction.getLeft())) {
             int position = symbols.indexOf(cfProduction.getLeft());
             symbols.remove(position);
-            symbols.addAll(position, cfProduction.getRight());
+            symbols.addAll(position, cfProduction.getRight().symbols);
             success = true;
         }
         return success;
@@ -31,16 +31,12 @@ public class Sequence {
         return this.symbols.size();
     }
 
-    public String getRepresentationString() {
-        String result = "";
-        for(Symbol symbol : this.symbols) {
-            result += symbol.getRepresentation();
-        }
-        return result;
-    }
-
     @Override
     public String toString() {
         return symbols.stream().map(Objects::toString).collect(Collectors.joining());
+    }
+
+    public void addSymbol(Symbol symbol) {
+        this.symbols.add(symbol);
     }
 }
