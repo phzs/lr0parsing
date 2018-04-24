@@ -2,8 +2,25 @@ package parsing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CFGrammar {
+    private List<CFProduction> productionList;
+    private MetaSymbol startSymbol;
+
+    public CFGrammar(MetaSymbol startSymbol) {
+        this.startSymbol = startSymbol;
+        this.productionList = new ArrayList<>();
+    }
+
+    public CFGrammar(char startSymbol) {
+        this(new MetaSymbol(startSymbol));
+    }
+
+    public CFGrammar() {
+        this(null);
+    }
+
     public List<CFProduction> getProductionList() {
         return productionList;
     }
@@ -12,10 +29,12 @@ public class CFGrammar {
         this.productionList = productionList;
     }
 
-    private List<CFProduction> productionList;
+    public MetaSymbol getStartSymbol() {
+        return startSymbol;
+    }
 
-    public CFGrammar() {
-        this.productionList = new ArrayList<CFProduction>();
+    public void setStartSymbol(MetaSymbol startSymbol) {
+        this.startSymbol = startSymbol;
     }
 
     public void addProduction(CFProduction cfProduction) {
