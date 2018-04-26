@@ -22,6 +22,13 @@ public class LR0Element {
             throw new IllegalArgumentException("Erroneous arguments");
     }
 
+    /**
+     * copy constructor with offset
+     */
+    public LR0Element(LR0Element aLR0Element, int markerOffset) {
+        this(aLR0Element.production, aLR0Element.markerPosition + markerOffset);
+    }
+
     public LR0Element(char left, String right, int markerPosition) {
         this(new CFProduction(left, right), markerPosition);
     }

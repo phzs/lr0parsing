@@ -57,6 +57,18 @@ public class CFGrammar {
         return closure;
     }
 
+    @JsonIgnore
+    public Set<LR0Element> getGOTO(Set<LR0Element> elements, Symbol readSymbol) {
+        Set<LR0Element> closureInput = new HashSet<>();
+        for(LR0Element el : elements) {
+            if(el.getSymbolRightOfMarker().equals(readSymbol)) {
+                closureInput.add(new LR0Element(el, 1));
+            }
+        }
+
+        return getCLOSURE(closureInput);
+    }
+
     public List<CFProduction> getProductionList() {
         return productionList;
     }
