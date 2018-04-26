@@ -1,7 +1,6 @@
+package parsing;
+
 import org.junit.jupiter.api.Test;
-import parsing.CFProduction;
-import parsing.MetaSymbol;
-import parsing.Sequence;
 
 import java.util.List;
 

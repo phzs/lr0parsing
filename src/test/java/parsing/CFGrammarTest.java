@@ -1,9 +1,7 @@
+package parsing;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import parsing.CFGrammar;
-import parsing.CFProduction;
-import parsing.LR0Element;
-import parsing.MetaSymbol;
 
 import java.io.IOException;
 import java.util.ArrayList;

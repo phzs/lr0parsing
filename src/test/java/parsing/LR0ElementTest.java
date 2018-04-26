@@ -1,6 +1,6 @@
+package parsing;
+
 import org.junit.jupiter.api.Test;
-import parsing.CFProduction;
-import parsing.LR0Element;
 
 import java.util.HashSet;
 import java.util.Set;
