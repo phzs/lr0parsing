@@ -44,6 +44,11 @@ public class Sequence {
     }
 
     @JsonIgnore
+    public Symbol get(int position) {
+        return symbols.get(position);
+    }
+
+    @JsonIgnore
     public int getLength() {
         return this.symbols.size();
     }
@@ -55,6 +60,43 @@ public class Sequence {
 
     public void addSymbol(Symbol symbol) {
         this.symbols.add(symbol);
+    }
+
+    public Sequence subsequence(int begin) {
+        Sequence result = new Sequence();
+        List<Symbol> newSymbols = symbols
+                .stream()
+                .skip(begin)
+                .collect(Collectors.toList());
+        result.setSymbols(newSymbols);
+        return result;
+
+    }
+
+    public Sequence subsequence(int begin, int end) {
+        Sequence result = new Sequence();
+        List<Symbol> newSymbols = symbols
+                .stream()
+                .skip(begin)
+                .limit(end-begin)
+                .collect(Collectors.toList());
+        result.setSymbols(newSymbols);
+        assert(result.getLength() == Math.min(getLength(), end) - begin);
+        return result;
+    }
+
+    /**
+     * Get a list of all MetaSymbols in this Sequence, in order of
+     * appearance.
+     * @return List of MetaSymbols
+     */
+    @JsonIgnore
+    public List<MetaSymbol> getMetaSymbols() {
+        return symbols
+                .stream()
+                .filter(s -> s instanceof MetaSymbol)
+                .map(s -> (MetaSymbol) s)
+                .collect(Collectors.toList());
     }
 
     @Override
