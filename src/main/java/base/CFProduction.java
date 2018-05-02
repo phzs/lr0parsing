@@ -1,4 +1,6 @@
-package parsing;
+package base;
+
+import parsing.LR0Element;
 
 import java.util.List;
 import java.util.Objects;

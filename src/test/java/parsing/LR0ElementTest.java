@@ -1,5 +1,6 @@
 package parsing;
 
+import base.CFProduction;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;

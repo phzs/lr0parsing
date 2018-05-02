@@ -1,4 +1,4 @@
-package parsing;
+package base;
 
 public abstract class Symbol {
     public abstract char getRepresentation();

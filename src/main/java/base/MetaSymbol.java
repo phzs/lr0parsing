@@ -1,14 +1,14 @@
-package parsing;
+package base;
 
-public class TerminalSymbol extends Symbol {
+public class MetaSymbol extends Symbol {
 
     private char representation;
 
-    public TerminalSymbol() {
+    public MetaSymbol() {
 
     }
 
-    public TerminalSymbol(char representation) {
+    public MetaSymbol(char representation) {
         this.representation = representation;
     }
 
@@ -18,14 +18,14 @@ public class TerminalSymbol extends Symbol {
 
     @Override
     public char getRepresentation() {
-        return Character.toLowerCase(this.representation);
+        return Character.toUpperCase(this.representation);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TerminalSymbol that = (TerminalSymbol) o;
+        MetaSymbol that = (MetaSymbol) o;
         return representation == that.representation;
     }
 
