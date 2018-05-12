@@ -111,4 +111,8 @@ public class Sequence {
     public int hashCode() {
         return Objects.hash(symbols);
     }
+
+    public int size() {
+        return this.symbols.size();
+    }
 }

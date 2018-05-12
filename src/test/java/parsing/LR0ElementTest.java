@@ -1,12 +1,14 @@
 package parsing;
 
 import base.CFProduction;
+import java.lang.IllegalArgumentException;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LR0ElementTest {
@@ -37,5 +39,20 @@ public class LR0ElementTest {
         Set<LR0Element> set = new HashSet<>();
         set.add(a);
         assertFalse(set.add(a));
+    }
+
+    @Test
+    public void illegalArgumentExceptionTest() {
+        assertThrows(IllegalArgumentException.class, () -> new LR0Element('A', "a.b."));
+        assertThrows(IllegalArgumentException.class, () -> new LR0Element('A', "a..."));
+        assertThrows(IllegalArgumentException.class, () -> new LR0Element('A', "a"));
+    }
+
+    @Test
+    public void rightDotNotationConstructorTest() {
+        LR0Element a = new LR0Element('A', "A.");
+        LR0Element b = new LR0Element('A', "A", 1);
+        assertTrue(a.equals(b));
+        assertTrue(new LR0Element('A', ".S").equals(new LR0Element('A', "S", 0)));
     }
 }

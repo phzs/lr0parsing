@@ -6,6 +6,7 @@ import base.Symbol;
 
 import java.lang.IllegalArgumentException;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * A state while parsing
@@ -33,6 +34,20 @@ public class LR0Element {
 
     public LR0Element(char left, String right, int markerPosition) {
         this(new CFProduction(left, right), markerPosition);
+    }
+
+    public LR0Element(char left, String rightDotNotation) {
+        String right = rightDotNotation;
+        int markerPosition = rightDotNotation.indexOf('.');
+        boolean invalidNumberOfDots = markerPosition == -1;
+        right = right.replaceFirst(Pattern.quote("."), "");
+        invalidNumberOfDots = invalidNumberOfDots || (right.indexOf('.') != -1);
+        if(invalidNumberOfDots)
+            throw new IllegalArgumentException("");
+        else {
+            this.production = new CFProduction(left, right);
+            this.markerPosition = markerPosition;
+        }
     }
 
     public Symbol getSymbolRightOfMarker() {
