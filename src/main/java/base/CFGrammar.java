@@ -133,4 +133,40 @@ public class CFGrammar {
     public int hashCode() {
         return Objects.hash(productionList, startSymbol);
     }
+
+    @JsonIgnore
+    public char getFreeMetaSymbol() {
+        return getFreeMetaSymbol("");
+    }
+
+    @JsonIgnore
+    public char getFreeMetaSymbol(String desiredRepresentations) {
+        char representation = '#';
+        boolean desiredFree = false;
+        List<Character> freeRepresentations = new LinkedList<>();
+        for(int i = (int)'A'; i <= (int)'Z'; i++) {
+            freeRepresentations.add((char) i);
+        }
+        for(CFProduction prod : productionList) {
+            int index = freeRepresentations.indexOf(prod.getLeft().getRepresentation());
+            if (index != -1) freeRepresentations.remove(index);
+            for(Symbol toRemove : prod.getRight().getMetaSymbols()) {
+                index = freeRepresentations.indexOf(toRemove.getRepresentation());
+                if (index != -1) freeRepresentations.remove(index);
+            }
+        }
+        if(desiredRepresentations.length() > 0 && freeRepresentations.size() > 0) {
+            for(char desiredChar : desiredRepresentations.toCharArray()) {
+                if(freeRepresentations.contains(desiredChar)) {
+                    representation = desiredChar;
+                    desiredFree = true;
+                    break;
+                }
+            }
+        }
+        if(!desiredFree && freeRepresentations.size() > 0) {
+            representation = freeRepresentations.get(freeRepresentations.size()-1);
+        }
+        return representation;
+    }
 }

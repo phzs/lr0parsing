@@ -118,4 +118,18 @@ public class CFGrammarTest {
 
         assertFalse(a.equals(c) || a.hashCode() == c.hashCode());
     }
+
+    @Test
+    public void getFreeMetaSymbolTest() {
+        CFGrammar a = new CFGrammar('S');
+        a.addProduction(new CFProduction('S', "AZ"));
+        char freeMeta = a.getFreeMetaSymbol();
+        assertTrue(freeMeta != 'Z');
+        assertTrue(freeMeta != 'A');
+        assertTrue(Character.isUpperCase(freeMeta));
+        assertTrue(a.getFreeMetaSymbol("ZB") == 'B');
+
+        assertTrue(getExampleGrammar().getFreeMetaSymbol("Z") == 'Z');
+        assertTrue(getExampleGrammar2().getFreeMetaSymbol("Z") != 'Z');
+    }
 }
