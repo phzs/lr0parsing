@@ -42,16 +42,21 @@ public class CFGrammar {
         boolean hasChanged;
         do {
             hasChanged = false;
+            Set<LR0Element> elementsToAdd = new HashSet<>();
             for (LR0Element el : closure) {
                 Symbol symbolRightOfMarker =  el.getSymbolRightOfMarker();
                 if(symbolRightOfMarker instanceof MetaSymbol) {
                     MetaSymbol metaSymbol = (MetaSymbol) symbolRightOfMarker;
                     for (CFProduction cfProduction : productionsByLeft.get(metaSymbol)) {
                         LR0Element newElement = cfProduction.getLR0Element(0);
-                        if(closure.add(newElement))
-                            hasChanged = true;
+                        if(!closure.contains(newElement))
+                            elementsToAdd.add(newElement);
                     }
                 }
+            }
+            if(elementsToAdd.size() > 0) {
+                closure.addAll(elementsToAdd);
+                hasChanged = true;
             }
         } while(hasChanged);
 
