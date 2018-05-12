@@ -67,7 +67,8 @@ public class CFGrammar {
     public Set<LR0Element> getGOTO(Set<LR0Element> elements, Symbol readSymbol) {
         Set<LR0Element> closureInput = new HashSet<>();
         for(LR0Element el : elements) {
-            if(el.getSymbolRightOfMarker().equals(readSymbol)) {
+            Symbol rightOfMarker = el.getSymbolRightOfMarker();
+            if(rightOfMarker != null && rightOfMarker.equals(readSymbol)) {
                 closureInput.add(new LR0Element(el, 1));
             }
         }

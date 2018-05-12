@@ -36,7 +36,10 @@ public class LR0Element {
     }
 
     public Symbol getSymbolRightOfMarker() {
-        return production.getRight().get(markerPosition);
+        if(production.getRight().size() > markerPosition)
+            return production.getRight().get(markerPosition);
+        else
+            return null;
     }
 
     @Override
