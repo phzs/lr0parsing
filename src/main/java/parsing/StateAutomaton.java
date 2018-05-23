@@ -2,9 +2,7 @@ package parsing;
 
 import base.Symbol;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 public class StateAutomaton {
     private TreeMap<Integer, State> states;
@@ -53,4 +51,24 @@ public class StateAutomaton {
     public int size() {
         return states.size();
     }
+
+    public List<StateTransition> getTransitionsFrom(int startStateNumber) {
+        List<StateTransition> result = new LinkedList<>();
+        for(StateTransition transition : transitions) {
+            if(transition.getFromState() == startStateNumber)
+                result.add(transition);
+        }
+        return result;
+    }
+
+    /*
+    public List<State> getStatesAscending() {
+        List<State> result = new LinkedList<>();
+        Iterator<Integer> iter = states.keySet().iterator(); // iterator preserves ascending order
+        while(iter.hasNext()) {
+            result.add(states.get(iter.next()));
+        }
+        return result;
+    }
+    */
 }

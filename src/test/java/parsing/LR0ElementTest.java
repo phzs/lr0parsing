@@ -1,15 +1,14 @@
 package parsing;
 
 import base.CFProduction;
-import java.lang.IllegalArgumentException;
+import base.MetaSymbol;
+import base.TerminalSymbol;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LR0ElementTest {
 
@@ -54,5 +53,32 @@ public class LR0ElementTest {
         LR0Element b = new LR0Element('A', "A", 1);
         assertTrue(a.equals(b));
         assertTrue(new LR0Element('A', ".S").equals(new LR0Element('A', "S", 0)));
+    }
+
+    @Test
+    public void getSymbolBeforeMarkerTest() {
+        LR0Element lr0Element = new LR0Element('A', "a.bc");
+        assertTrue(lr0Element.getSymbolBeforeMarker().equals(
+                new TerminalSymbol('a')));
+        LR0Element lr0Element1 = new LR0Element('B', ".abc");
+        assertTrue(lr0Element1.getSymbolBeforeMarker() == null);
+        LR0Element lr0Element2 = new LR0Element('B', "abc.");
+        assertTrue(lr0Element2.getSymbolBeforeMarker().equals(
+                new TerminalSymbol('c')));
+        LR0Element lr0Element3 = new LR0Element('B', "abcD.");
+        assertTrue(lr0Element3.getSymbolBeforeMarker().equals(
+                new MetaSymbol('D')));
+    }
+
+    @Test
+    public void isAcceptingTest() {
+        LR0Element lr0Element = new LR0Element('A', "a.bc");
+        assertFalse(lr0Element.isAccepting());
+        LR0Element lr0Element1 = new LR0Element('B', ".abc");
+        assertFalse(lr0Element1.isAccepting());
+        LR0Element lr0Element2 = new LR0Element('B', "abc.");
+        assertTrue(lr0Element2.isAccepting());
+        LR0Element lr0Element3 = new LR0Element('B', "abcD.");
+        assertTrue(lr0Element3.isAccepting());
     }
 }

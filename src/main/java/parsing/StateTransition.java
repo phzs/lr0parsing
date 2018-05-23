@@ -15,6 +15,18 @@ public class StateTransition {
         this.symbol = transitionSymbol;
     }
 
+    public Integer getFromState() {
+        return fromState;
+    }
+
+    public Integer getToState() {
+        return toState;
+    }
+
+    public Symbol getSymbol() {
+        return symbol;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

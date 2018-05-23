@@ -57,6 +57,10 @@ public class LR0Element {
             return null;
     }
 
+    public boolean isAccepting() {
+        return production.getRight().size() <= markerPosition;
+    }
+
     @Override
     public String toString() {
         String productionRight = production.getRight().toString();
@@ -78,5 +82,17 @@ public class LR0Element {
     @Override
     public int hashCode() {
         return Objects.hash(production, markerPosition);
+    }
+
+    public Symbol getSymbolBeforeMarker() {
+        Symbol result = null;
+        if(markerPosition > 0) {
+            result = production.getRight().get(markerPosition-1);
+        }
+        return result;
+    }
+
+    public CFProduction getProduction() {
+        return production;
     }
 }

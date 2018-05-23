@@ -169,4 +169,19 @@ public class CFGrammar {
         }
         return representation;
     }
+
+    public List<TerminalSymbol> getTerminalSymbols() {
+        List<TerminalSymbol> result = new LinkedList<>();
+        Set<TerminalSymbol> uniqueSet = new HashSet<>();
+        for(CFProduction production : productionList) {
+            for(Symbol symbol : production.getRight().getSymbols()) {
+                // this could be delegated to Sequence.getTerminalSymbols()
+                if(symbol instanceof TerminalSymbol)
+                    uniqueSet.add((TerminalSymbol) symbol);
+            }
+        }
+        result.addAll(uniqueSet);
+        Collections.sort(result);
+        return result;
+    }
 }
