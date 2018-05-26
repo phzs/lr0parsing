@@ -170,6 +170,7 @@ public class CFGrammar {
         return representation;
     }
 
+    @JsonIgnore
     public List<TerminalSymbol> getTerminalSymbols() {
         List<TerminalSymbol> result = new LinkedList<>();
         Set<TerminalSymbol> uniqueSet = new HashSet<>();
