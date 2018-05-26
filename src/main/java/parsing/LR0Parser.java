@@ -47,9 +47,9 @@ public class LR0Parser implements Parser {
     }
 
     @Override
-    public SyntaxAnalysisTable generateTable(CFGrammar grammar, StateAutomaton stateAutomaton) {
+    public ParseTable generateTable(CFGrammar grammar, StateAutomaton stateAutomaton) {
 
-        SyntaxAnalysisTable syntaxAnalysisTable = new SyntaxAnalysisTable();
+        ParseTable parseTable = new ParseTable();
 
         State firstState = stateAutomaton.getStartState();
 
@@ -65,7 +65,7 @@ public class LR0Parser implements Parser {
                 ParserAction action = ParserAction.Null;
                 if (transition.getSymbol() instanceof TerminalSymbol)
                     action = ParserAction.Shift;
-                syntaxAnalysisTable.add(
+                parseTable.add(
                         state.getNumber(),
                         transition.getSymbol(),
                         action,
@@ -91,7 +91,7 @@ public class LR0Parser implements Parser {
         );
 
         // 2. Add accept entry for the syntethic start rule
-        syntaxAnalysisTable.add(
+        parseTable.add(
                 acceptRuleStateNumber,
                 new TerminalSymbol('$'),
                 ParserAction.Accept,
@@ -110,7 +110,7 @@ public class LR0Parser implements Parser {
             for(LR0Element element : state.getElements()) {
                 if(element.isAccepting() && !element.equals(acceptRule)) {
                     for(TerminalSymbol terminalSymbol : terminalSymbols) {
-                        syntaxAnalysisTable.add(
+                        parseTable.add(
                           state.getNumber(),
                           terminalSymbol,
                           ParserAction.Reduce,
@@ -122,7 +122,7 @@ public class LR0Parser implements Parser {
             // possible optimization: let each state cache which elements end up with '' after marker
         }
 
-        return syntaxAnalysisTable;
+        return parseTable;
     }
 
     // optimize: 1. let LR0Element know its productionNumber in Grammar

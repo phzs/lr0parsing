@@ -4,15 +4,14 @@ import base.CFGrammar;
 import base.CFProduction;
 import base.Sequence;
 import base.Symbol;
-import parsing.Parser;
 import parsing.ParserAction;
-import parsing.SyntaxAnalysisTable;
+import parsing.ParseTable;
 
 import java.util.Stack;
 
 public class Analyzer {
 
-    public boolean analyze(CFGrammar grammar, SyntaxAnalysisTable syntaxAnalysisTable, String sequenceInput) {
+    public boolean analyze(CFGrammar grammar, ParseTable parseTable, String sequenceInput) {
         Sequence sequence = new Sequence(sequenceInput);
         Stack<Character> stack = new Stack<>();
 
@@ -31,8 +30,8 @@ public class Analyzer {
             // 2. read next symbol of input
             Symbol symbol = sequence.get(0);
 
-            // 3. lookup both in syntaxAnalysisTable
-            SyntaxAnalysisTable.TableEntry tableEntry = syntaxAnalysisTable.getEntry(stateNum, symbol);
+            // 3. lookup both in parseTable
+            ParseTable.TableEntry tableEntry = parseTable.getEntry(stateNum, symbol);
             if(tableEntry == null) {
                 System.out.println("Error: No entry found for " + stateNum + " and " + symbol + ".");
                 return false;
@@ -61,7 +60,7 @@ public class Analyzer {
                         stack.add(reduceSymbol.getRepresentation());
                         System.out.println("\t adding to stack: " + reduceSymbol.getRepresentation());
 
-                        SyntaxAnalysisTable.TableEntry reduceEntry = syntaxAnalysisTable.getEntry(z, reduceSymbol);
+                        ParseTable.TableEntry reduceEntry = parseTable.getEntry(z, reduceSymbol);
                         stack.add(Character.forDigit(reduceEntry.getNumber(), 10));
                         System.out.println("\t adding to stack: " + Character.forDigit(reduceEntry.getNumber(), 10));
                     } else {

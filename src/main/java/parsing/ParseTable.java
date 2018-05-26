@@ -5,7 +5,7 @@ import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.*;
 
-public class SyntaxAnalysisTable {
+public class ParseTable {
 
     private Map<Integer, Map<Symbol, TableEntry>> table; // stateNumber -> symbol -> (Entry)
 
@@ -62,7 +62,7 @@ public class SyntaxAnalysisTable {
         }
     }
 
-    public SyntaxAnalysisTable() {
+    public ParseTable() {
         table = new HashMap<>();
     }
 
@@ -74,13 +74,13 @@ public class SyntaxAnalysisTable {
         if(entry.action != null) {
             if(entry.action == ParserAction.Shift && parserAction == ParserAction.Shift) {
                 entry.action = ParserAction.ShiftShiftConflict;
-                entry.conflictNum = entry.number;
+                entry.secondaryNumber = entry.number;
             } else if(entry.action == ParserAction.Shift && parserAction == ParserAction.Reduce) {
                 entry.action = ParserAction.ShiftReduceConflict;
-                entry.conflictNum = entry.number;
+                entry.secondaryNumber = entry.number;
             } else if(entry.action == ParserAction.Reduce && parserAction == ParserAction.Reduce)  {
                 entry.action = ParserAction.ReduceRecudeConflict;
-                entry.conflictNum = entry.number;
+                entry.secondaryNumber = entry.number;
             } else if(entry.action != ParserAction.Null)
                 throw new InvalidStateException(
                         "An syntax analysis table entry with action " + entry.action + " may not be overwritten by action " + parserAction + ".");
