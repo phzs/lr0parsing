@@ -85,6 +85,10 @@ public class Sequence {
         return result;
     }
 
+    public void removeFirst() {
+        symbols.remove(0);
+    }
+
     /**
      * Get a list of all MetaSymbols in this Sequence, in order of
      * appearance.

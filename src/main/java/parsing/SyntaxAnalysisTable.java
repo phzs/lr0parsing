@@ -9,10 +9,10 @@ public class SyntaxAnalysisTable {
 
     private Map<Integer, Map<Symbol, TableEntry>> table; // stateNumber -> symbol -> (Entry)
 
-    private class TableEntry {
+    public class TableEntry {
         private ParserAction action;
         private Integer number;
-        private Integer conflictNum;
+        private Integer secondaryNumber;
 
         public ParserAction getAction() {
             return action;
@@ -47,13 +47,13 @@ public class SyntaxAnalysisTable {
                     result = "r" + number;
                     break;
                 case ShiftReduceConflict:
-                    result = String.format("s%d/r%d", conflictNum, number);
+                    result = String.format("s%d/r%d", secondaryNumber, number);
                     break;
                 case ShiftShiftConflict:
-                    result = String.format("s%d/s%d", conflictNum, number);
+                    result = String.format("s%d/s%d", secondaryNumber, number);
                     break;
                 case ReduceRecudeConflict:
-                    result = String.format("r%d/r%d", conflictNum, number);
+                    result = String.format("r%d/r%d", secondaryNumber, number);
                     break;
                 default:
                     result = "-";
