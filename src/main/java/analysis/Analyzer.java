@@ -7,11 +7,56 @@ import base.Symbol;
 import parsing.ParserAction;
 import parsing.ParseTable;
 
+import java.util.stream.Collectors;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Stack;
 
 public class Analyzer {
 
-    public boolean analyze(CFGrammar grammar, ParseTable parseTable, String sequenceInput) {
+    public static class AnalyzerResult {
+        private boolean success;
+        private List<CFProduction> usedProductions;
+
+        public AnalyzerResult(boolean success) {
+            this.success = success;
+        }
+
+        public boolean getSuccess() {
+            return success;
+        }
+
+        public void setSuccess(boolean success) {
+            this.success = success;
+        }
+
+        public List<CFProduction> getUsedProductions() {
+            return usedProductions;
+        }
+
+        public void setUsedProductions(List<CFProduction> usedProductions) {
+            this.usedProductions = usedProductions;
+        }
+
+        public void addProduction(CFProduction production) {
+            if(usedProductions == null)
+                usedProductions = new LinkedList<>();
+            usedProductions.add(production);
+        }
+
+        @Override
+        public String toString() {
+            String result = String.valueOf(success);
+            if(success && usedProductions != null && usedProductions.size() > 0) {
+                result += " " + usedProductions.stream().map(Object::toString)
+                        .collect(Collectors.joining(", "));
+            }
+            return result;
+        }
+    }
+
+    public AnalyzerResult analyze(CFGrammar grammar, ParseTable parseTable, String sequenceInput) {
+        AnalyzerResult result = new AnalyzerResult(true);
         Sequence sequence = new Sequence(sequenceInput);
         Stack<Character> stack = new Stack<>();
 
@@ -34,7 +79,7 @@ public class Analyzer {
             ParseTable.TableEntry tableEntry = parseTable.getEntry(stateNum, symbol);
             if(tableEntry == null) {
                 System.out.println("Error: No entry found for " + stateNum + " and " + symbol + ".");
-                return false;
+                return new AnalyzerResult(false);
             }
             ParserAction action = tableEntry.getAction();
             int newState = tableEntry.getNumber();
@@ -53,6 +98,7 @@ public class Analyzer {
                 case Reduce:
                     if(prodNum >= 0 && prodNum < grammar.getProductionList().size()) {
                         CFProduction production = grammar.getProductionList().get(prodNum);
+                        result.addProduction(production);
                         int amount = 2 * production.getRight().size();
                         for (int j = 0; j < amount; j++) stack.pop();
                         int z = Character.getNumericValue(stack.peek().charValue());
@@ -65,19 +111,18 @@ public class Analyzer {
                         System.out.println("\t adding to stack: " + Character.forDigit(reduceEntry.getNumber(), 10));
                     } else {
                         System.out.println("Error: production number not in range: " + prodNum);
-                        return false;
+                        return new AnalyzerResult(false);
                     }
                     break;
                 case Accept:
-                    return true;
+                    return result; // success = true
                 default: //error
-                    return false;
+                    return new AnalyzerResult(false);
             }
 
 
             System.out.println(stack);
         }
-
-        return true;
+        return new AnalyzerResult(false);
     }
 }
