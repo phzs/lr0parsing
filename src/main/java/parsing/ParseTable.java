@@ -9,7 +9,7 @@ public class ParseTable {
 
     private Map<Integer, Map<Symbol, TableEntry>> table; // stateNumber -> symbol -> (Entry)
 
-    public class TableEntry {
+    public static class TableEntry {
         private ParserAction action;
         private Integer number;
         private Integer secondaryNumber;
