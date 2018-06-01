@@ -13,6 +13,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import visualization.grammar.GrammarTable;
+import visualization.grammar.GrammarTableData;
+import visualization.grammar.TextFieldCellFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -30,16 +33,14 @@ public class MainController implements Initializable {
     private TabPane tabPane;
 
     @FXML
-    private TextArea grammarInputField;
-
-    @FXML
     private ScrollPane grammarInputScrollPane;
 
     @FXML
     private Button startStopButton;
 
-    @FXML
-    private TableView grammarTable;
+    private GrammarTable grammarTable = new GrammarTable(true);
+
+    private GrammarTable grammarViewTable = new GrammarTable(false);
 
     @FXML
     private ChoiceBox startSymbolChoiceBox;
@@ -56,6 +57,9 @@ public class MainController implements Initializable {
     @FXML
     private Button removeRuleButton;
 
+    @FXML
+    private ScrollPane parsingGrammarScrollPane;
+
     public static CFGrammar getExampleGrammar() {
         CFGrammar exampleGrammar = new CFGrammar('S');
         exampleGrammar.addProduction(new CFProduction('S', "Sb"));
@@ -67,32 +71,8 @@ public class MainController implements Initializable {
     }
 
     private void initTable() {
-        TableColumn<GrammarTableData, Integer> numberCol = new TableColumn<>("#");
-        numberCol.setCellValueFactory(new PropertyValueFactory<GrammarTableData, Integer>("id"));
-        numberCol.setSortable(false);
-        numberCol.setEditable(false);
-
-        TableColumn<GrammarTableData, String> leftCol = new TableColumn<>("left");
-        leftCol.setCellValueFactory(new PropertyValueFactory<GrammarTableData, String>("left"));
-        leftCol.setCellFactory(new TextFieldCellFactory());
-        leftCol.setPrefWidth(50);
-        leftCol.setSortable(false);
-        leftCol.setEditable(true);
-
-        TableColumn<GrammarTableData, String> arrowCol = new TableColumn<>("arrow");
-        arrowCol.setCellValueFactory(new PropertyValueFactory<GrammarTableData, String>("arrow"));
-        arrowCol.setPrefWidth(30);
-        arrowCol.setSortable(false);
-        arrowCol.setEditable(false);
-
-        TableColumn<GrammarTableData, String> rightCol = new TableColumn<>("right");
-        rightCol.setCellValueFactory(new PropertyValueFactory<GrammarTableData, String>("right"));
-        rightCol.setCellFactory(new TextFieldCellFactory());
-        rightCol.setPrefWidth(50);
-        rightCol.setSortable(false);
-        rightCol.setEditable(true);
-
-        grammarTable.getColumns().addAll(numberCol, leftCol, arrowCol, rightCol);
+        grammarInputScrollPane.setFitToHeight(true);
+        grammarInputScrollPane.setFitToWidth(true);
         grammarInputScrollPane.setContent(grammarTable);
     }
 
@@ -138,9 +118,6 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        grammarInputScrollPane.setFitToHeight(true);
-        grammarInputScrollPane.setFitToWidth(true);
-
         initTable();
         loadGrammar(getExampleGrammar());
 
@@ -162,9 +139,14 @@ public class MainController implements Initializable {
                         alertBox.getChildren().remove(newAlert);
                     }
                 });
-                alertBox.getChildren().add(newAlert);
+                //alertBox.getChildren().add(newAlert);
 
                 System.out.println(getGrammar());
+                grammarViewTable.getItems().clear();
+                grammarViewTable.getItems().addAll(grammarTable.getItems());
+                parsingGrammarScrollPane.setContent(grammarViewTable);
+                parsingGrammarScrollPane.setFitToHeight(true);
+                parsingGrammarScrollPane.setFitToWidth(true);
             }
         });
         clearRulesButton.setOnAction(new EventHandler<ActionEvent>() {

@@ -1,4 +1,4 @@
-package visualization;
+package visualization.grammar;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -9,6 +9,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
+import visualization.grammar.GrammarTableData;
 
 public class TextFieldCellFactory
         implements Callback<TableColumn<GrammarTableData,String>,TableCell<GrammarTableData,String>> {

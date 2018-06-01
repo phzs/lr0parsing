@@ -1,4 +1,4 @@
-package visualization;
+package visualization.grammar;
 
 import base.CFProduction;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
