@@ -10,6 +10,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
@@ -26,10 +27,9 @@
             <TabPane tabClosingPolicy="UNAVAILABLE">
               <tabs>
                   <Tab text="1 Input">
-                     <content>
-                        <HBox>
-                           <children>
-                                 <ScrollPane fx:id="grammarInputScrollPane" hbarPolicy="ALWAYS" vbarPolicy="ALWAYS">
+                        <SplitPane dividerPositions="0.5">
+                           <items>
+                                 <ScrollPane fx:id="grammarInputScrollPane">
                                      <content>
                                          <TableView fx:id="grammarTable" editable="true" />
                                      </content>
@@ -55,24 +55,37 @@
                                     <Button fx:id="removeRuleButton" mnemonicParsing="false" text="Remove last rule" />
                                  </children>
                               </VBox>
-                           </children>
-                        </HBox>
-                     </content>
+                           </items>
+                        </SplitPane>
                   </Tab>
                 <Tab text="2 Parsing">
                      <content>
-                        <ScrollPane maxHeight="-Infinity" maxWidth="-Infinity">
-                           <content>
-                              <Canvas fx:id="graphCanvas" height="600.0" width="800.0" />
-                           </content>
-                        </ScrollPane>
+                        <SplitPane dividerPositions="0.5">
+                           <items>
+                              <ScrollPane prefHeight="200.0" prefWidth="200.0">
+                                <content>
+                                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                                </content>
+                              </ScrollPane>
+                              <ScrollPane maxHeight="-Infinity" maxWidth="-Infinity">
+                                 <content>
+                                    <Canvas fx:id="graphCanvas" height="600.0" width="800.0" />
+                                 </content>
+                              </ScrollPane>
+                           </items>
+                        </SplitPane>
                      </content>
                 </Tab>
-                <Tab text="3 Syntax Analysis">
+                <Tab text="3 Parse Table">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                   </content>
                 </Tab>
+                  <Tab text="4 Syntax Analysis">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    </content>
+                  </Tab>
               </tabs>
             </TabPane>
             <AnchorPane pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
