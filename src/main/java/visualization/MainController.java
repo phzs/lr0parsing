@@ -118,7 +118,8 @@ public class MainController implements Initializable {
 
     public CFGrammar getGrammar() {
         grammar = new CFGrammar();
-        grammar.setStartSymbol(new MetaSymbol((char) startSymbolChoiceBox.getValue()));
+        if(startSymbolChoiceBox.getValue() != null)
+            grammar.setStartSymbol(new MetaSymbol((char) startSymbolChoiceBox.getValue()));
         for(Object dataRow : grammarTable.getItems()) {
             GrammarTableData grammarTableData = (GrammarTableData) dataRow;
             CFProduction newProduction = new CFProduction(
