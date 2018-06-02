@@ -44,6 +44,13 @@ public class StateAutomaton {
         return this.states.get(key);
     }
 
+    public List<State> getStates() {
+        LinkedList<State> result = new LinkedList<>();
+        for(Integer key : stateNumberMapping.keySet())
+            result.add(getState(key));
+        return result;
+    }
+
     public State getStartState() {
         return getState(0);
     }

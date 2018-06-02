@@ -9,16 +9,17 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
+import parsing.LR0Parser;
 import visualization.grammar.GrammarTable;
 import visualization.grammar.GrammarTableData;
-import visualization.grammar.TextFieldCellFactory;
+import visualization.graph.GraphDrawer;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,6 +67,12 @@ public class MainController implements Initializable {
 
     @FXML
     private ScrollPane parsingGrammarScrollPane;
+
+    @FXML
+    private ScrollPane parsingGraphScrollPane;
+
+    @FXML
+    private Pane canvasPane;
 
     @FXML
     private MenuItem menuOpen;
@@ -135,15 +142,8 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         initTable();
-        loadGrammar(getExampleGrammar());
 
-        GraphicsContext gc = graphCanvas.getGraphicsContext2D();
-        gc.beginPath();
-        gc.moveTo(30.5, 30.5);
-        gc.lineTo(150.5, 30.5);
-        gc.lineTo(150.5, 150.5);
-        gc.lineTo(30.5, 30.5);
-        gc.stroke();
+        loadGrammar(getExampleGrammar());
 
         startStopButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -154,6 +154,8 @@ public class MainController implements Initializable {
                 parsingGrammarScrollPane.setContent(grammarViewTable);
                 parsingGrammarScrollPane.setFitToHeight(true);
                 parsingGrammarScrollPane.setFitToWidth(true);
+
+                new GraphDrawer(canvasPane, new LR0Parser().parse(grammar));
             }
         });
         clearRulesButton.setOnAction(new EventHandler<ActionEvent>() {
