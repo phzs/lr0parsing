@@ -100,9 +100,9 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem mnemonicParsing="false" text="Open" />
-                  <MenuItem mnemonicParsing="false" text="Save" />
-                  <MenuItem mnemonicParsing="false" text="Save as..." />
+                  <MenuItem fx:id="menuOpen" mnemonicParsing="false" text="Open" />
+                  <MenuItem fx:id="menuSave" disable="true" mnemonicParsing="false" text="Save" />
+                  <MenuItem fx:id="menuSaveAs" mnemonicParsing="false" text="Save as..." />
               <MenuItem mnemonicParsing="false" text="Quit" />
             </items>
           </Menu>

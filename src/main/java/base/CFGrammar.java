@@ -1,8 +1,15 @@
 package base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
 import parsing.LR0Element;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.*;
 
 public class CFGrammar {
@@ -184,5 +191,23 @@ public class CFGrammar {
         result.addAll(uniqueSet);
         Collections.sort(result);
         return result;
+    }
+
+    private static ObjectMapper getObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enableDefaultTyping(
+                ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE);
+        return objectMapper;
+    }
+
+    public static CFGrammar fromFile(File file) throws IOException {
+        CFGrammar result = new CFGrammar();
+        ObjectMapper objectMapper = getObjectMapper();
+        String grammarJSON = FileUtils.readFileToString(file);
+        return objectMapper.readValue(grammarJSON, CFGrammar.class);
+    }
+
+    public String toJSON() throws JsonProcessingException {
+        return getObjectMapper().writeValueAsString(this);
     }
 }
