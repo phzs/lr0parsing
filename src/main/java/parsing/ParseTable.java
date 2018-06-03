@@ -1,13 +1,16 @@
 package parsing;
 
 import base.Symbol;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.*;
 
 public class ParseTable {
 
-    private Map<Integer, Map<Symbol, TableEntry>> table; // stateNumber -> symbol -> (Entry)
+    private ObservableMap<Integer, ObservableMap<Symbol, TableEntry>> table; // stateNumber -> symbol -> (Entry)
 
     public static class TableEntry {
         private ParserAction action;
@@ -63,11 +66,12 @@ public class ParseTable {
     }
 
     public ParseTable() {
-        table = new HashMap<>();
+        table = new SimpleMapProperty<>(FXCollections.observableHashMap());
     }
 
     public void add(Integer stateNum, Symbol symbol, ParserAction parserAction, Integer targetState) {
-        table.putIfAbsent(stateNum, new HashMap<>());
+        if(table.get(stateNum) == null)
+            table.put(stateNum, new SimpleMapProperty<>(FXCollections.observableHashMap()));
         Map<Symbol, TableEntry> tableRow = table.get(stateNum);
         tableRow.putIfAbsent(symbol, new TableEntry());
         TableEntry entry = tableRow.get(symbol);
@@ -97,6 +101,10 @@ public class ParseTable {
         return result;
     }
 
+    public Collection<ObservableMap<Symbol, TableEntry>> getRows() {
+        return table.values();
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -122,7 +130,6 @@ public class ParseTable {
                 }
             }
             result.append("\n");
-            System.out.println();
         }
         return result.toString();
     }

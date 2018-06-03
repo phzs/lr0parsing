@@ -193,6 +193,22 @@ public class CFGrammar {
         return result;
     }
 
+    @JsonIgnore
+    public List<MetaSymbol> getMetaSymbols() {
+        List<MetaSymbol> result = new LinkedList<>();
+        Set<MetaSymbol> uniqueSet = new HashSet<>();
+        for(CFProduction production : productionList) {
+            for(Symbol symbol : production.getRight().getSymbols()) {
+                if(symbol instanceof MetaSymbol)
+                    uniqueSet.add((MetaSymbol) symbol);
+            }
+            uniqueSet.add(production.getLeft());
+        }
+        result.addAll(uniqueSet);
+        Collections.sort(result);
+        return result;
+    }
+
     private static ObjectMapper getObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enableDefaultTyping(

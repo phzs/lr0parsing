@@ -12,14 +12,13 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import visualization.parseTable.ParseTableView?>
 
 <BorderPane minHeight="800.0" minWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.MainController">
    <center>
@@ -30,8 +29,7 @@
                   <Tab fx:id="inputTab" text="1 Input">
                         <SplitPane dividerPositions="0.5">
                            <items>
-                                 <ScrollPane fx:id="grammarInputScrollPane">
-                                 </ScrollPane>
+                                 <ScrollPane fx:id="grammarInputScrollPane" />
                               <VBox>
                                  <children>
                                       <HBox>
@@ -83,18 +81,13 @@
                           </ScrollPane>
                           <AnchorPane fx:id="parsing2AnchorPane" minHeight="0.0" minWidth="0.0" pickOnBounds="false" prefHeight="180.0" prefWidth="200.0">
                               <children>
-                                 <TableView opacity="0.9" prefHeight="200.0" prefWidth="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
-                                   <columns>
-                                     <TableColumn prefWidth="75.0" text="C1" />
-                                     <TableColumn prefWidth="75.0" text="C2" />
-                                   </columns>
-                                 </TableView>
+                                 <ParseTableView fx:id="parsing2TableView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="0.9" prefHeight="287.0" prefWidth="434.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0" />
                               </children>
                           </AnchorPane>
                       </StackPane>
                   </content>
                 </Tab>
-                  <Tab  fx:id="analysisTab" text="4 Syntax Analysis">
+                  <Tab fx:id="analysisTab" text="4 Syntax Analysis">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                     </content>

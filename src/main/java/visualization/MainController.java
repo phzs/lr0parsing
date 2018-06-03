@@ -19,9 +19,12 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
 import parsing.LR0Parser;
+import parsing.ParseTable;
+import parsing.StateAutomaton;
 import visualization.grammar.GrammarTable;
 import visualization.grammar.GrammarTableData;
 import visualization.graph.GraphDrawer;
+import visualization.parseTable.ParseTableView;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +56,12 @@ public class MainController implements Initializable {
     private File grammarFile;
 
     private GraphDrawer graphDrawer;
+
+    private AppState state;
+
+    private LR0Parser lr0Parser;
+
+    private StateAutomaton stateAutomaton;
 
     @FXML
     private ChoiceBox startSymbolChoiceBox;
@@ -89,6 +98,9 @@ public class MainController implements Initializable {
 
     @FXML
     private MenuItem menuSaveAs;
+
+    @FXML
+    private ParseTableView parsing2TableView;
 
     public static CFGrammar getExampleGrammar() {
         CFGrammar exampleGrammar = new CFGrammar('S');
@@ -152,19 +164,31 @@ public class MainController implements Initializable {
 
         loadGrammar(getExampleGrammar());
 
+        this.state = AppState.NOT_STARTED;
+        this.lr0Parser = new LR0Parser();
+
         startStopButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println(getGrammar());
-                grammarViewTable.getItems().clear();
-                grammarViewTable.getItems().addAll(grammarTable.getItems());
-                parsingGrammarScrollPane.setContent(grammarViewTable);
-                parsingGrammarScrollPane.setFitToHeight(true);
-                parsingGrammarScrollPane.setFitToWidth(true);
+                if(state == AppState.NOT_STARTED) {
+                    grammarViewTable.getItems().clear();
+                    grammarViewTable.getItems().addAll(grammarTable.getItems());
+                    parsingGrammarScrollPane.setContent(grammarViewTable);
+                    parsingGrammarScrollPane.setFitToHeight(true);
+                    parsingGrammarScrollPane.setFitToWidth(true);
+                    stateAutomaton = lr0Parser.parse(grammar);
+                    graphDrawer = new GraphDrawer(canvasPane, stateAutomaton);
+                    tabPane.getSelectionModel().select(1);
+                    state = AppState.AUTOMATON_GENERATED;
+                }
+                else if(state == AppState.AUTOMATON_GENERATED) {
+                    ParseTable resultTable = lr0Parser.generateTable(grammar, stateAutomaton);
+                    parsing2TableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
+                    parsing2TableView.getItems().addAll(resultTable.getRows());
 
-                graphDrawer = new GraphDrawer(canvasPane, new LR0Parser().parse(grammar));
-
-                tabPane.getSelectionModel().select(1);
+                    tabPane.getSelectionModel().select(2);
+                    state = AppState.PARSETABLE_GENERATED;
+                }
             }
         });
         clearRulesButton.setOnAction(new EventHandler<ActionEvent>() {
