@@ -252,10 +252,12 @@ public class MainController implements Initializable {
                 new ChangeListener<Tab>() {
                     @Override
                     public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
-                        if(t1.getId().equals("parsing2Tab")) {
-                            graphDrawer.setTargetPane(parsing2CanvasPane);
-                        } else if(t1.getId().equals("parsingTab")) {
-                            graphDrawer.setTargetPane(canvasPane);
+                        if(graphDrawer != null) {
+                            if (t1.getId().equals("parsing2Tab")) {
+                                graphDrawer.setTargetPane(parsing2CanvasPane);
+                            } else if (t1.getId().equals("parsingTab")) {
+                                graphDrawer.setTargetPane(canvasPane);
+                            }
                         }
                     }
                 }
