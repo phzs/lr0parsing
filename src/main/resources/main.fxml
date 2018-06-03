@@ -12,6 +12,8 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -23,9 +25,9 @@
    <center>
       <StackPane pickOnBounds="false">
          <children>
-            <TabPane tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                  <Tab text="1 Input">
+                  <Tab fx:id="inputTab" text="1 Input">
                         <SplitPane dividerPositions="0.5">
                            <items>
                                  <ScrollPane fx:id="grammarInputScrollPane">
@@ -54,7 +56,7 @@
                            </items>
                         </SplitPane>
                   </Tab>
-                <Tab text="2 Parsing">
+                <Tab fx:id="parsingTab" text="2 Parsing">
                      <content>
                         <SplitPane dividerPositions="0.5">
                            <items>
@@ -64,23 +66,35 @@
                               </ScrollPane>
                               <ScrollPane fx:id="parsingGraphScrollPane" maxHeight="-Infinity" maxWidth="-Infinity">
                                  <content>
-                                    <Pane fx:id="canvasPane" managed="false" prefHeight="1800.0" prefWidth="1800.0">
-                                       <children>
-                                          <!--<StackPane fx:id="canvasStackPane" prefHeight="150.0" prefWidth="200.0" />-->
-                                       </children>
-                                    </Pane>
+                                    <Pane fx:id="canvasPane" managed="false" prefHeight="1800.0" prefWidth="1800.0" />
                                  </content>
                               </ScrollPane>
                            </items>
                         </SplitPane>
                      </content>
                 </Tab>
-                <Tab text="3 Parse Table">
+                <Tab fx:id="parsing2Tab" text="3 Parse Table">
                   <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                      <StackPane>
+                          <ScrollPane fx:id="parsing2GraphScrollPane">
+                              <content>
+                                  <Pane fx:id="parsing2CanvasPane" managed="false" prefHeight="1800.0" prefWidth="1800.0" />
+                              </content>
+                          </ScrollPane>
+                          <AnchorPane fx:id="parsing2AnchorPane" minHeight="0.0" minWidth="0.0" pickOnBounds="false" prefHeight="180.0" prefWidth="200.0">
+                              <children>
+                                 <TableView opacity="0.9" prefHeight="200.0" prefWidth="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
+                                   <columns>
+                                     <TableColumn prefWidth="75.0" text="C1" />
+                                     <TableColumn prefWidth="75.0" text="C2" />
+                                   </columns>
+                                 </TableView>
+                              </children>
+                          </AnchorPane>
+                      </StackPane>
                   </content>
                 </Tab>
-                  <Tab text="4 Syntax Analysis">
+                  <Tab  fx:id="analysisTab" text="4 Syntax Analysis">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                     </content>

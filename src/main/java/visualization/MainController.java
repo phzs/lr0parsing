@@ -4,6 +4,8 @@ import base.CFGrammar;
 import base.CFProduction;
 import base.MetaSymbol;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -50,6 +52,8 @@ public class MainController implements Initializable {
 
     private File grammarFile;
 
+    private GraphDrawer graphDrawer;
+
     @FXML
     private ChoiceBox startSymbolChoiceBox;
 
@@ -73,6 +77,9 @@ public class MainController implements Initializable {
 
     @FXML
     private Pane canvasPane;
+
+    @FXML
+    private Pane parsing2CanvasPane;
 
     @FXML
     private MenuItem menuOpen;
@@ -155,7 +162,9 @@ public class MainController implements Initializable {
                 parsingGrammarScrollPane.setFitToHeight(true);
                 parsingGrammarScrollPane.setFitToWidth(true);
 
-                new GraphDrawer(canvasPane, new LR0Parser().parse(grammar));
+                graphDrawer = new GraphDrawer(canvasPane, new LR0Parser().parse(grammar));
+
+                tabPane.getSelectionModel().select(1);
             }
         });
         clearRulesButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -215,6 +224,18 @@ public class MainController implements Initializable {
                 saveGramamrToFile();
             }
         });
+        tabPane.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<Tab>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
+                        if(t1.getId().equals("parsing2Tab")) {
+                            graphDrawer.setTargetPane(parsing2CanvasPane);
+                        } else if(t1.getId().equals("parsingTab")) {
+                            graphDrawer.setTargetPane(canvasPane);
+                        }
+                    }
+                }
+        );
     }
 
     private void alert(String message) {
