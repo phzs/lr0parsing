@@ -1,3 +1,7 @@
 .idea/
-lr0visualization.iml
+*.iml
 target/
+
+stash/
+todo.*
+*.ora*
