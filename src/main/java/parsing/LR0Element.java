@@ -4,7 +4,6 @@ package parsing;
 import base.CFProduction;
 import base.Symbol;
 
-import java.lang.IllegalArgumentException;
 import java.util.Objects;
 import java.util.regex.Pattern;
 

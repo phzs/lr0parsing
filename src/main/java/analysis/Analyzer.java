@@ -4,13 +4,13 @@ import base.CFGrammar;
 import base.CFProduction;
 import base.Sequence;
 import base.Symbol;
-import parsing.ParserAction;
 import parsing.ParseTable;
+import parsing.ParserAction;
 
-import java.util.stream.Collectors;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 public class Analyzer {
 

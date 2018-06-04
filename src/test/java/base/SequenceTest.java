@@ -1,8 +1,5 @@
 package base;
 
-import base.CFProduction;
-import base.MetaSymbol;
-import base.Sequence;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
