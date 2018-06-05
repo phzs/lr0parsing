@@ -12,12 +12,14 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import visualization.parseTable.ParseTableView?>
 
 <BorderPane minHeight="800.0" minWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.MainController">
@@ -89,7 +91,38 @@
                 </Tab>
                   <Tab fx:id="analysisTab" text="4 Syntax Analysis">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        <VBox>
+                            <children>
+                                <SplitPane fx:id="analysisAnchorPane" dividerPositions="0.5">
+                                    <items>
+                                        <ParseTableView fx:id="analysisTableView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="0.9" prefHeight="287.0" prefWidth="300.0" />
+                                        <VBox>
+                                            <children>
+                                                <TextArea fx:id="analysisInputTextArea" prefHeight="261.0" prefWidth="1699.0" text="baab" />
+                                                <Button fx:id="analysisStartButton" text="Analyze Input" />
+                                            </children>
+                                        </VBox>
+                                    </items>
+                                </SplitPane>
+                                <VBox>
+                                    <children>
+                                    <HBox fx:id="analysisStackDisplay" prefHeight="50.0" prefWidth="200.0">
+                                       <VBox.margin>
+                                          <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
+                                       </VBox.margin>
+                                    </HBox>
+                                    <Label fx:id="analysisInputDisplay" text="Input">
+                                       <VBox.margin>
+                                          <Insets left="50.0" />
+                                       </VBox.margin>
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                    </Label>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
                     </content>
                   </Tab>
               </tabs>

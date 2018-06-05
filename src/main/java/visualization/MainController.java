@@ -1,5 +1,6 @@
 package visualization;
 
+import analysis.Analyzer;
 import base.CFGrammar;
 import base.CFProduction;
 import base.MetaSymbol;
@@ -10,11 +11,16 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
@@ -33,12 +39,18 @@ import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
 
+    private MainThread mainThread;
+
     private CFGrammar grammar;
-
     private int prodNum = 0;
-
-    @FXML
-    private Canvas graphCanvas;
+    private GrammarTable grammarTable = new GrammarTable(true);
+    private GrammarTable grammarViewTable = new GrammarTable(false);
+    private File grammarFile;
+    private GraphDrawer graphDrawer;
+    private AppState state;
+    private LR0Parser lr0Parser;
+    private StateAutomaton stateAutomaton;
+    private StackView stackView;
 
     @FXML
     private TabPane tabPane;
@@ -48,20 +60,6 @@ public class MainController implements Initializable {
 
     @FXML
     private Button startStopButton;
-
-    private GrammarTable grammarTable = new GrammarTable(true);
-
-    private GrammarTable grammarViewTable = new GrammarTable(false);
-
-    private File grammarFile;
-
-    private GraphDrawer graphDrawer;
-
-    private AppState state;
-
-    private LR0Parser lr0Parser;
-
-    private StateAutomaton stateAutomaton;
 
     @FXML
     private ChoiceBox startSymbolChoiceBox;
@@ -101,6 +99,21 @@ public class MainController implements Initializable {
 
     @FXML
     private ParseTableView parsing2TableView;
+
+    @FXML
+    private ParseTableView analysisTableView;
+
+    @FXML
+    private Label analysisInputDisplay;
+
+    @FXML
+    private TextArea analysisInputTextArea;
+
+    @FXML
+    private HBox analysisStackDisplay;
+
+    @FXML
+    private Button analysisStartButton;
 
     public static CFGrammar getExampleGrammar() {
         CFGrammar exampleGrammar = new CFGrammar('S');
@@ -157,12 +170,20 @@ public class MainController implements Initializable {
         grammarTable.getItems().clear();
     }
 
+    public void stateAutomatonFinished() {
+        state = AppState.AUTOMATON_GENERATED;
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        mainThread = new MainThread(this);
+        StepController.getInstance().setMainThread(mainThread);
 
         initTable();
 
         loadGrammar(getExampleGrammar());
+        mainThread.setGrammar(grammar);
 
         this.state = AppState.NOT_STARTED;
         this.lr0Parser = new LR0Parser();
@@ -171,23 +192,39 @@ public class MainController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 if(state == AppState.NOT_STARTED) {
+                    grammar = getGrammar();
+                    mainThread.setGrammar(grammar);
+
                     grammarViewTable.getItems().clear();
                     grammarViewTable.getItems().addAll(grammarTable.getItems());
                     parsingGrammarScrollPane.setContent(grammarViewTable);
                     parsingGrammarScrollPane.setFitToHeight(true);
                     parsingGrammarScrollPane.setFitToWidth(true);
-                    stateAutomaton = lr0Parser.parse(grammar);
-                    graphDrawer = new GraphDrawer(canvasPane, stateAutomaton);
+                    stateAutomaton = mainThread.getStateAutomaton();
+
                     tabPane.getSelectionModel().select(1);
-                    state = AppState.AUTOMATON_GENERATED;
+
+                    graphDrawer = new GraphDrawer(canvasPane, stateAutomaton);
+                    StepController.getInstance().start();
                 }
                 else if(state == AppState.AUTOMATON_GENERATED) {
+                    StepController.getInstance().stop();
                     ParseTable resultTable = lr0Parser.generateTable(grammar, stateAutomaton);
                     parsing2TableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
                     parsing2TableView.getItems().addAll(resultTable.getRows());
 
                     tabPane.getSelectionModel().select(2);
                     state = AppState.PARSETABLE_GENERATED;
+                }
+                else if(state == AppState.PARSETABLE_GENERATED) {
+                    StepController.getInstance().start();
+                    analysisTableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
+                    analysisTableView.getItems().addAll(parsing2TableView.getItems());
+
+                    Analyzer analyzer = new Analyzer();
+
+                    tabPane.getSelectionModel().select(3);
+                    state = AppState.ANALYSIS;
                 }
             }
         });
@@ -262,6 +299,11 @@ public class MainController implements Initializable {
                     }
                 }
         );
+        analysisStartButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+            }
+        });
     }
 
     private void alert(String message) {
@@ -303,5 +345,9 @@ public class MainController implements Initializable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public GraphDrawer getGraphDrawer() {
+        return graphDrawer;
     }
 }

@@ -11,10 +11,12 @@ public class LR0Parser implements Parser {
 
     private MetaSymbol previousStartSymbol;
 
-    @Override
-    public StateAutomaton parse(CFGrammar grammar) {
-        StateAutomaton stateAutomaton = new StateAutomaton();
+    // parsing output data structures
+    private StateAutomaton stateAutomaton;
+    private ParseTable parseTable;
 
+    @Override
+    public void parse(CFGrammar grammar) {
         // 1. Add a new start production
         char newStartSymbolRepr = grammar.getFreeMetaSymbol("ZS");
         CFProduction newStartProduction = new CFProduction(newStartSymbolRepr, grammar.getStartSymbol().toString());
@@ -44,8 +46,6 @@ public class LR0Parser implements Parser {
             statesProcessed.add(stateId);
             statesToProcess.remove(stateId);
         }
-
-        return stateAutomaton;
     }
 
     @Override
@@ -125,6 +125,26 @@ public class LR0Parser implements Parser {
         }
 
         return parseTable;
+    }
+
+    @Override
+    public StateAutomaton getStateAutomaton() {
+        return stateAutomaton;
+    }
+
+    @Override
+    public void setStateAutomaton(StateAutomaton stateAutomaton) {
+        this.stateAutomaton = stateAutomaton;
+    }
+
+    @Override
+    public ParseTable getParseTable() {
+        return parseTable;
+    }
+
+    @Override
+    public void setParseTable(ParseTable parseTable) {
+        this.parseTable = parseTable;
     }
 
     // optimize: 1. let LR0Element know its productionNumber in Grammar

@@ -1,19 +1,25 @@
 package parsing;
 
 import base.Symbol;
+import javafx.beans.property.MapProperty;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.property.SimpleSetProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
 
 import java.util.*;
 
 public class StateAutomaton {
-    private TreeMap<Integer, State> states;
+    private ObservableMap<Integer, State> states;
     private TreeMap<Integer, Integer> stateNumberMapping; // maps State.number to State.elements.hashCode (key of states)
-    private Set<StateTransition> transitions;
+    private ObservableSet<StateTransition> transitions;
     private Integer nextFreeStateNumber;
 
     public StateAutomaton() {
-        states = new TreeMap<>();
+        states = new SimpleMapProperty<>(FXCollections.observableHashMap());
         stateNumberMapping = new TreeMap<>();
-        transitions = new HashSet<>();
+        transitions = new SimpleSetProperty<>(FXCollections.observableSet());
         nextFreeStateNumber = 0;
     }
 
@@ -66,6 +72,14 @@ public class StateAutomaton {
                 result.add(transition);
         }
         return result;
+    }
+
+    public ObservableMap statesProperty() {
+        return states;
+    }
+
+    public ObservableSet transitionsProperty() {
+        return transitions;
     }
 
     /*

@@ -16,7 +16,10 @@ public class LR0ParserTest {
     public void parseTest() {
         CFGrammar exampleGrammar = CFGrammarTest.getExampleGrammar();
 
-        StateAutomaton result = new LR0Parser().parse(exampleGrammar);
+        LR0Parser parser = new LR0Parser();
+        StateAutomaton result = new StateAutomaton();
+        parser.parse(exampleGrammar);
+        result = parser.getStateAutomaton();
 
         // 1. check states
         List<Set<LR0Element>> expectedElementSets = new LinkedList<>();

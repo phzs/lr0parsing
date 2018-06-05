@@ -1,5 +1,9 @@
 package visualization.graph;
 
+import javafx.animation.Transition;
+import javafx.application.Platform;
+import javafx.collections.MapChangeListener;
+import javafx.collections.SetChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -7,10 +11,7 @@ import parsing.State;
 import parsing.StateAutomaton;
 import parsing.StateTransition;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GraphDrawer {
     public static final double paddingLeft = 25.0;
@@ -30,8 +31,9 @@ public class GraphDrawer {
         this.stateRectangles = new HashMap<>();
         this.transitionArrows = new LinkedList<>();
 
+        // draw existing states
         for(State state : stateAutomaton.getStates()) {
-            stateRectangles.put(state.getNumber(), drawState(state));
+            drawState(state);
         }
 
         for(int i = 0; i < stateAutomaton.size(); i++) {
@@ -39,6 +41,34 @@ public class GraphDrawer {
                 drawTransition(transition);
             }
         }
+
+        // handle future changes to stateAutomaton
+        stateAutomaton.statesProperty().addListener(new MapChangeListener() {
+            @Override
+            public void onChanged(Change change) {
+                if(change.wasAdded()) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            drawState((State) change.getValueAdded());
+                        }
+                    });
+                }
+            }
+        });
+        stateAutomaton.transitionsProperty().addListener(new SetChangeListener() {
+            @Override
+            public void onChanged(Change change) {
+                if(change.wasAdded()) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            drawTransition((StateTransition) change.getElementAdded());
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private StateRectangle drawState(State state) {
@@ -49,6 +79,7 @@ public class GraphDrawer {
         text.setX(pos.getX());
         text.setY(pos.getY());
         targetPane.getChildren().add(rect);
+        stateRectangles.put(state.getNumber(), rect);
         return rect;
     }
 
