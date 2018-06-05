@@ -13,6 +13,7 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class Analyzer {
+    private Stack<Character> stack;
 
     public static class AnalyzerResult {
         private boolean success;
@@ -55,13 +56,17 @@ public class Analyzer {
         }
     }
 
+    public Analyzer() {
+        this.stack = new Stack<>();
+    }
+
     public AnalyzerResult analyze(CFGrammar grammar, ParseTable parseTable, String sequenceInput) {
+        this.stack.clear();
         AnalyzerResult result = new AnalyzerResult(true);
         Sequence sequence = new Sequence(sequenceInput);
-        Stack<Character> stack = new Stack<>();
 
-        stack.add('$');
-        stack.add('0');
+        stack.push('$');
+        stack.push('0');
 
         int size = sequence.size();
         for(int i = 0; i < size; i++) {
@@ -90,9 +95,9 @@ public class Analyzer {
             switch (action) {
                 case Shift:
                     sequence.removeFirst();
-                    stack.add(symbol.getRepresentation());
+                    stack.push(symbol.getRepresentation());
                     System.out.println("\t adding to stack: " + symbol.getRepresentation());
-                    stack.add(Character.forDigit(newState, 10));
+                    stack.push(Character.forDigit(newState, 10));
                     System.out.println("\t adding to stack: " + Character.forDigit(newState, 10));
                     break;
                 case Reduce:
@@ -103,11 +108,11 @@ public class Analyzer {
                         for (int j = 0; j < amount; j++) stack.pop();
                         int z = Character.getNumericValue(stack.peek().charValue());
                         Symbol reduceSymbol = production.getLeft();
-                        stack.add(reduceSymbol.getRepresentation());
+                        stack.push(reduceSymbol.getRepresentation());
                         System.out.println("\t adding to stack: " + reduceSymbol.getRepresentation());
 
                         ParseTable.TableEntry reduceEntry = parseTable.getEntry(z, reduceSymbol);
-                        stack.add(Character.forDigit(reduceEntry.getNumber(), 10));
+                        stack.push(Character.forDigit(reduceEntry.getNumber(), 10));
                         System.out.println("\t adding to stack: " + Character.forDigit(reduceEntry.getNumber(), 10));
                     } else {
                         System.out.println("Error: production number not in range: " + prodNum);
