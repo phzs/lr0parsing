@@ -44,13 +44,13 @@
                                           <ChoiceBox fx:id="startSymbolChoiceBox" prefWidth="50.0" />
                                          </children>
                                       </HBox>
-                                    <Button fx:id="clearRulesButton" mnemonicParsing="false" text="Clear rules">
+                                    <Button fx:id="clearRulesButton" mnemonicParsing="false" onAction="#handleClearRulesButtonAction" text="Clear rules">
                                        <VBox.margin>
                                           <Insets />
                                        </VBox.margin>
                                     </Button>
-                                    <Button fx:id="addRuleButton" mnemonicParsing="false" text="Add rule" />
-                                    <Button fx:id="removeRuleButton" mnemonicParsing="false" text="Remove last rule" />
+                                    <Button fx:id="addRuleButton" mnemonicParsing="false" onAction="#handleAddRuleButtonAction" text="Add rule" />
+                                    <Button fx:id="removeRuleButton" mnemonicParsing="false" onAction="#handleRemoveRuleButtonAction" text="Remove last rule" />
                                  </children>
                               </VBox>
                            </items>
@@ -99,7 +99,7 @@
                                         <VBox>
                                             <children>
                                                 <TextArea fx:id="analysisInputTextArea" prefHeight="261.0" prefWidth="1699.0" text="baab" />
-                                                <Button fx:id="analysisStartButton" text="Analyze Input" />
+                                                <Button fx:id="analysisStartButton" onAction="#handleAnalysisStartButtonAction" text="Analyze Input" />
                                             </children>
                                         </VBox>
                                     </items>
@@ -129,7 +129,7 @@
             </TabPane>
             <AnchorPane pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="startStopButton" layoutX="254.0" layoutY="691.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="112.0" text="Start Parsing" AnchorPane.bottomAnchor="30.0" />
+                  <Button fx:id="startStopButton" layoutX="254.0" layoutY="691.0" mnemonicParsing="false" onAction="#handleStartStopButtonAction" prefHeight="50.0" prefWidth="112.0" text="Start Parsing" AnchorPane.bottomAnchor="30.0" />
                   <Slider layoutX="430.0" layoutY="697.0" prefHeight="38.0" prefWidth="207.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" AnchorPane.bottomAnchor="30.0" />
                   <Button layoutX="687.0" layoutY="691.0" mnemonicParsing="false" prefHeight="50.0" text="Next Step" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="34.0" />
                   <Button layoutX="14.0" layoutY="691.0" mnemonicParsing="false" prefHeight="50.0" text="Previous Step" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="14.0" />
@@ -144,9 +144,9 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-                  <MenuItem fx:id="menuOpen" mnemonicParsing="false" text="Open" />
-                  <MenuItem fx:id="menuSave" disable="true" mnemonicParsing="false" text="Save" />
-                  <MenuItem fx:id="menuSaveAs" mnemonicParsing="false" text="Save as..." />
+                  <MenuItem fx:id="menuOpen" mnemonicParsing="false" onAction="#handleMenuOpenAction" text="Open" />
+                  <MenuItem fx:id="menuSave" disable="true" mnemonicParsing="false" onAction="#handleMenuSaveAction" text="Save" />
+                  <MenuItem fx:id="menuSaveAs" mnemonicParsing="false" onAction="#handleMenuSaveAsAction" text="Save as..." />
               <MenuItem mnemonicParsing="false" text="Quit" />
             </items>
           </Menu>

@@ -188,103 +188,6 @@ public class MainController implements Initializable {
         this.state = AppState.NOT_STARTED;
         this.lr0Parser = new LR0Parser();
 
-        startStopButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(state == AppState.NOT_STARTED) {
-                    grammar = getGrammar();
-                    mainThread.setGrammar(grammar);
-
-                    grammarViewTable.getItems().clear();
-                    grammarViewTable.getItems().addAll(grammarTable.getItems());
-                    parsingGrammarScrollPane.setContent(grammarViewTable);
-                    parsingGrammarScrollPane.setFitToHeight(true);
-                    parsingGrammarScrollPane.setFitToWidth(true);
-                    stateAutomaton = mainThread.getStateAutomaton();
-
-                    tabPane.getSelectionModel().select(1);
-
-                    graphDrawer = new GraphDrawer(canvasPane, stateAutomaton);
-                    StepController.getInstance().start();
-                }
-                else if(state == AppState.AUTOMATON_GENERATED) {
-                    StepController.getInstance().stop();
-                    ParseTable resultTable = lr0Parser.generateTable(grammar, stateAutomaton);
-                    parsing2TableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
-                    parsing2TableView.getItems().addAll(resultTable.getRows());
-
-                    tabPane.getSelectionModel().select(2);
-                    state = AppState.PARSETABLE_GENERATED;
-                }
-                else if(state == AppState.PARSETABLE_GENERATED) {
-                    StepController.getInstance().start();
-                    analysisTableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
-                    analysisTableView.getItems().addAll(parsing2TableView.getItems());
-
-                    Analyzer analyzer = new Analyzer();
-
-                    tabPane.getSelectionModel().select(3);
-                    state = AppState.ANALYSIS;
-                }
-            }
-        });
-        clearRulesButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                grammarTable.getItems().clear();
-                startSymbolChoiceBox.getItems().clear();
-                grammar = new CFGrammar();
-                prodNum = 0;
-            }
-        });
-        addRuleButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                grammarTable.getItems().add(new GrammarTableData(prodNum++));
-            }
-        });
-        removeRuleButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(grammarTable.getItems().size() > 0) {
-                    grammarTable.getItems().remove(grammarTable.getItems().size() - 1);
-                    prodNum--;
-                }
-
-            }
-        });
-
-        menuOpen.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                File file = openFileChooser("Open File");
-                setGrammarFile(file);
-
-                try {
-                    grammar = CFGrammar.fromFile(file);
-                    loadGrammar(grammar);
-                } catch (IOException e) {
-                    alert("Error! File could not be opened: " + e.getLocalizedMessage());
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        menuSave.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                saveGramamrToFile();
-            }
-        });
-
-        menuSaveAs.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                File file = openFileChooser("Save Grammar as");
-                setGrammarFile(file);
-                saveGramamrToFile();
-            }
-        });
         tabPane.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<Tab>() {
                     @Override
@@ -299,11 +202,96 @@ public class MainController implements Initializable {
                     }
                 }
         );
-        analysisStartButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-            }
-        });
+    }
+
+    @FXML
+    private void handleStartStopButtonAction(ActionEvent actionEvent) {
+        if(state == AppState.NOT_STARTED) {
+            grammar = getGrammar();
+            mainThread.setGrammar(grammar);
+
+            grammarViewTable.getItems().clear();
+            grammarViewTable.getItems().addAll(grammarTable.getItems());
+            parsingGrammarScrollPane.setContent(grammarViewTable);
+            parsingGrammarScrollPane.setFitToHeight(true);
+            parsingGrammarScrollPane.setFitToWidth(true);
+            stateAutomaton = mainThread.getStateAutomaton();
+
+            tabPane.getSelectionModel().select(1);
+
+            graphDrawer = new GraphDrawer(canvasPane, stateAutomaton);
+            StepController.getInstance().start();
+        }
+        else if(state == AppState.AUTOMATON_GENERATED) {
+            StepController.getInstance().stop();
+            ParseTable resultTable = lr0Parser.generateTable(grammar, stateAutomaton);
+            parsing2TableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
+            parsing2TableView.getItems().addAll(resultTable.getRows());
+
+            tabPane.getSelectionModel().select(2);
+            state = AppState.PARSETABLE_GENERATED;
+        }
+        else if(state == AppState.PARSETABLE_GENERATED) {
+            StepController.getInstance().start();
+            analysisTableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
+            analysisTableView.getItems().addAll(parsing2TableView.getItems());
+
+            Analyzer analyzer = new Analyzer();
+
+            tabPane.getSelectionModel().select(3);
+            state = AppState.ANALYSIS;
+        }
+    }
+
+    @FXML
+    private void handleClearRulesButtonAction(ActionEvent actionEvent) {
+        grammarTable.getItems().clear();
+        startSymbolChoiceBox.getItems().clear();
+        grammar = new CFGrammar();
+        prodNum = 0;
+    }
+
+    @FXML
+    private void handleAddRuleButtonAction(ActionEvent actionEvent) {
+        grammarTable.getItems().add(new GrammarTableData(prodNum++));
+    }
+
+    @FXML
+    private void handleRemoveRuleButtonAction(ActionEvent actionEvent) {
+        if(grammarTable.getItems().size() > 0) {
+            grammarTable.getItems().remove(grammarTable.getItems().size() - 1);
+            prodNum--;
+        }
+    }
+
+    @FXML
+    private void handleAnalysisStartButtonAction(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    private void handleMenuOpenAction(ActionEvent actionEvent) {
+        File file = openFileChooser("Open File");
+        setGrammarFile(file);
+
+        try {
+            grammar = CFGrammar.fromFile(file);
+            loadGrammar(grammar);
+        } catch (IOException e) {
+            alert("Error! File could not be opened: " + e.getLocalizedMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleMenuSaveAction(ActionEvent actionEvent) {
+        saveGramamrToFile();
+    }
+
+    @FXML
+    private void handleMenuSaveAsAction(ActionEvent actionEvent) {
+        File file = openFileChooser("Save Grammar as");
+        setGrammarFile(file);
+        saveGramamrToFile();
     }
 
     private void alert(String message) {
