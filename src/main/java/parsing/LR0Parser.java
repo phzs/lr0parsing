@@ -89,7 +89,7 @@ public class LR0Parser implements Parser {
         }
 
         if(!acceptRuleFound) throw new IllegalArgumentException(
-                "No state with the accepting LR0-Element [Z -> S.] could be found in input stateAutomaton"
+                "State automaton not valid for further parsing: No state with the accepting LR0-Element could be found in the input state automaton"
         );
 
         // 2. Add accept entry for the syntethic start rule
