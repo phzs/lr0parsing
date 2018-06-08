@@ -147,7 +147,7 @@
                   <MenuItem fx:id="menuOpen" mnemonicParsing="false" onAction="#handleMenuOpenAction" text="Open" />
                   <MenuItem fx:id="menuSave" disable="true" mnemonicParsing="false" onAction="#handleMenuSaveAction" text="Save" />
                   <MenuItem fx:id="menuSaveAs" mnemonicParsing="false" onAction="#handleMenuSaveAsAction" text="Save as..." />
-              <MenuItem mnemonicParsing="false" text="Quit" />
+              <MenuItem mnemonicParsing="false" onAction="#handleMenuQuitAction" text="Quit" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

@@ -5,6 +5,7 @@ import base.CFGrammar;
 import base.CFProduction;
 import base.MetaSymbol;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -292,6 +293,11 @@ public class MainController implements Initializable {
         File file = openFileChooser("Save Grammar as");
         setGrammarFile(file);
         saveGramamrToFile();
+    }
+
+    @FXML
+    public void handleMenuQuitAction(ActionEvent actionEvent) {
+        Platform.exit();
     }
 
     private void alert(String message) {
