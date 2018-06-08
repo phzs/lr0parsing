@@ -51,7 +51,6 @@ public class MainController implements Initializable {
     private AppState state;
     private LR0Parser lr0Parser;
     private StateAutomaton stateAutomaton;
-    private StackView stackView;
 
     @FXML
     private TabPane tabPane;
@@ -115,6 +114,9 @@ public class MainController implements Initializable {
 
     @FXML
     private Button analysisStartButton;
+
+    @FXML
+    private CheckBox stepModeCheckbox;
 
     public static CFGrammar getExampleGrammar() {
         CFGrammar exampleGrammar = new CFGrammar('S');
@@ -186,6 +188,10 @@ public class MainController implements Initializable {
         loadGrammar(getExampleGrammar());
         mainThread.setGrammar(grammar);
 
+        // bind running property inversed-bidirectional to checkBox
+        stepModeCheckbox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> StepController.getInstance().runningProperty().setValue(!isNowSelected));
+        StepController.getInstance().runningProperty().addListener((obs, wasSelected, isNowSelected) -> stepModeCheckbox.setSelected(!isNowSelected));
+
         this.state = AppState.NOT_STARTED;
         this.lr0Parser = new LR0Parser();
 
@@ -240,8 +246,17 @@ public class MainController implements Initializable {
             Analyzer analyzer = new Analyzer();
 
             tabPane.getSelectionModel().select(3);
-            state = AppState.ANALYSIS;
         }
+    }
+
+    @FXML
+    private void handleNextStepButton(ActionEvent actionEvent) {
+        StepController.getInstance().nextStep();
+    }
+
+    @FXML
+    private void handlePreviousStepButton(ActionEvent actionEvent) {
+        StepController.getInstance().previousStep();
     }
 
     @FXML

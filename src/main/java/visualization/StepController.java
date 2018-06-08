@@ -1,23 +1,28 @@
 package visualization;
 
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.*;
-import java.util.concurrent.Semaphore;
 
 public class StepController {
 
     private static StepController INSTANCE;
 
     private MainThread mainThread;
-    private Object semaphore;
+    private Object mutex;
 
     private SimpleIntegerProperty delay;
-    private boolean running;
+    private SimpleBooleanProperty running;
     private boolean hasStarted;
     private TreeMap<String, Step> steps;
 
-    public boolean isRunning() {
+    public SimpleBooleanProperty isRunning() {
+        return running;
+    }
+
+    public SimpleBooleanProperty runningProperty() {
         return running;
     }
 
@@ -44,14 +49,14 @@ public class StepController {
 
     private StepController() {
         delay = new SimpleIntegerProperty(1);
-        running = true;
+        running = new SimpleBooleanProperty(true);
         steps = new TreeMap<>();
         hasStarted = false;
-        semaphore = new Object();
+        mutex = new Object();
     }
 
-    public Object getSemaphore() {
-        return this.semaphore;
+    public Object getMutex() {
+        return this.mutex;
     }
 
     public void setMainThread(MainThread mainThread) {
@@ -59,27 +64,32 @@ public class StepController {
     }
 
     public void start() {
-        Thread th = new Thread(mainThread);
-        running = true;
         if(!hasStarted) {
             System.out.println("StepController: Starting mainThread for the first time");
-            th.setDaemon(true);
-            th.start();
-            hasStarted = true;
+            startMainThread();
         }
         else {
-            synchronized (semaphore) {
-                semaphore.notify();
+            synchronized (mutex) {
+                mutex.notify();
             }
         }
     }
 
+    private void startMainThread() {
+        Thread th = new Thread(mainThread);
+        th.setDaemon(true);
+        th.start();
+        hasStarted = true;
+    }
+
     public void stop() {
-        running = false;
+        running.set(false);
     }
 
     public void nextStep() {
-        //TODO
+        synchronized (mutex) {
+            mutex.notify();
+        }
     }
 
     public void previousStep() {
@@ -87,6 +97,28 @@ public class StepController {
     }
 
     public void registerStep(String id, String description) {
-        steps.put(id, new Step(id, description));
+        Step currentStep = steps.get(id);
+        if(currentStep == null) {
+            currentStep = new Step(id, description);
+            steps.put(id, currentStep);
+        } else {
+            currentStep.repetition++;
+        }
+
+        try {
+            if(running.get()) {
+                if(currentStep.mayRun) {
+                    Thread.sleep(delay.getValue());
+                } else {
+                    running.set(false);
+                }
+            } else {
+                synchronized (mutex) {
+                    getMutex().wait();
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

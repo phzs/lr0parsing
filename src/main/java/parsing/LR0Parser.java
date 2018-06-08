@@ -1,6 +1,7 @@
 package parsing;
 
 import base.*;
+import visualization.StepController;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -23,10 +24,12 @@ public class LR0Parser implements Parser {
         grammar.addProduction(newStartProduction);
         previousStartSymbol = grammar.getStartSymbol();
         grammar.setStartSymbol(new MetaSymbol(newStartSymbolRepr));
+        StepController.getInstance().registerStep("parse:NewProd", "Added new Production to accept sequence");
 
         // 2. Add state for start production
         Set<LR0Element> startStateSet = grammar.getCLOSURE(newStartProduction.getLR0Element(0));
         int startStateId = stateAutomaton.registerState(startStateSet);
+        StepController.getInstance().registerStep("parse:FirstState", "Added first state to the state automaton");
 
         // 3. For each symbol following a '.' in the set of LR0Elements of the start state: compute GOTO_0 and register a state+transition
         // 4. Repeat this for all states
@@ -39,9 +42,11 @@ public class LR0Parser implements Parser {
             for (Symbol symbol : symbolsToProcess) {
                 Set<LR0Element> symbolGOTO = grammar.getGOTO(stateAutomaton.getState(stateId).getElements(), symbol);
                 int newStateId = stateAutomaton.registerState(symbolGOTO);
+                StepController.getInstance().registerStep("parse:StateCreated", "Added a new state to the state automaton");
                 if(!statesProcessed.contains(newStateId))
                     statesToProcess.add(newStateId);
                 stateAutomaton.addTransition(stateId, newStateId, symbol);
+                StepController.getInstance().registerStep("parse:TransitionCreated", "Added a new transition to the state automaton");
             }
             statesProcessed.add(stateId);
             statesToProcess.remove(stateId);

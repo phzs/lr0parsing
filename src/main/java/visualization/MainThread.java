@@ -6,8 +6,6 @@ import javafx.concurrent.Task;
 import parsing.LR0Parser;
 import parsing.StateAutomaton;
 
-import java.util.HashSet;
-
 public class MainThread extends Task<Void> {
 
     private LR0Parser parser;
@@ -35,21 +33,11 @@ public class MainThread extends Task<Void> {
     protected Void call() throws Exception {
         System.out.println("MainThread call");
         int i = 0;
-        Object Semaphore = StepController.getInstance().getSemaphore();
-        try {
-            synchronized(Semaphore) {
-                while(! StepController.getInstance().isRunning()) {
-                    System.out.println("MainThread going to sleep");
-                    Semaphore.wait();
-                }
-                parser.setStateAutomaton(stateAutomaton);
-                parser.parse(grammar);
-                mainController.stateAutomatonFinished();
-                stateAutomaton.registerState(new HashSet<>());
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        // phase 1: grammar -> stateAutomaton
+        parser.setStateAutomaton(stateAutomaton);
+        parser.parse(grammar);
+        mainController.stateAutomatonFinished();
         System.out.println("MainThread finished");
         return null;
     }
