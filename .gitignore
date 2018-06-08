@@ -5,3 +5,4 @@ target/
 stash/
 todo.*
 *.ora*
+local-tests/
