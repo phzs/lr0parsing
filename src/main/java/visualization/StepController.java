@@ -18,8 +18,8 @@ public class StepController {
     private boolean hasStarted;
     private TreeMap<String, Step> steps;
 
-    public SimpleBooleanProperty isRunning() {
-        return running;
+    public boolean isRunning() {
+        return running.get();
     }
 
     public SimpleBooleanProperty runningProperty() {
@@ -65,7 +65,6 @@ public class StepController {
 
     public void start() {
         if(!hasStarted) {
-            System.out.println("StepController: Starting mainThread for the first time");
             startMainThread();
         }
         else {

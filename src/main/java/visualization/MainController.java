@@ -4,16 +4,17 @@ import analysis.Analyzer;
 import base.CFGrammar;
 import base.CFProduction;
 import base.MetaSymbol;
+import base.Symbol;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -173,8 +174,22 @@ public class MainController implements Initializable {
         grammarTable.getItems().clear();
     }
 
+    public void addParseTableRow(ObservableMap<Symbol, ParseTable.TableEntry> valueAdded) {
+        parsing2TableView.getItems().add(valueAdded);
+    }
+
     public void stateAutomatonFinished() {
         state = AppState.AUTOMATON_GENERATED;
+        Platform.runLater(() -> {
+            tabPane.getSelectionModel().select(2);
+        });
+    }
+
+    public void parseTableFinished() {
+        state = AppState.PARSETABLE_GENERATED;
+        Platform.runLater(() -> {
+            tabPane.getSelectionModel().select(3);
+        });
     }
 
     @Override
@@ -224,6 +239,8 @@ public class MainController implements Initializable {
             parsingGrammarScrollPane.setFitToWidth(true);
             stateAutomaton = mainThread.getStateAutomaton();
 
+            parsing2TableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
+
             tabPane.getSelectionModel().select(1);
 
             graphDrawer = new GraphDrawer(canvasPane, stateAutomaton);
@@ -235,8 +252,6 @@ public class MainController implements Initializable {
             parsing2TableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
             parsing2TableView.getItems().addAll(resultTable.getRows());
 
-            tabPane.getSelectionModel().select(2);
-            state = AppState.PARSETABLE_GENERATED;
         }
         else if(state == AppState.PARSETABLE_GENERATED) {
             StepController.getInstance().start();

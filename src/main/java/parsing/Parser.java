@@ -10,5 +10,5 @@ public interface Parser {
 
     ParseTable getParseTable();
     void setParseTable(ParseTable parseTable);
-    ParseTable generateTable(CFGrammar grammar, StateAutomaton stateAutomaton);
+    void generateTable(CFGrammar grammar, StateAutomaton stateAutomaton);
 }

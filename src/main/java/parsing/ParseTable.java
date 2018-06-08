@@ -2,7 +2,9 @@ package parsing;
 
 import base.Symbol;
 import javafx.beans.property.SimpleMapProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import sun.plugin.dom.exception.InvalidStateException;
 
@@ -106,6 +108,10 @@ public class ParseTable {
 
     public Collection<ObservableMap<Symbol, TableEntry>> getRows() {
         return table.values();
+    }
+
+    public void addChangeListener(MapChangeListener<Integer, ObservableMap<Symbol, TableEntry>> changeListener) {
+        table.addListener(changeListener);
     }
 
     @Override

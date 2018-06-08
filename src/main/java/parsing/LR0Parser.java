@@ -54,9 +54,7 @@ public class LR0Parser implements Parser {
     }
 
     @Override
-    public ParseTable generateTable(CFGrammar grammar, StateAutomaton stateAutomaton) {
-
-        ParseTable parseTable = new ParseTable();
+    public void generateTable(CFGrammar grammar, StateAutomaton stateAutomaton) {
 
         State firstState = stateAutomaton.getStartState();
 
@@ -78,9 +76,10 @@ public class LR0Parser implements Parser {
                         action,
                         transition.getToState()
                 );
+                StepController.getInstance().registerStep("parse2:ShiftEntry", "Added a new shift entry to the parse table");
             }
 
-            // find and remember the sythetic start rule (acceptRule) in advance for step 2
+            // find and remember the synthetic start rule (acceptRule) in advance for step 2
             if (!acceptRuleFound) {
                 for (LR0Element element : state.getElements()) {
                     if (element.isAccepting()
@@ -123,13 +122,12 @@ public class LR0Parser implements Parser {
                           ParserAction.Reduce,
                           findProduction(grammar, element)
                         );
+                        StepController.getInstance().registerStep("parse2:ReduceEntry", "Added a new reduce entry to the parse table");
                     }
                 }
             }
             // possible optimization: let each state cache which elements end up with '' after marker
         }
-
-        return parseTable;
     }
 
     @Override
