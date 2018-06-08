@@ -3,9 +3,9 @@ package visualization;
 import javafx.scene.control.Label;
 import javafx.scene.text.Font;
 
-public class Alert extends Label {
+public class AlertMessage extends Label {
 
-    public Alert(String message) {
+    public AlertMessage(String message) {
         this.setText(message);
         this.setStyle("-fx-background-color: red;");
         this.setWidth(400);

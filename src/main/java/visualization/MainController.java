@@ -1,6 +1,5 @@
 package visualization;
 
-import analysis.Analyzer;
 import base.CFGrammar;
 import base.CFProduction;
 import base.MetaSymbol;
@@ -26,7 +25,6 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
-import parsing.LR0Parser;
 import parsing.ParseTable;
 import parsing.StateAutomaton;
 import visualization.grammar.GrammarTable;
@@ -37,6 +35,7 @@ import visualization.parseTable.ParseTableView;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MainController implements Initializable {
@@ -50,7 +49,6 @@ public class MainController implements Initializable {
     private File grammarFile;
     private GraphDrawer graphDrawer;
     private AppState state;
-    private LR0Parser lr0Parser;
     private StateAutomaton stateAutomaton;
 
     @FXML
@@ -195,20 +193,15 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        mainThread = new MainThread(this);
-        StepController.getInstance().setMainThread(mainThread);
-
         initTable();
 
         loadGrammar(getExampleGrammar());
-        mainThread.setGrammar(grammar);
 
         // bind running property inversed-bidirectional to checkBox
         stepModeCheckbox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> StepController.getInstance().runningProperty().setValue(!isNowSelected));
         StepController.getInstance().runningProperty().addListener((obs, wasSelected, isNowSelected) -> stepModeCheckbox.setSelected(!isNowSelected));
 
         this.state = AppState.NOT_STARTED;
-        this.lr0Parser = new LR0Parser();
 
         tabPane.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<Tab>() {
@@ -229,8 +222,11 @@ public class MainController implements Initializable {
     @FXML
     private void handleStartStopButtonAction(ActionEvent actionEvent) {
         if(state == AppState.NOT_STARTED) {
+            state = AppState.STARTED;
+            mainThread = new MainThread(this);
             grammar = getGrammar();
             mainThread.setGrammar(grammar);
+            StepController.getInstance().setMainThread(mainThread);
 
             grammarViewTable.getItems().clear();
             grammarViewTable.getItems().addAll(grammarTable.getItems());
@@ -245,22 +241,23 @@ public class MainController implements Initializable {
 
             graphDrawer = new GraphDrawer(canvasPane, stateAutomaton);
             StepController.getInstance().start();
-        }
-        else if(state == AppState.AUTOMATON_GENERATED) {
-            StepController.getInstance().stop();
-            ParseTable resultTable = lr0Parser.generateTable(grammar, stateAutomaton);
-            parsing2TableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
-            parsing2TableView.getItems().addAll(resultTable.getRows());
+            startStopButton.setText("Reset to Start");
+        } else {
+            mainThread.cancel();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Reset Confirmation");
+            alert.setHeaderText("All results will be lost if you choose to reset parsing");
+            alert.setContentText("Do you want to reset the parsing progress?");
 
-        }
-        else if(state == AppState.PARSETABLE_GENERATED) {
-            StepController.getInstance().start();
-            analysisTableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
-            analysisTableView.getItems().addAll(parsing2TableView.getItems());
-
-            Analyzer analyzer = new Analyzer();
-
-            tabPane.getSelectionModel().select(3);
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                graphDrawer.clearGraph();
+                parsing2TableView.getItems().clear();
+                parsing2TableView.getColumns().clear();
+                startStopButton.setText("Start Parsing");
+                tabPane.getSelectionModel().select(0);
+            }
+            state = AppState.NOT_STARTED;
         }
     }
 
@@ -331,14 +328,14 @@ public class MainController implements Initializable {
     }
 
     private void alert(String message) {
-        Alert newAlert = new Alert(message);
-        newAlert.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        AlertMessage newAlertMessage = new AlertMessage(message);
+        newAlertMessage.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                alertBox.getChildren().remove(newAlert);
+                alertBox.getChildren().remove(newAlertMessage);
             }
         });
-        alertBox.getChildren().add(newAlert);
+        alertBox.getChildren().add(newAlertMessage);
     }
 
     private File openFileChooser(String title) {
@@ -374,4 +371,5 @@ public class MainController implements Initializable {
     public GraphDrawer getGraphDrawer() {
         return graphDrawer;
     }
+
 }
