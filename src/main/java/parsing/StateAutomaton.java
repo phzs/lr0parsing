@@ -1,14 +1,16 @@
 package parsing;
 
 import base.Symbol;
-import javafx.beans.property.MapProperty;
 import javafx.beans.property.SimpleMapProperty;
 import javafx.beans.property.SimpleSetProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class StateAutomaton {
     private ObservableMap<Integer, State> states;
