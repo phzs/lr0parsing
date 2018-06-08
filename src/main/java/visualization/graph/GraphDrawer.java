@@ -121,4 +121,15 @@ public class GraphDrawer {
             this.targetPane = targetPane;
         }
     }
+    
+    public void clearGraph() {
+        for (StateRectangle rect : stateRectangles.values()) {
+            targetPane.getChildren().remove(rect);
+        }
+        for (TransitionArrow arrow : transitionArrows) {
+            targetPane.getChildren().remove(arrow);
+        }
+        stateRectangles.clear();
+        transitionArrows.clear();
+    }
 }

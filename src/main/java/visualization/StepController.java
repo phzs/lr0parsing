@@ -61,6 +61,7 @@ public class StepController {
 
     public void setMainThread(MainThread mainThread) {
         this.mainThread = mainThread;
+        this.hasStarted = false;
     }
 
     public void start() {
