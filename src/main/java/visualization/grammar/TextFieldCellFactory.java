@@ -140,7 +140,6 @@ public class TextFieldCellFactory
                         this.textField.textProperty().bindBidirectional(this.boundToCurrently);
                     }
                 }
-                System.out.println("item=" + item + " ObservableValue<String>=" + ov.getValue());
                 //this.textField.setText(item);  // No longer need this!!!
             }
             else {
