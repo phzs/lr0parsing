@@ -1,8 +1,10 @@
 package visualization;
 
 import analysis.Analyzer;
+import analysis.ObservableStack;
 import base.CFGrammar;
 import base.Symbol;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import javafx.concurrent.Task;
@@ -23,6 +25,9 @@ public class MainThread extends Task<Void> {
     // output data structures
     private StateAutomaton stateAutomaton;
     private ParseTable parseTable;
+    private SimpleStringProperty analyzerInput;
+    private ObservableStack<Character> analyzerStack;
+    private Analyzer.AnalyzerResult analyzerResult;
 
     // for output
     private MainController mainController;
@@ -34,6 +39,9 @@ public class MainThread extends Task<Void> {
         analyzer = new Analyzer();
         stateAutomaton = new StateAutomaton();
         parseTable = new ParseTable();
+        analyzerInput = new SimpleStringProperty();
+        analyzerStack = new ObservableStack<>();
+        analyzerResult = new Analyzer.AnalyzerResult();
         System.out.println("MainThread created");
     }
 
@@ -63,6 +71,17 @@ public class MainThread extends Task<Void> {
         if(StepController.getInstance().isRunning())
             Thread.sleep(SLEEP_BETWEEN_PHASES);
         mainController.parseTableFinished();
+        analyzerStack = analyzer.getStack();
+        mainController.getStackDrawer().setStack(analyzerStack);
+        analyzer.setResult(analyzerResult);
+        mainController.bindAnalyzerInput(analyzerInput);
+        while(!isCancelled()) {
+            StepController.getInstance().stop();
+            StepController.getInstance().registerStep("mainThread:readyToAnalyze", "Waiting for user input to analyze");
+            analyzer.analyze(grammar, parseTable, analyzerInput.getValue());
+            mainController.displayAnalyzerResult(analyzerResult);
+        }
+
         System.out.println("MainThread finished");
         return null;
     }
@@ -77,5 +96,9 @@ public class MainThread extends Task<Void> {
 
     public StateAutomaton getStateAutomaton() {
         return stateAutomaton;
+    }
+
+    public void pushNextAnalyzerInput(String input) {
+        this.analyzerInput.setValue(input);
     }
 }

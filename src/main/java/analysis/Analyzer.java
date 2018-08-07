@@ -13,56 +13,27 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class Analyzer {
-    private Stack<Character> stack;
+    private ObservableStack<Character> stack;
 
-    public static class AnalyzerResult {
-        private boolean success;
-        private List<CFProduction> usedProductions;
-
-        public AnalyzerResult(boolean success) {
-            this.success = success;
-        }
-
-        public boolean getSuccess() {
-            return success;
-        }
-
-        public void setSuccess(boolean success) {
-            this.success = success;
-        }
-
-        public List<CFProduction> getUsedProductions() {
-            return usedProductions;
-        }
-
-        public void setUsedProductions(List<CFProduction> usedProductions) {
-            this.usedProductions = usedProductions;
-        }
-
-        public void addProduction(CFProduction production) {
-            if(usedProductions == null)
-                usedProductions = new LinkedList<>();
-            usedProductions.add(production);
-        }
-
-        @Override
-        public String toString() {
-            String result = String.valueOf(success);
-            if(success && usedProductions != null && usedProductions.size() > 0) {
-                result += " " + usedProductions.stream().map(Object::toString)
-                        .collect(Collectors.joining(", "));
-            }
-            return result;
-        }
+    public void setResult(AnalyzerResult result) {
+        this.result = result;
     }
+
+    private AnalyzerResult result;
 
     public Analyzer() {
-        this.stack = new Stack<>();
+        this.stack = new ObservableStack<>();
+        this.result = new AnalyzerResult();
     }
 
-    public AnalyzerResult analyze(CFGrammar grammar, ParseTable parseTable, String sequenceInput) {
+    public ObservableStack<Character> getStack() {
+        return this.stack;
+    }
+
+
+    public Void analyze(CFGrammar grammar, ParseTable parseTable, String sequenceInput) {
         this.stack.clear();
-        AnalyzerResult result = new AnalyzerResult(true);
+
         Sequence sequence = new Sequence(sequenceInput);
 
         stack.push('$');
@@ -84,7 +55,7 @@ public class Analyzer {
             ParseTable.TableEntry tableEntry = parseTable.getEntry(stateNum, symbol);
             if(tableEntry == null) {
                 System.out.println("Error: No entry found for " + stateNum + " and " + symbol + ".");
-                return new AnalyzerResult(false);
+                return null;
             }
             ParserAction action = tableEntry.getAction();
             int newState = tableEntry.getNumber();
@@ -116,18 +87,67 @@ public class Analyzer {
                         System.out.println("\t adding to stack: " + Character.forDigit(reduceEntry.getNumber(), 10));
                     } else {
                         System.out.println("Error: production number not in range: " + prodNum);
-                        return new AnalyzerResult(false);
+                        result.setSuccess(false);
+                        return null;
                     }
                     break;
                 case Accept:
-                    return result; // success = true
+                    result.setSuccess(true);
+                    return null;
                 default: //error
-                    return new AnalyzerResult(false);
+                    result.setSuccess(false);
+                    return null;
             }
-
 
             System.out.println(stack);
         }
-        return new AnalyzerResult(false);
+        return null;
+    }
+
+    public static class AnalyzerResult {
+        private Boolean success;
+        private List<CFProduction> usedProductions;
+
+        public AnalyzerResult() {
+            this(null);
+        }
+
+        public AnalyzerResult(Boolean success) {
+            this.success = success;
+        }
+
+        public boolean getSuccess() {
+            return success;
+        }
+
+        public void setSuccess(boolean success) {
+            this.success = success;
+        }
+
+        public List<CFProduction> getUsedProductions() {
+            return usedProductions;
+        }
+
+        public void setUsedProductions(List<CFProduction> usedProductions) {
+            this.usedProductions = usedProductions;
+        }
+
+        public void addProduction(CFProduction production) {
+            if(usedProductions == null)
+                usedProductions = new LinkedList<>();
+            usedProductions.add(production);
+        }
+
+        @Override
+        public String toString() {
+            String result = "";
+            if(success == null)
+                result = "Unknown";
+            else if(success && usedProductions != null && usedProductions.size() > 0) {
+                result += String.valueOf(success) + " " + usedProductions.stream().map(Object::toString)
+                        .collect(Collectors.joining(", "));
+            }
+            return result;
+        }
     }
 }
