@@ -226,6 +226,11 @@ public class MainController implements Initializable {
         );
     }
 
+    private void setGrammarWritable(boolean writable) {
+        grammarTable.setDisable(!writable);
+        menuOpen.setDisable(!writable);
+    }
+
     @FXML
     private void handleStartStopButtonAction(ActionEvent actionEvent) {
         if(state == AppState.NOT_STARTED) {
@@ -234,6 +239,7 @@ public class MainController implements Initializable {
             grammar = getGrammar();
             mainThread.setGrammar(grammar);
             StepController.getInstance().setMainThread(mainThread);
+            setGrammarWritable(false);
 
             grammarViewTable.getItems().clear();
             grammarViewTable.getItems().addAll(grammarTable.getItems());
@@ -267,6 +273,7 @@ public class MainController implements Initializable {
                 parsing2TableView.getColumns().clear();
                 startStopButton.setText("Start Parsing");
                 tabPane.getSelectionModel().select(0);
+                setGrammarWritable(true);
             }
             state = AppState.NOT_STARTED;
         }
@@ -309,6 +316,7 @@ public class MainController implements Initializable {
         String input = analysisInputTextArea.getText().replace("\n", "");
         mainThread.pushNextAnalyzerInput(input);
         analysisInputTextArea.setDisable(true);
+        analysisStartButton.setDisable(true);
         StepController.getInstance().nextStep();
     }
 
@@ -392,6 +400,7 @@ public class MainController implements Initializable {
         Platform.runLater(() -> {
             analysisResultDisplay.setText(analyzerResult.toString());
             analysisInputTextArea.setDisable(false);
+            analysisStartButton.setDisable(false);
         });
     }
 
