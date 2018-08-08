@@ -6,6 +6,7 @@ import base.Sequence;
 import base.Symbol;
 import parsing.ParseTable;
 import parsing.ParserAction;
+import visualization.StepController;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -51,6 +52,8 @@ public class Analyzer {
             // 2. read next symbol of input
             Symbol symbol = sequence.get(0);
 
+            StepController.getInstance().registerStep("analyze:LookupParseTable", "Popped from stack, looking up in parse table");
+
             // 3. lookup both in parseTable
             ParseTable.TableEntry tableEntry = parseTable.getEntry(stateNum, symbol);
             if(tableEntry == null) {
@@ -70,6 +73,7 @@ public class Analyzer {
                     System.out.println("\t adding to stack: " + symbol.getRepresentation());
                     stack.push(Character.forDigit(newState, 10));
                     System.out.println("\t adding to stack: " + Character.forDigit(newState, 10));
+                    StepController.getInstance().registerStep("analyze:ActionShift", "Shift action");
                     break;
                 case Reduce:
                     if(prodNum >= 0 && prodNum < grammar.getProductionList().size()) {
@@ -85,6 +89,7 @@ public class Analyzer {
                         ParseTable.TableEntry reduceEntry = parseTable.getEntry(z, reduceSymbol);
                         stack.push(Character.forDigit(reduceEntry.getNumber(), 10));
                         System.out.println("\t adding to stack: " + Character.forDigit(reduceEntry.getNumber(), 10));
+                        StepController.getInstance().registerStep("analyze:ActionReduce", "Reduce action");
                     } else {
                         System.out.println("Error: production number not in range: " + prodNum);
                         result.setSuccess(false);
