@@ -1,10 +1,7 @@
 package visualization;
 
 import analysis.Analyzer;
-import base.CFGrammar;
-import base.CFProduction;
-import base.MetaSymbol;
-import base.Symbol;
+import base.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,15 +12,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
@@ -38,6 +30,7 @@ import visualization.stack.StackDrawer;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -181,6 +174,7 @@ public class MainController implements Initializable {
 
     public void addParseTableRow(ObservableMap<Symbol, ParseTable.TableEntry> valueAdded) {
         parsing2TableView.getItems().add(valueAdded);
+        analysisTableView.getItems().add(valueAdded);
     }
 
     public void stateAutomatonFinished() {
@@ -205,8 +199,14 @@ public class MainController implements Initializable {
         loadGrammar(getExampleGrammar());
 
         // bind running property inversed-bidirectional to checkBox
-        stepModeCheckbox.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> StepController.getInstance().runningProperty().setValue(!isNowSelected));
-        StepController.getInstance().runningProperty().addListener((obs, wasSelected, isNowSelected) -> stepModeCheckbox.setSelected(!isNowSelected));
+        stepModeCheckbox.selectedProperty().addListener(
+                (obs, wasSelected, isNowSelected)
+                        -> StepController.getInstance().runningProperty().setValue(!isNowSelected)
+        );
+        StepController.getInstance().runningProperty().addListener(
+                (obs, wasSelected, isNowSelected)
+                        -> stepModeCheckbox.setSelected(!isNowSelected)
+        );
 
         this.state = AppState.NOT_STARTED;
 
@@ -214,7 +214,7 @@ public class MainController implements Initializable {
                 new ChangeListener<Tab>() {
                     @Override
                     public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
-                        if(graphDrawer != null) {
+                        if (graphDrawer != null) {
                             if (t1.getId().equals("parsing2Tab")) {
                                 graphDrawer.setTargetPane(parsing2CanvasPane);
                             } else if (t1.getId().equals("parsingTab")) {
@@ -242,7 +242,10 @@ public class MainController implements Initializable {
             parsingGrammarScrollPane.setFitToWidth(true);
             stateAutomaton = mainThread.getStateAutomaton();
 
-            parsing2TableView.init(grammar.getTerminalSymbols(), grammar.getMetaSymbols());
+            List<TerminalSymbol> terminalSymbols = grammar.getTerminalSymbols();
+            List<MetaSymbol> metaSymbols = grammar.getMetaSymbols();
+            parsing2TableView.init(terminalSymbols, metaSymbols);
+            analysisTableView.init(terminalSymbols, metaSymbols);
 
             tabPane.getSelectionModel().select(1);
 
