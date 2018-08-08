@@ -1,11 +1,13 @@
 package visualization;
 
+import analysis.Analyzer;
 import base.CFGrammar;
 import base.CFProduction;
 import base.MetaSymbol;
 import base.Symbol;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
@@ -31,6 +33,7 @@ import visualization.grammar.GrammarTable;
 import visualization.grammar.GrammarTableData;
 import visualization.graph.GraphDrawer;
 import visualization.parseTable.ParseTableView;
+import visualization.stack.StackDrawer;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,8 +51,12 @@ public class MainController implements Initializable {
     private GrammarTable grammarViewTable = new GrammarTable(false);
     private File grammarFile;
     private GraphDrawer graphDrawer;
+    private StackDrawer stackDrawer;
     private AppState state;
     private StateAutomaton stateAutomaton;
+
+    @FXML
+    private Pane stackPane;
 
     @FXML
     private TabPane tabPane;
@@ -106,10 +113,10 @@ public class MainController implements Initializable {
     private Label analysisInputDisplay;
 
     @FXML
-    private TextArea analysisInputTextArea;
+    private Label analysisResultDisplay;
 
     @FXML
-    private HBox analysisStackDisplay;
+    private TextArea analysisInputTextArea;
 
     @FXML
     private Button analysisStartButton;
@@ -240,6 +247,7 @@ public class MainController implements Initializable {
             tabPane.getSelectionModel().select(1);
 
             graphDrawer = new GraphDrawer(canvasPane, stateAutomaton);
+            stackDrawer = new StackDrawer(stackPane);
             StepController.getInstance().start();
             startStopButton.setText("Reset to Start");
         } else {
@@ -294,6 +302,11 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleAnalysisStartButtonAction(ActionEvent actionEvent) {
+        stackDrawer.getStack().clear();
+        String input = analysisInputTextArea.getText().replace("\n", "");
+        mainThread.pushNextAnalyzerInput(input);
+        analysisInputTextArea.setDisable(true);
+        StepController.getInstance().nextStep();
     }
 
     @FXML
@@ -372,4 +385,18 @@ public class MainController implements Initializable {
         return graphDrawer;
     }
 
+    public void displayAnalyzerResult(Analyzer.AnalyzerResult analyzerResult) {
+        Platform.runLater(() -> {
+            analysisResultDisplay.setText(analyzerResult.toString());
+            analysisInputTextArea.setDisable(false);
+        });
+    }
+
+    public StackDrawer getStackDrawer() {
+        return stackDrawer;
+    }
+
+    public void bindAnalyzerInput(SimpleStringProperty analyzerInput) {
+        Platform.runLater(() -> analysisInputDisplay.textProperty().bind(analyzerInput));
+    }
 }
