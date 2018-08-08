@@ -14,7 +14,7 @@ import parsing.StateAutomaton;
 
 public class MainThread extends Task<Void> {
 
-    private final static int SLEEP_BETWEEN_PHASES = 2*1000;
+    private final static int SLEEP_BETWEEN_PHASES = 0;
 
     private LR0Parser parser;
     private Analyzer analyzer;
