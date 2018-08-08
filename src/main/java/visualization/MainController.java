@@ -314,7 +314,7 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleMenuOpenAction(ActionEvent actionEvent) {
-        File file = openFileChooser("Open File");
+        File file = getFileChooser("Open Grammar File").showOpenDialog(new Stage());
         setGrammarFile(file);
 
         try {
@@ -328,14 +328,14 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleMenuSaveAction(ActionEvent actionEvent) {
-        saveGramamrToFile();
+        saveGrammarToFile();
     }
 
     @FXML
     private void handleMenuSaveAsAction(ActionEvent actionEvent) {
-        File file = openFileChooser("Save Grammar as");
+        File file = getFileChooser("Save Grammar as").showSaveDialog(new Stage());
         setGrammarFile(file);
-        saveGramamrToFile();
+        saveGrammarToFile();
     }
 
     @FXML
@@ -354,14 +354,14 @@ public class MainController implements Initializable {
         alertBox.getChildren().add(newAlertMessage);
     }
 
-    private File openFileChooser(String title) {
+    private FileChooser getFileChooser(String title) {
         FileChooser.ExtensionFilter extFilter =
                 new FileChooser.ExtensionFilter("Grammar (JSON)", "*.json");
 
         FileChooser chooser = new FileChooser();
         chooser.setTitle(title);
         chooser.getExtensionFilters().add(extFilter);
-        return chooser.showOpenDialog(new Stage());
+        return chooser;
     }
 
     // remember file for later save actions (Menu: File -> Save)
@@ -370,7 +370,7 @@ public class MainController implements Initializable {
         menuSave.setDisable(false);
     }
 
-    private void saveGramamrToFile() {
+    private void saveGrammarToFile() {
         if(grammarFile != null) {
             try {
                 FileUtils.writeStringToFile(grammarFile, getGrammar().toJSON());
