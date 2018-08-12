@@ -13,11 +13,15 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import netscape.javascript.JSObject;
 import org.apache.commons.io.FileUtils;
 import parsing.ParseTable;
 import parsing.StateAutomaton;
@@ -47,6 +51,8 @@ public class MainController implements Initializable {
     private StackDrawer stackDrawer;
     private AppState state;
     private StateAutomaton stateAutomaton;
+
+    private WebEngine webEngine;
 
     @FXML
     private Pane stackPane;
@@ -82,7 +88,7 @@ public class MainController implements Initializable {
     private ScrollPane parsingGraphScrollPane;
 
     @FXML
-    private Pane canvasPane;
+    private WebView parsingWebView;
 
     @FXML
     private Pane parsing2CanvasPane;
@@ -194,6 +200,9 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        // initializing the webview needs some time, therefore do it in advance
+        graphDrawer = new GraphDrawer(parsingWebView);
+
         initTable();
 
         loadGrammar(getExampleGrammar());
@@ -218,7 +227,7 @@ public class MainController implements Initializable {
                             if (t1.getId().equals("parsing2Tab")) {
                                 graphDrawer.setTargetPane(parsing2CanvasPane);
                             } else if (t1.getId().equals("parsingTab")) {
-                                graphDrawer.setTargetPane(canvasPane);
+                                //graphDrawer.setTargetPane(canvasPane);
                             }
                         }
                     }
@@ -255,7 +264,8 @@ public class MainController implements Initializable {
 
             tabPane.getSelectionModel().select(1);
 
-            graphDrawer = new GraphDrawer(canvasPane, stateAutomaton);
+            graphDrawer.setStateAutomaton(stateAutomaton);
+
             stackDrawer = new StackDrawer(stackPane);
             StepController.getInstance().start();
             startStopButton.setText("Reset to Start");
@@ -278,6 +288,8 @@ public class MainController implements Initializable {
             state = AppState.NOT_STARTED;
         }
     }
+
+
 
     @FXML
     private void handleNextStepButton(ActionEvent actionEvent) {

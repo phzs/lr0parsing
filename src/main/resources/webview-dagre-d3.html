@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Graph visualisation</title>
+    <style>
+        body {
+            font: 300 20px 'Helvetica', Helvetica;
+        }
+
+        .node rect {
+            stroke: #333;
+            fill: #fff;
+        }
+
+        .edgePath path {
+            stroke: #333;
+            fill: #333;
+            stroke-width: 1.5px;
+        }
+
+
+    </style>
+</head>
+<body>
+<!--
+<div>
+    <input id="node_id" name="id" type="text">
+    <input id="node_content" name="content" type="text">
+    <button onclick="addNode(document.getElementById('node_id').value, document.getElementById('node_content').value)">Add Node</button>
+
+    <br>
+    <input id="edge_from" name="from" type="text">
+    <input id="edge_to" name="to" type="text">
+    <input id="edge_label" name="label" type="text">
+    <button onclick="addEdge(document.getElementById('edge_from').value, document.getElementById('edge_to').value, document.getElementById('edge_label').value)">Add Edge</button>
+
+    <br>
+    <input id="rename_from" name="from" type="text">
+    <input id="rename_to" name="to" type="text">
+    <button onclick="renameNode(document.getElementById('rename_from').value, document.getElementById('rename_to').value)">Rename Node</button>
+
+    <br>
+    <input id="remove_id" name="remove_id">
+    <button onclick="removeNode(document.getElementById('remove_id').value)">Remove Node</button>
+
+    <br>
+    <button onclick="clearGraph()">Clear</button>
+</div>
+-->
+<svg id="graph" width="700" height="700"><g/></svg>
+
+<script src="bower_components/d3/d3.js"></script>
+<script src="bower_components/lodash/lodash.js"></script>
+<script src="bower_components/graphlib/dist/graphlib.core.js"></script>
+<script src="bower_components/dagre/dist/dagre.core.js"></script>
+<script src="bower_components/dagre-d3/dist/dagre-d3.core.js"></script>
+<script src="graphs.js"></script>
+<!--
+<script type='text/javascript' src='http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js'></script>
+-->
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) {
+        if(typeof app !== "undefined" && app != null)
+            app.onWebviewPageLoaded();
+        console.log("document ready");
+    });
+</script>
+</body>
+</html>

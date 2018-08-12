@@ -23,6 +23,7 @@
 <?import javafx.scene.text.Font?>
 <?import visualization.parseTable.ParseTableView?>
 
+<?import javafx.scene.web.WebView?>
 <BorderPane minHeight="800.0" minWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.MainController">
    <center>
       <StackPane pickOnBounds="false">
@@ -67,7 +68,7 @@
                               </ScrollPane>
                               <ScrollPane fx:id="parsingGraphScrollPane" maxHeight="-Infinity" maxWidth="-Infinity">
                                  <content>
-                                    <Pane fx:id="canvasPane" managed="false" prefHeight="1800.0" prefWidth="1800.0" />
+                                     <WebView fx:id="parsingWebView" managed="false" prefHeight="1800.0" prefWidth="1800.0"></WebView>
                                  </content>
                               </ScrollPane>
                            </items>

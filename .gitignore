@@ -6,3 +6,4 @@ stash/
 todo.*
 *.ora*
 local-tests/
+bower_components/

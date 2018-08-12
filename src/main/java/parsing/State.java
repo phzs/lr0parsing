@@ -3,6 +3,7 @@ package parsing;
 import base.Symbol;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class State {
@@ -34,5 +35,17 @@ public class State {
 
     public Set<LR0Element> getElements() {
         return elements;
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+        Iterator<LR0Element> iter = elements.iterator();
+        while(iter.hasNext()) {
+            result += iter.next().toString();
+            if(iter.hasNext())
+                result += "\n";
+        }
+        return result;
     }
 }
