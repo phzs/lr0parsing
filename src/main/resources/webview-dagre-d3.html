@@ -63,6 +63,29 @@
     document.addEventListener("DOMContentLoaded", function(event) {
         if(typeof app !== "undefined" && app != null)
             app.onWebviewPageLoaded();
+        else {
+            // for testing in a webbrowser
+            addNode(0, "[S --> .Sb]\n[Z --> .S]\n[S --> .bAa]");
+            addNode(1, "[A --> .a]\n[S --> b.Aa]\n[A --> .aSc]\n[A --> .aSb]");
+            addEdge(0,1, "b");
+            addNode(2, "[S --> S.b]\n[Z --> S.]");
+            addEdge(0,2, "S");
+            addNode(3, "[A --> a.]\n[S --> .Sb]\n[A --> a.Sb]\n[S --> .bAa]\n[A --> a.Sc]");
+            addEdge(1,3, "a");
+            addNode(4, "[S --> bA.a]");
+            addEdge(1,4, "A");
+            addNode(5, "[S --> Sb.]");
+            addEdge(2,5, "b");
+            addEdge(3,1, "b");
+            addNode(6, "[S --> S.b]\n[A --> AB.c]\n[A --> aS.b]");
+            addEdge(3,6, "S");
+            addNode(7, "[S --> bAa.]");
+            addEdge(4,7, "a");
+            addNode(8, "[S --> Sb.]\n[A --> aSb.]");
+            addEdge(6,8, "b");
+            addNode(9, "[A --> aSc.]");
+            addEdge(6,9, "c");
+        }
         console.log("document ready");
     });
 </script>
