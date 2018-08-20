@@ -6,7 +6,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
-import sun.plugin.dom.exception.InvalidStateException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -91,7 +90,7 @@ public class ParseTable {
                 entry.action = ParserAction.ReduceRecudeConflict;
                 entry.secondaryNumber = entry.number;
             } else if(entry.action != ParserAction.Null)
-                throw new InvalidStateException(
+                throw new IllegalArgumentException(
                         "A parse table entry with action " + entry.action + " may not be overwritten by action " + parserAction + ".");
         } else {
             entry.action = parserAction;
