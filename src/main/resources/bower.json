@@ -1,0 +1,6 @@
+{
+  "name": "lr0visualization",
+  "dependencies": {
+    "dagre-d3": "^0.6.1"
+  }
+}
