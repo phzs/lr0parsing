@@ -18,8 +18,8 @@ public class LR0ParserTest {
 
         LR0Parser parser = new LR0Parser();
         StateAutomaton result = new StateAutomaton();
+        parser.setStateAutomaton(result);
         parser.parse(exampleGrammar);
-        result = parser.getStateAutomaton();
 
         // 1. check states
         List<Set<LR0Element>> expectedElementSets = new LinkedList<>();
