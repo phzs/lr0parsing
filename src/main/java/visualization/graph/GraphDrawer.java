@@ -62,7 +62,7 @@ public class GraphDrawer {
 
     private void initWebView() {
         webEngine = webView.getEngine();
-        webEngine.load(this.getClass().getResource("/webview-dagre-d3.html").toExternalForm());
+        webEngine.load(this.getClass().getResource("/webview.html").toExternalForm());
         JSObject window = (JSObject) webEngine.executeScript("window");
         window.setMember("app", this);
     }
