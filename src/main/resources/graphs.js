@@ -96,7 +96,8 @@ function drawGraph() {
                 });
             g.append("rect")
                 .attr("width", stateNumRectSize)
-                .attr("height", stateNumRectSize);
+                .attr("height", stateNumRectSize)
+                .style("fill", "#f7f7f7");
             g.append("g")
                 .attr("class", "label")
                 .attr("transform", function() {
