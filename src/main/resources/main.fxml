@@ -21,16 +21,16 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.web.WebView?>
 <?import visualization.parseTable.ParseTableView?>
 
-<?import javafx.scene.web.WebView?>
 <BorderPane minHeight="800.0" minWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.MainController">
    <center>
       <StackPane pickOnBounds="false">
          <children>
             <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                  <Tab fx:id="inputTab" text="1 Input">
+                  <Tab fx:id="inputTab" text="Input Grammar">
                         <SplitPane dividerPositions="0.5">
                            <items>
                                  <ScrollPane fx:id="grammarInputScrollPane" />
@@ -58,23 +58,14 @@
                            </items>
                         </SplitPane>
                   </Tab>
-                <Tab fx:id="parsingTab" text="2 Parsing">
+                <Tab fx:id="parsingTab" text="Parsing">
                      <content>
-                        <SplitPane dividerPositions="0.5">
-                           <items>
-                              <ScrollPane fx:id="parsingGrammarScrollPane" prefHeight="200.0" prefWidth="200.0">
-                                <content>
-                                </content>
-                              </ScrollPane>
-                              <ScrollPane fx:id="parsingGraphScrollPane" maxHeight="-Infinity" maxWidth="-Infinity">
-                                 <content>
-                                     <WebView fx:id="parsingWebView" managed="false" prefHeight="1800.0" prefWidth="1800.0"></WebView>
-                                 </content>
-                              </ScrollPane>
-                           </items>
-                        </SplitPane>
+                         <ScrollPane fx:id="parsingParent">
+                            <WebView fx:id="parsingWebView" managed="false" minHeight="400.0" minWidth="400.0" prefHeight="-1.0" prefWidth="-1.0" />
+                         </ScrollPane>
                      </content>
                 </Tab>
+                  <!--
                 <Tab fx:id="parsing2Tab" text="3 Parse Table">
                   <content>
                       <StackPane>
@@ -91,7 +82,8 @@
                       </StackPane>
                   </content>
                 </Tab>
-                  <Tab fx:id="analysisTab" text="4 Syntax Analysis">
+                -->
+                  <Tab fx:id="analysisTab" text="Syntax Analysis">
                     <content>
                         <VBox>
                             <children>

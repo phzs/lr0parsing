@@ -39,11 +39,11 @@ public class ParseTable {
 
         @Override
         public String toString() {
+            if(action == null) {
+                return "" + number;
+            }
             String result;
             switch(action) {
-                case Null:
-                    result = "" + number;
-                    break;
                 case Shift:
                     result = "s" + number;
                     break;
@@ -77,8 +77,13 @@ public class ParseTable {
         if(table.get(stateNum) == null)
             table.put(stateNum, new SimpleMapProperty<>(FXCollections.observableHashMap()));
         Map<Symbol, TableEntry> tableRow = table.get(stateNum);
-        tableRow.putIfAbsent(symbol, new TableEntry());
-        TableEntry entry = tableRow.get(symbol);
+        TableEntry entry;
+        boolean notInTable = false;
+        if(tableRow.get(symbol) == null) {
+            entry = new TableEntry();
+            notInTable = true;
+        } else
+            entry = tableRow.get(symbol);
         if(entry.action != null) {
             if(entry.action == ParserAction.Shift && parserAction == ParserAction.Shift) {
                 entry.action = ParserAction.ShiftShiftConflict;
@@ -96,6 +101,8 @@ public class ParseTable {
             entry.action = parserAction;
         }
         entry.number = targetState;
+        if(notInTable)
+            tableRow.put(symbol, entry);
     }
 
     public TableEntry getEntry(int state, Symbol symbol) {

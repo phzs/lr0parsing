@@ -1,17 +1,23 @@
-package visualization.graph;
+package visualization.parsing;
 
+import base.*;
 import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
+import javafx.collections.ObservableMap;
 import javafx.collections.SetChangeListener;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
+import parsing.ParseTable;
 import parsing.State;
 import parsing.StateAutomaton;
 import parsing.StateTransition;
 
-public class GraphDrawer {
+import java.util.List;
+import java.util.ListIterator;
+
+public class ParsingView {
     public static final double paddingLeft = 25.0;
     public static final double paddingTop = 25.0;
 
@@ -22,7 +28,7 @@ public class GraphDrawer {
     private double nextX = paddingLeft;
     private double nextY = paddingTop;
 
-    public GraphDrawer(WebView targetWebView) {
+    public ParsingView(WebView targetWebView) {
         this.webView = targetWebView;
 
         initWebView();
@@ -62,6 +68,7 @@ public class GraphDrawer {
 
     private void initWebView() {
         webEngine = webView.getEngine();
+        //webEngine.setUserStyleSheetLocation("data:,body { font: 12px Arial; }");
         webEngine.load(this.getClass().getResource("/webview.html").toExternalForm());
         JSObject window = (JSObject) webEngine.executeScript("window");
         window.setMember("app", this);
@@ -78,7 +85,6 @@ public class GraphDrawer {
                 + "\"";
 
         webEngine.executeScript("addNode("+state.getNumber()+", "+content+")");
-        System.out.println("addNode("+state.getNumber()+", "+content+")");
     }
 
     private void drawTransition(StateTransition transition) {
@@ -89,7 +95,6 @@ public class GraphDrawer {
                 + transition.getSymbol().toString()
                 + "\"";
         webEngine.executeScript("addEdge("+from.getNumber()+","+to.getNumber()+", "+ transitionLabel +")");
-        System.out.println("addEdge("+from.getNumber()+","+to.getNumber()+", "+ transitionLabel +")");
     }
 
     /**
@@ -103,5 +108,52 @@ public class GraphDrawer {
     
     public void clearGraph() {
         webEngine.executeScript("clearGraph()");
+    }
+
+    public void initGrammar(CFGrammar grammar) {
+        webEngine.executeScript("clearRules()");
+        List<CFProduction> productionList = grammar.getProductionList();
+        for(int i = 0; i < productionList.size(); i++) {
+            CFProduction production = productionList.get(i);
+            webEngine.executeScript("addRule(" + i + ", \"" + production.getLeft() + "\", \"" + production.getRight()+"\")");
+        }
+    }
+
+    private String listToJsArray(List<? extends Symbol> list) {
+        String result = "[";
+        ListIterator<Symbol> iter = (ListIterator<Symbol>) list.iterator();
+        for(Symbol symbol = iter.next(); iter.hasNext(); symbol = iter.next()) {
+            result += ('\"' + symbol.toString() + '\"');
+            if(iter.hasNext())
+                result += ",";
+        }
+        result += "]";
+        return result;
+    }
+
+    public void initParseTable(List<TerminalSymbol> terminalSymbols, List<MetaSymbol> metaSymbols) {
+        terminalSymbols.add(new TerminalSymbol('$'));
+        String script = "initParseTable("
+                + listToJsArray(terminalSymbols)
+                + ", "
+                + listToJsArray(metaSymbols)
+                +")";
+        webEngine.executeScript(script);
+    }
+
+    public void addParseTableEntryListener(int stateId, ObservableMap<Symbol, ParseTable.TableEntry> entryObservableMap) {
+        entryObservableMap.addListener(new MapChangeListener<Symbol, ParseTable.TableEntry>() {
+            @Override
+            public void onChanged(Change<? extends Symbol, ? extends ParseTable.TableEntry> change) {
+                String script = "addParseTableEntry("
+                        + stateId + ","                         // stateId
+                        + "\'" + change.getKey() + "\',"        // symbol
+                        + "\'" + change.getValueAdded() + "\'"  // entry
+                        + ")";
+                Platform.runLater(() -> {
+                    webEngine.executeScript(script);
+                });
+            }
+        });
     }
 }

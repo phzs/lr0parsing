@@ -62,9 +62,7 @@ public class MainThread extends Task<Void> {
         parseTable.addChangeListener(new MapChangeListener<Integer, ObservableMap<Symbol, ParseTable.TableEntry>>() {
             @Override
             public void onChanged(Change<? extends Integer, ? extends ObservableMap<Symbol, ParseTable.TableEntry>> change) {
-                if(change.wasAdded()) {
-                    mainController.addParseTableRow(change.getValueAdded());
-                }
+                    mainController.addParseTableRow(change.getKey(), change.getValueAdded());
             }
         });
         parser.generateTable(grammar, stateAutomaton);

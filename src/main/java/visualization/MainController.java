@@ -5,15 +5,12 @@ import base.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -21,14 +18,13 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import netscape.javascript.JSObject;
 import org.apache.commons.io.FileUtils;
 import parsing.ParseTable;
 import parsing.StateAutomaton;
 import visualization.grammar.GrammarTable;
 import visualization.grammar.GrammarTableData;
-import visualization.graph.GraphDrawer;
 import visualization.parseTable.ParseTableView;
+import visualization.parsing.ParsingView;
 import visualization.stack.StackDrawer;
 
 import java.io.File;
@@ -45,9 +41,8 @@ public class MainController implements Initializable {
     private CFGrammar grammar;
     private int prodNum = 0;
     private GrammarTable grammarTable = new GrammarTable(true);
-    private GrammarTable grammarViewTable = new GrammarTable(false);
     private File grammarFile;
-    private GraphDrawer graphDrawer;
+    private ParsingView parsingView;
     private StackDrawer stackDrawer;
     private AppState state;
     private StateAutomaton stateAutomaton;
@@ -82,16 +77,10 @@ public class MainController implements Initializable {
     private Button removeRuleButton;
 
     @FXML
-    private ScrollPane parsingGrammarScrollPane;
-
-    @FXML
     private ScrollPane parsingGraphScrollPane;
 
     @FXML
     private WebView parsingWebView;
-
-    @FXML
-    private Pane parsing2CanvasPane;
 
     @FXML
     private MenuItem menuOpen;
@@ -101,9 +90,6 @@ public class MainController implements Initializable {
 
     @FXML
     private MenuItem menuSaveAs;
-
-    @FXML
-    private ParseTableView parsing2TableView;
 
     @FXML
     private ParseTableView analysisTableView;
@@ -122,6 +108,9 @@ public class MainController implements Initializable {
 
     @FXML
     private CheckBox stepModeCheckbox;
+
+    @FXML
+    private ScrollPane parsingParent;
 
     public static CFGrammar getExampleGrammar() {
         CFGrammar exampleGrammar = new CFGrammar('S');
@@ -178,22 +167,24 @@ public class MainController implements Initializable {
         grammarTable.getItems().clear();
     }
 
-    public void addParseTableRow(ObservableMap<Symbol, ParseTable.TableEntry> valueAdded) {
-        parsing2TableView.getItems().add(valueAdded);
+    public void addParseTableRow(int stateId, ObservableMap<Symbol, ParseTable.TableEntry> valueAdded) {
+        System.out.println("MainController.addParseTableRow("+stateId+","+valueAdded+")");
+        parsingView.addParseTableEntryListener(stateId, valueAdded);
         analysisTableView.getItems().add(valueAdded);
     }
 
     public void stateAutomatonFinished() {
         state = AppState.AUTOMATON_GENERATED;
         Platform.runLater(() -> {
-            tabPane.getSelectionModel().select(2);
+            webEngine.executeScript("setGrammarVisible(false)");
+            webEngine.executeScript("setParseTableVisible(true)");
         });
     }
 
     public void parseTableFinished() {
         state = AppState.PARSETABLE_GENERATED;
         Platform.runLater(() -> {
-            tabPane.getSelectionModel().select(3);
+            tabPane.getSelectionModel().select(2);
         });
     }
 
@@ -201,7 +192,8 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         // initializing the webview needs some time, therefore do it in advance
-        graphDrawer = new GraphDrawer(parsingWebView);
+        parsingView = new ParsingView(parsingWebView);
+        webEngine = parsingWebView.getEngine();
 
         initTable();
 
@@ -219,6 +211,7 @@ public class MainController implements Initializable {
 
         this.state = AppState.NOT_STARTED;
 
+        /*
         tabPane.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<Tab>() {
                     @Override
@@ -233,6 +226,13 @@ public class MainController implements Initializable {
                     }
                 }
         );
+        */
+        parsingParent.widthProperty().addListener((observable, oldValue, newValue) -> {
+            parsingWebView.setPrefWidth((Double) newValue);
+        });
+        parsingParent.heightProperty().addListener((observable, oldValue, newValue) -> {
+            parsingWebView.setPrefHeight((Double) newValue);
+        });
     }
 
     private void setGrammarWritable(boolean writable) {
@@ -250,21 +250,18 @@ public class MainController implements Initializable {
             StepController.getInstance().setMainThread(mainThread);
             setGrammarWritable(false);
 
-            grammarViewTable.getItems().clear();
-            grammarViewTable.getItems().addAll(grammarTable.getItems());
-            parsingGrammarScrollPane.setContent(grammarViewTable);
-            parsingGrammarScrollPane.setFitToHeight(true);
-            parsingGrammarScrollPane.setFitToWidth(true);
             stateAutomaton = mainThread.getStateAutomaton();
 
             List<TerminalSymbol> terminalSymbols = grammar.getTerminalSymbols();
             List<MetaSymbol> metaSymbols = grammar.getMetaSymbols();
-            parsing2TableView.init(terminalSymbols, metaSymbols);
+            parsingView.initGrammar(grammar);
+
+            parsingView.initParseTable(terminalSymbols, metaSymbols);
             analysisTableView.init(terminalSymbols, metaSymbols);
 
             tabPane.getSelectionModel().select(1);
 
-            graphDrawer.setStateAutomaton(stateAutomaton);
+            parsingView.setStateAutomaton(stateAutomaton);
 
             stackDrawer = new StackDrawer(stackPane);
             StepController.getInstance().start();
@@ -278,9 +275,7 @@ public class MainController implements Initializable {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK){
-                graphDrawer.clearGraph();
-                parsing2TableView.getItems().clear();
-                parsing2TableView.getColumns().clear();
+                parsingView.clearGraph();
                 startStopButton.setText("Start Parsing");
                 tabPane.getSelectionModel().select(0);
                 setGrammarWritable(true);
@@ -404,8 +399,8 @@ public class MainController implements Initializable {
         }
     }
 
-    public GraphDrawer getGraphDrawer() {
-        return graphDrawer;
+    public ParsingView getParsingView() {
+        return parsingView;
     }
 
     public void displayAnalyzerResult(Analyzer.AnalyzerResult analyzerResult) {

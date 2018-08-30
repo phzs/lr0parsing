@@ -1,6 +1,8 @@
 {
   "name": "lr0visualization",
   "dependencies": {
-    "dagre-d3": "^0.6.1"
+    "dagre-d3": "^0.6.1",
+    "bootstrap4": "bootstrap#^4.1.3",
+    "jquery": "^3.3.1"
   }
 }
