@@ -96,6 +96,12 @@ public class StepController {
         //TODO
     }
 
+    public void registerStep(String id, String description, boolean breakpoint) {
+        if(breakpoint)
+            running.set(false);
+        registerStep(id, description);
+    }
+
     public void registerStep(String id, String description) {
         Step currentStep = steps.get(id);
         if(currentStep == null) {

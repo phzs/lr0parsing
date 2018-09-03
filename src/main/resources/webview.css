@@ -1,0 +1,26 @@
+body {
+    font-family: arial !important;
+    font-size: 12pt !important;
+    font-weight: normal !important;
+}
+
+.node rect {
+    stroke: #333;
+    fill: #fff;
+}
+
+.edgePath path {
+    stroke: #333;
+    fill: #333;
+    stroke-width: 1.5px;
+}
+
+.h3 {
+    text-align: center;
+}
+
+.stepDescription {
+    font-size: 14pt;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

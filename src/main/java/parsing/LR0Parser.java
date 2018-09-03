@@ -16,15 +16,19 @@ public class LR0Parser implements Parser {
     private StateAutomaton stateAutomaton;
     private ParseTable parseTable;
 
+    private CFGrammar grammar;
+
     @Override
     public void parse(CFGrammar grammar) {
+        this.grammar = grammar;
         // 1. Add a new start production
         char newStartSymbolRepr = grammar.getFreeMetaSymbol("ZS");
+        StepController.getInstance().registerStep("parse:NewProd1", "Ready to add new Production to accept sequence");
         CFProduction newStartProduction = new CFProduction(newStartSymbolRepr, grammar.getStartSymbol().toString());
-        grammar.addProduction(newStartProduction);
+        grammar.addNewStartProduction(newStartProduction);
         previousStartSymbol = grammar.getStartSymbol();
         grammar.setStartSymbol(new MetaSymbol(newStartSymbolRepr));
-        StepController.getInstance().registerStep("parse:NewProd", "Added new Production to accept sequence");
+        StepController.getInstance().registerStep("parse:NewProd2", "Added new Production to accept sequence");
 
         // 2. Add state for start production
         Set<LR0Element> startStateSet = grammar.getCLOSURE(newStartProduction.getLR0Element(0));
@@ -163,5 +167,9 @@ public class LR0Parser implements Parser {
         }
 
         return result;
+    }
+
+    public CFGrammar getGrammar() {
+        return grammar;
     }
 }

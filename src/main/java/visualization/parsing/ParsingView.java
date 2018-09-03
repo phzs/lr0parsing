@@ -117,6 +117,29 @@ public class ParsingView {
             CFProduction production = productionList.get(i);
             webEngine.executeScript("addRule(" + i + ", \"" + production.getLeft() + "\", \"" + production.getRight()+"\")");
         }
+
+        /*
+            add listener to get notified about the new production
+            which will be added by the parser
+        */
+        grammar.addListener(new CFGrammarListener() {
+            @Override
+            public void onChanged(Change change) {
+                if(change.getType() == ChangeType.startProductionAdded) {
+                    CFProduction production = change.getNewProduction();
+                    Platform.runLater(() -> {
+                        String script = "insertFirstRule("
+                                + "\'" + production.getLeft() + "\'"
+                                + ", "
+                                + "\'" + production.getRight() + "\'"
+                                + ")";
+                        webEngine.executeScript(script);
+                        webEngine.executeScript("highlightRule(0)");
+                        System.out.println(script);
+                    });
+                }
+            }
+        });
     }
 
     private String listToJsArray(List<? extends Symbol> list) {
@@ -154,6 +177,18 @@ public class ParsingView {
                     webEngine.executeScript(script);
                 });
             }
+        });
+    }
+
+    public void setVisibleParsingStep(ParsingStep step) {
+        Platform.runLater(() -> {
+            String script = "setStep(";
+            if (step == ParsingStep.One) script += 1;
+            else if (step == ParsingStep.Two) script += 2;
+            else if (step == ParsingStep.Three) script += 3;
+            else if (step == ParsingStep.Results) script += 4;
+            script += ")";
+            webEngine.executeScript(script);
         });
     }
 }

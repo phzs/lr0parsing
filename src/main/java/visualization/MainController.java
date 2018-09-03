@@ -24,6 +24,7 @@ import parsing.StateAutomaton;
 import visualization.grammar.GrammarTable;
 import visualization.grammar.GrammarTableData;
 import visualization.parseTable.ParseTableView;
+import visualization.parsing.ParsingStep;
 import visualization.parsing.ParsingView;
 import visualization.stack.StackDrawer;
 
@@ -173,18 +174,19 @@ public class MainController implements Initializable {
         analysisTableView.getItems().add(valueAdded);
     }
 
+    public void parsingPreparationFinished() {
+        parsingView.setVisibleParsingStep(ParsingStep.Two);
+    }
+
     public void stateAutomatonFinished() {
         state = AppState.AUTOMATON_GENERATED;
-        Platform.runLater(() -> {
-            webEngine.executeScript("setGrammarVisible(false)");
-            webEngine.executeScript("setParseTableVisible(true)");
-        });
+        parsingView.setVisibleParsingStep(ParsingStep.Three);
     }
 
     public void parseTableFinished() {
         state = AppState.PARSETABLE_GENERATED;
         Platform.runLater(() -> {
-            tabPane.getSelectionModel().select(2);
+            parsingView.setVisibleParsingStep(ParsingStep.Results);
         });
     }
 

@@ -3,6 +3,7 @@ package visualization;
 import analysis.Analyzer;
 import analysis.ObservableStack;
 import base.CFGrammar;
+import base.CFGrammarListener;
 import base.Symbol;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.MapChangeListener;
@@ -52,9 +53,24 @@ public class MainThread extends Task<Void> {
 
         // phase 1: grammar -> stateAutomaton
         parser.setStateAutomaton(stateAutomaton);
+        grammar.addListener(new CFGrammarListener() {
+            /*
+                There must be another ChangeListener on the grammar here, because this thread needs to be paused
+                when the grammar changes.
+                The other one in ParseView can not do this - otherwise the GUI-Thread will freeze.
+             */
+            @Override
+            public void onChanged(Change change) {
+                if(change.getType() == ChangeType.startProductionAdded) {
+                    StepController.getInstance().registerStep("parseUI:ready", "Ready to begin with the next step", true);
+                    mainController.parsingPreparationFinished();
+                }
+            }
+        });
         parser.parse(grammar);
         if(StepController.getInstance().isRunning())
             Thread.sleep(SLEEP_BETWEEN_PHASES);
+        grammar.removeAllListeners();
         mainController.stateAutomatonFinished();
 
         // phase 2: stateAutomaton -> parseTable
@@ -69,6 +85,8 @@ public class MainThread extends Task<Void> {
         if(StepController.getInstance().isRunning())
             Thread.sleep(SLEEP_BETWEEN_PHASES);
         mainController.parseTableFinished();
+
+        // phase 3
         analyzerStack = analyzer.getStack();
         mainController.getStackDrawer().setStack(analyzerStack);
         analyzer.setResult(analyzerResult);

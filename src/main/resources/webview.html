@@ -3,66 +3,70 @@
 <head>
     <meta charset="utf-8">
     <title>Graph visualisation</title>
-    <style>
-        body {
-            font-family: arial !important;
-            font-size: 12pt !important;
-            font-weight: normal !important;
-        }
-
-        .node rect {
-            stroke: #333;
-            fill: #fff;
-        }
-
-        .edgePath path {
-            stroke: #333;
-            fill: #333;
-            stroke-width: 1.5px;
-        }
-
-        .h3 {
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="webview.css">
     <link rel="stylesheet" href="bower_components/bootstrap4/dist/css/bootstrap.css">
 </head>
-<body>
 <div class="container">
+    <div id="step2descr" class="row" style="display: none;">
+        <ol class="stepDescription" start="2">
+            <li>Build the state automaton from the grammar.</li>
+            <ul>
+                <li>Start with the LR(0)-Element of the newly inserted production
+                    at position 0 and compute CLOSURE<sub>0</sub></li>
+            </ul>
+            <ul>
+                <li>Then compute GOTO<sub>0</sub> of each terminal symbol following a position marker to get the next states.</li>
+            </ul>
+            <ul>
+                <li>Join states which hold the exact same set of LR(0)-Elements into one state.</li>
+            </ul>
+        </ol>
+    </div>
+    <div id="step3descr" class="row" style="display: none;">
+        <ol start="3" class="stepDescription">
+            <li>Build the parse table from the state automaton.</li>
+        </ol>
+    </div>
     <div class="row">
         <div class="col" id="grammarCol">
             <h3 class="text-center">Grammar</h3>
-            <table id="grammarTable" class="table table-sm">
+            <table id="grammarTable" class="table table-sm table-striped">
                 <thead>
-                    <tr>
-                        <th>#</th>
-                        <th></th>
-                    </tr>
+                <tr>
+                    <th>#</th>
+                    <th></th>
+                </tr>
                 </thead>
                 <tbody>
-                    <!-- to be inserted -->
+                <!-- to be inserted -->
                 </tbody>
             </table>
         </div>
-        <div class="col">
+        <div id="step1descr" class="col">
+            <ol class="stepDescription">
+                <li>Insert a new <span class="text-info">unique starting symbol</span>
+                    and a <span class="text-danger">production to derive the old starting symbol from the new one</span>.</li>
+            </ol>
+        </div>
+        <div id="stateAutomatonCol" class="col" style="display: none;">
             <h3 class="text-center">State Automaton</h3>
             <svg id="graph" width="700" height="700" style="border: 1px solid;"><g/></svg>
         </div>
-        <div class="col" id="parseTableCol" style="display: none;">
-            <h3 class="text-center">Jump Table</h3>
-            <table id="parseTable" class="table table-sm">
+        <div id="parseTableCol" class="col" style="display: none;">
+            <h3 class="text-center">Parse Table</h3>
+            <table id="parseTable" class="table table-sm table-striped">
                 <thead>
-                    <tr>
-                        <th></th>
-                        <th id="actionTableHeader">Action Table</th>
-                        <th id="jumpTableHeader">Jump Table</th>
-                    </tr>
-                    <tr id="tableHead">
-                        <!-- to be inserted -->
-                    </tr>
+                <tr>
+                    <th></th>
+                    <th id="actionTableHeader">Action Table</th>
+                    <th id="jumpTableHeader">Jump Table</th>
+                </tr>
+                <tr id="tableHead">
+                    <!-- to be inserted -->
+                </tr>
                 </thead>
                 <tbody>
-                    <!-- to be insertied -->
+                <!-- to be insertied -->
                 </tbody>
             </table>
         </div>
@@ -82,18 +86,38 @@
 -->
 <script type="text/javascript">
 
-    function setGrammarVisible(visible) {
+    function fadeElement(elementId, visible) {
         if(visible)
-            $('#grammarCol').fadeIn();
+            $(elementId).fadeIn();
         else
-            $('#grammarCol').fadeOut();
+            $(elementId).fadeOut();
     }
 
-    function setParseTableVisible(visible) {
-        if(visible)
-            $('#parseTableCol').fadeIn();
-        else
-            $('#parseTableCol').fadeOut();
+    function setDescriptionVisible(stepNum) {
+        var idForStep = function(n) { return '#step'+n+"descr"; }
+
+        if(stepNum != null)
+            fadeElement(idForStep(stepNum), true);
+        for(var i = 1; i <= 3; i++) {
+            if(i != stepNum)
+                fadeElement(idForStep(i), false);
+        }
+    }
+
+    function setStep(n) {
+        setDescriptionVisible(n);
+        if(n == 1) {
+
+        }
+        if(n == 2) {
+            fadeElement('#stateAutomatonCol', true);
+        } else if(n == 3) {
+            fadeElement('#grammarCol', false);
+            fadeElement('#parseTableCol', true);
+        } else if(n == 4) {
+            // display only the results
+            setDescriptionVisible(null);
+        }
     }
 
     document.addEventListener("DOMContentLoaded", function(event) {

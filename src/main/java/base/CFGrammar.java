@@ -15,10 +15,14 @@ public class CFGrammar {
     private Map<MetaSymbol, List<CFProduction>> productionsByLeft;
     private MetaSymbol startSymbol;
 
+    private List<CFGrammarListener> changeListeners;
+
     public CFGrammar(MetaSymbol startSymbol) {
         this.startSymbol = startSymbol;
         this.productionList = new ArrayList<>();
         this.productionsByLeft = new HashMap<>();
+
+        this.changeListeners = new LinkedList<>();
     }
 
     public CFGrammar(char startSymbol) {
@@ -111,6 +115,16 @@ public class CFGrammar {
     public void addProduction(CFProduction cfProduction) {
         this.productionList.add(cfProduction);
         addProductionByLeft(cfProduction.getLeft(), cfProduction);
+    }
+
+    public void addNewStartProduction(CFProduction newStartCfProduction) {
+        addProduction(newStartCfProduction);
+
+        CFGrammarListener.Change change = new CFGrammarListener.Change();
+        change.setType(CFGrammarListener.ChangeType.startProductionAdded);
+        change.setGrammar(this);
+        change.setNewProduction(newStartCfProduction);
+        propagateChange(change);
     }
 
     @Override
@@ -223,5 +237,19 @@ public class CFGrammar {
 
     public String toJSON() throws JsonProcessingException {
         return getObjectMapper().writeValueAsString(this);
+    }
+
+    public void addListener(CFGrammarListener listener) {
+        changeListeners.add(listener);
+    }
+
+    private void propagateChange(CFGrammarListener.Change change) {
+        for(CFGrammarListener listener : changeListeners) {
+            listener.onChanged(change);
+        }
+    }
+
+    public void removeAllListeners() {
+        changeListeners.clear();
     }
 }
