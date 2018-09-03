@@ -1,37 +1,12 @@
 // Create a new directed graph
 var g = new dagreD3.graphlib.Graph().setGraph({nodesep: 70});
-// States and transitions from RFC 793
-/*var states = [ "CLOSED", "LISTEN", "SYN RCVD", "SYN SENT",
-    "ESTAB", "FINWAIT-1", "CLOSE WAIT", "FINWAIT-2",
-    "CLOSING", "LAST-ACK", "TIME WAIT" ];
-    */
+
 var states = [];
 var stateNumRectSize = 30;
 
 // Automatically label each of the nodes
 states.forEach(function(state) { g.setNode(state, { label: state }); });
 
-// Set up the edges
-/*
-g.setEdge("CLOSED",     "LISTEN",     { label: "open" });
-g.setEdge("LISTEN",     "SYN RCVD",   { label: "rcv SYN" });
-g.setEdge("LISTEN",     "SYN SENT",   { label: "send" });
-g.setEdge("LISTEN",     "CLOSED",     { label: "close" });
-g.setEdge("SYN RCVD",   "FINWAIT-1",  { label: "close" });
-g.setEdge("SYN RCVD",   "ESTAB",      { label: "rcv ACK of SYN" });
-g.setEdge("SYN SENT",   "SYN RCVD",   { label: "rcv SYN" });
-g.setEdge("SYN SENT",   "ESTAB",      { label: "rcv SYN, ACK" });
-g.setEdge("SYN SENT",   "CLOSED",     { label: "close" });
-g.setEdge("ESTAB",      "FINWAIT-1",  { label: "close" });
-g.setEdge("ESTAB",      "CLOSE WAIT", { label: "rcv FIN" });
-g.setEdge("FINWAIT-1",  "FINWAIT-2",  { label: "rcv ACK of FIN" });
-g.setEdge("FINWAIT-1",  "CLOSING",    { label: "rcv FIN" });
-g.setEdge("CLOSE WAIT", "LAST-ACK",   { label: "close" });
-g.setEdge("FINWAIT-2",  "TIME WAIT",  { label: "rcv FIN" });
-g.setEdge("CLOSING",    "TIME WAIT",  { label: "rcv ACK of FIN" });
-g.setEdge("LAST-ACK",   "CLOSED",     { label: "rcv ACK of FIN" });
-g.setEdge("TIME WAIT",  "CLOSED",     { label: "timeout=2MSL" });
-*/
 // Set some general styles
 g.nodes().forEach(function(v) {
     var node = g.node(v);
@@ -62,7 +37,7 @@ if(states.length > 0)
 function calcYoffset(height) {
     var H = height,
         RR = 2*stateNumRectSize;
-    if(H == RR) {
+    if(H === RR) {
         return 0;
     } else if(H > RR) {
         return ((H/2.0) - stateNumRectSize);
@@ -76,7 +51,7 @@ function drawGraph() {
     render(inner, g);
 
     d3.selectAll(".node > rect")
-        .attr("width", function(d) {
+        .attr("width", function() {
             return Number(d3.select(this).attr("width")) + (stateNumRectSize + 2);
         });
 
@@ -112,7 +87,7 @@ function drawGraph() {
                     if(Number(d.id+5) < 10) return 9;
                     else return 4;
                 })
-                .text(function(){ return d.id+5 });
+                .text(function(){ return d.id });
             return node_width;
         });
     // Center the graph
@@ -132,9 +107,6 @@ function addNode(id, content) {
 
     // label node
     g.setNode(id, {id: id, label: content});
-
-    // set style
-    var node = g.node(id);
 
     drawGraph();
 }
