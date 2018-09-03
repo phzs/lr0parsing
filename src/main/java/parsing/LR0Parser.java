@@ -22,8 +22,8 @@ public class LR0Parser implements Parser {
     public void parse(CFGrammar grammar) {
         this.grammar = grammar;
         // 1. Add a new start production
-        char newStartSymbolRepr = grammar.getFreeMetaSymbol("ZS");
         StepController.getInstance().registerStep("parse:NewProd1", "Ready to add new Production to accept sequence");
+        char newStartSymbolRepr = grammar.getFreeMetaSymbol("ZSXY");
         CFProduction newStartProduction = new CFProduction(newStartSymbolRepr, grammar.getStartSymbol().toString());
         grammar.addNewStartProduction(newStartProduction);
         previousStartSymbol = grammar.getStartSymbol();
