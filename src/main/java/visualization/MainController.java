@@ -203,10 +203,11 @@ public class MainController implements Initializable {
 
     public void parseTableFinished() {
         state = AppState.PARSETABLE_GENERATED;
+        parsingView.setVisibleParsingStep(ParsingStep.Results);
         Platform.runLater(() -> {
-            parsingView.setVisibleParsingStep(ParsingStep.Results);
+            tabPane.getSelectionModel().select(2);
+            setControlButtonsDisable(true);
         });
-        setControlButtonsDisable(true);
     }
 
     public void setControlButtonsDisable(boolean disable) {
@@ -217,6 +218,7 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        StepController.getInstance().setMainController(this);
 
         // initializing the webview needs some time, therefore do it in advance
         parsingView = new ParsingView(parsingWebView);
@@ -287,6 +289,8 @@ public class MainController implements Initializable {
             stackDrawer = new StackDrawer(stackPane);
             StepController.getInstance().start();
             startStopButton.setText("Reset to Start");
+
+            continueButton.requestFocus();
         } else {
             mainThread.cancel();
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -449,10 +453,16 @@ public class MainController implements Initializable {
         Platform.runLater(() -> analysisInputDisplay.textProperty().bind(analyzerInput));
     }
 
-    public void displayStep(String id, String description) {
+    public void displayStep(String id, String description, int repetition) {
         Platform.runLater(() -> {
-            stepControllerLabel.setText(description);
+            String text = description;
+            if(repetition > 0)
+                text += " (" + repetition + ")";
+            stepControllerLabel.setText(text);
         });
     }
 
+    public void setFocusToContinue() {
+        continueButton.requestFocus();
+    }
 }

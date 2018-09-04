@@ -1,6 +1,5 @@
 package visualization;
 
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
@@ -51,7 +50,7 @@ public class StepController {
 
     private StepController() {
         delay = new SimpleIntegerProperty(1);
-        running = new SimpleBooleanProperty(true);
+        running = new SimpleBooleanProperty(false);
         steps = new TreeMap<>();
         hasStarted = false;
         mutex = new Object();
@@ -86,6 +85,7 @@ public class StepController {
 
     public void stop() {
         running.set(false);
+        mainController.setFocusToContinue();
     }
 
     public void nextStep() {
@@ -105,8 +105,6 @@ public class StepController {
     }
 
     public void registerStep(String id, String description) {
-        mainController.displayStep(id, description);
-        System.out.println("[StepController]" + id + " | " + description);
 
         Step currentStep = steps.get(id);
         if(currentStep == null) {
@@ -115,6 +113,9 @@ public class StepController {
         } else {
             currentStep.repetition++;
         }
+
+        mainController.displayStep(id, description, currentStep.repetition);
+        System.out.println("[StepController] " + id + " ("+currentStep.repetition+") | " + description + "; Thread: " + Thread.currentThread());
 
         try {
             if(running.get()) {

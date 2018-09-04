@@ -21,14 +21,16 @@ public class LR0Parser implements Parser {
     @Override
     public void parse(CFGrammar grammar) {
         this.grammar = grammar;
+
         // 1. Add a new start production
-        StepController.getInstance().registerStep("parse:NewProd1", "Ready to add new Production to accept sequence");
+        StepController.getInstance().registerStep("parse:ready", "Ready to begin step 1 (adding a new start production)", true);
         char newStartSymbolRepr = grammar.getFreeMetaSymbol("ZSXY");
         CFProduction newStartProduction = new CFProduction(newStartSymbolRepr, grammar.getStartSymbol().toString());
         grammar.addNewStartProduction(newStartProduction);
         previousStartSymbol = grammar.getStartSymbol();
         grammar.setStartSymbol(new MetaSymbol(newStartSymbolRepr));
-        StepController.getInstance().registerStep("parse:NewProd2", "Added new Production to accept sequence");
+
+        StepController.getInstance().registerStep("parse:ready", "Ready to begin with step 2 (building the state automaton)", true);
 
         // 2. Add state for start production
         Set<LR0Element> startStateSet = grammar.getCLOSURE(newStartProduction.getLR0Element(0));
@@ -55,10 +57,12 @@ public class LR0Parser implements Parser {
             statesProcessed.add(stateId);
             statesToProcess.remove(stateId);
         }
+        StepController.getInstance().registerStep("parse:finished", "Step 2 (building the state automaton) finished", true);
     }
 
     @Override
     public void generateTable(CFGrammar grammar, StateAutomaton stateAutomaton) {
+        StepController.getInstance().registerStep("parse2:ready", "Ready to generate the parse table", true);
 
         State firstState = stateAutomaton.getStartState();
 

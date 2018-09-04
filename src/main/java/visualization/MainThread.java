@@ -62,14 +62,12 @@ public class MainThread extends Task<Void> {
             @Override
             public void onChanged(Change change) {
                 if(change.getType() == ChangeType.startProductionAdded) {
-                    StepController.getInstance().registerStep("parseUI:ready", "Ready to begin with the next step", true);
+                    StepController.getInstance().registerStep("parse:prepared", "Step 1 (adding a new start production) finished", true);
                     mainController.parsingPreparationFinished();
                 }
             }
         });
         parser.parse(grammar);
-        if(StepController.getInstance().isRunning())
-            Thread.sleep(SLEEP_BETWEEN_PHASES);
         grammar.removeAllListeners();
         mainController.stateAutomatonFinished();
 
@@ -82,8 +80,6 @@ public class MainThread extends Task<Void> {
             }
         });
         parser.generateTable(grammar, stateAutomaton);
-        if(StepController.getInstance().isRunning())
-            Thread.sleep(SLEEP_BETWEEN_PHASES);
         mainController.parseTableFinished();
 
         // phase 3
@@ -92,8 +88,7 @@ public class MainThread extends Task<Void> {
         analyzer.setResult(analyzerResult);
         mainController.bindAnalyzerInput(analyzerInput);
         while(!isCancelled()) {
-            StepController.getInstance().stop();
-            StepController.getInstance().registerStep("mainThread:readyToAnalyze", "Waiting for user input to analyze");
+            StepController.getInstance().registerStep("mainThread:readyToAnalyze", "Waiting for user input to analyze", true);
             analyzer.analyze(grammar, parseTable, analyzerInput.getValue());
             mainController.displayAnalyzerResult(analyzerResult);
         }
