@@ -1,0 +1,12 @@
+.stepDescriptionLabel {
+    -fx-border-width: 1 0 0 0;
+    -fx-border-color: #4e555b;
+    -fx-text-fill: snow;
+    -fx-padding: 2 5 0 5;
+}
+
+.stepDescriptionBar {
+    -fx-background-color: #2f6f9f;
+    -fx-border-width: 0 0 3 0;
+    -fx-border-color: #353a3e;
+}

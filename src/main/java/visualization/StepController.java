@@ -11,6 +11,8 @@ public class StepController {
     private static StepController INSTANCE;
 
     private MainThread mainThread;
+
+    private MainController mainController;
     private Object mutex;
 
     private SimpleIntegerProperty delay;
@@ -103,6 +105,9 @@ public class StepController {
     }
 
     public void registerStep(String id, String description) {
+        mainController.displayStep(id, description);
+        System.out.println("[StepController]" + id + " | " + description);
+
         Step currentStep = steps.get(id);
         if(currentStep == null) {
             currentStep = new Step(id, description);
@@ -126,5 +131,9 @@ public class StepController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
     }
 }

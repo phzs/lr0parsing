@@ -5,6 +5,8 @@ import base.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -113,6 +116,21 @@ public class MainController implements Initializable {
     @FXML
     private ScrollPane parsingParent;
 
+    @FXML
+    private Label stepControllerLabel;
+
+    @FXML
+    private HBox controlButtonBar;
+
+    @FXML
+    private Button continueButton;
+
+    @FXML
+    private Button nextStepButton;
+
+    @FXML
+    private Button previousStepButton;
+
     public static CFGrammar getExampleGrammar() {
         CFGrammar exampleGrammar = new CFGrammar('S');
         exampleGrammar.addProduction(new CFProduction('S', "Sb"));
@@ -188,6 +206,13 @@ public class MainController implements Initializable {
         Platform.runLater(() -> {
             parsingView.setVisibleParsingStep(ParsingStep.Results);
         });
+        setControlButtonsDisable(true);
+    }
+
+    public void setControlButtonsDisable(boolean disable) {
+        continueButton.setDisable(disable);
+        nextStepButton.setDisable(disable);
+        previousStepButton.setDisable(disable);
     }
 
     @Override
@@ -213,22 +238,16 @@ public class MainController implements Initializable {
 
         this.state = AppState.NOT_STARTED;
 
-        /*
+        controlButtonBar.setVisible(false);
         tabPane.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<Tab>() {
                     @Override
                     public void changed(ObservableValue<? extends Tab> ov, Tab t, Tab t1) {
-                        if (graphDrawer != null) {
-                            if (t1.getId().equals("parsing2Tab")) {
-                                graphDrawer.setTargetPane(parsing2CanvasPane);
-                            } else if (t1.getId().equals("parsingTab")) {
-                                //graphDrawer.setTargetPane(canvasPane);
-                            }
-                        }
+                        controlButtonBar.setVisible(! t1.getId().equals("inputTab") );
                     }
                 }
         );
-        */
+
         parsingParent.widthProperty().addListener((observable, oldValue, newValue) -> {
             parsingWebView.setPrefWidth((Double) newValue);
         });
@@ -299,6 +318,12 @@ public class MainController implements Initializable {
     }
 
     @FXML
+    public void handleContinueButton(ActionEvent actionEvent) {
+        StepController.getInstance().runningProperty().set(true);
+        StepController.getInstance().nextStep();
+    }
+
+    @FXML
     private void handleClearRulesButtonAction(ActionEvent actionEvent) {
         grammarTable.getItems().clear();
         startSymbolChoiceBox.getItems().clear();
@@ -326,7 +351,10 @@ public class MainController implements Initializable {
         mainThread.pushNextAnalyzerInput(input);
         analysisInputTextArea.setDisable(true);
         analysisStartButton.setDisable(true);
+        setControlButtonsDisable(false);
         StepController.getInstance().nextStep();
+
+        continueButton.requestFocus();
     }
 
     @FXML
@@ -420,4 +448,11 @@ public class MainController implements Initializable {
     public void bindAnalyzerInput(SimpleStringProperty analyzerInput) {
         Platform.runLater(() -> analysisInputDisplay.textProperty().bind(analyzerInput));
     }
+
+    public void displayStep(String id, String description) {
+        Platform.runLater(() -> {
+            stepControllerLabel.setText(description);
+        });
+    }
+
 }

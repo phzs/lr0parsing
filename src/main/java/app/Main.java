@@ -22,7 +22,9 @@ public class Main extends Application {
         Parent root = loader.load(getClass().getResource("/main.fxml"));
 
         primaryStage.setTitle(APPLICATION_TITLE);
-        primaryStage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("/main.css").toExternalForm());
+        primaryStage.setScene(scene);
         Point2D windowBounds = getWindowBounds();
         primaryStage.setMinWidth(WINDOW_MIN_WIDTH);
         primaryStage.setMinHeight(WINDOW_MIN_HEIGHT);
