@@ -24,15 +24,21 @@ function generateTableRowHtml(ruleId, left, right) {
 // this will insert the rule at position 0 and move
 // all existing rules accordingly
 function insertFirstRule(left, right) {
+    var grammarRulesTemp = {}
+    for(var i in grammarRules) {
+        grammarRulesTemp[(Number(i)+1)] = grammarRules[i];
+    }
+    grammarRules = grammarRulesTemp;
+    grammarRules[0] = {left: left, right: right, symbols: {}};
     var rowHtml = generateTableRowHtml(0, left, right);
     $(rowHtml).insertBefore('#grammarTable > tbody > tr:first()');
-    grammarRules[-1] = {left: left, right: right, symbols: {}};
 
     // update numbers
-    $('#grammarTable > tbody > tr > td:first-child()').each(function(i, element) {
+    $('#grammarTable > tbody > tr').each(function(i, element) {
         if(i != 0) {
-            var ruleId = Number(element.innerHTML);
-            element.innerHTML = (ruleId+1);
+            var ruleId = Number(element.id.split("rule")[1]);
+            element.id = "rule"+(ruleId+1);
+            element.children[0].innerHTML = ruleId+1;
         }
     });
 }
