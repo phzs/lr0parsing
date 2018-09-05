@@ -22,6 +22,11 @@ public class ParseTableView extends TableView<ObservableMap<Symbol, ParseTable.T
         super();
     }
 
+    public void reset() {
+        this.getItems().clear();
+        this.getColumns().clear();
+    }
+
     public void init(List<TerminalSymbol> terminalSymbols, List<MetaSymbol> metaSymbols) {
         this.terminalSymbols = terminalSymbols;
         this.terminalSymbols.add(new TerminalSymbol('$'));

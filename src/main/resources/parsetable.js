@@ -36,3 +36,13 @@ function addParseTableEntry(stateId, symbol, entry) {
     $('#'+getIdForCell(stateId, symbol)).html(entry);
     parseTableRows[stateId][symbol] = entry;
 }
+
+function clearParseTable() {
+    $('#tableHead > th').remove();
+    Object.keys(parseTableRows).forEach(function(key) {
+        $('#row'+key).remove()
+    });
+    actionTableHeaders = [];
+    jumpTableHeaders = [];
+    parseTableRows = {};
+}

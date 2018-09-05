@@ -204,6 +204,7 @@ public class MainController implements Initializable {
     public void parseTableFinished() {
         state = AppState.PARSETABLE_GENERATED;
         parsingView.setVisibleParsingStep(ParsingStep.Results);
+        StepController.getInstance().registerStep("parse:finished", "Parsing finished", true);
         Platform.runLater(() -> {
             tabPane.getSelectionModel().select(2);
             setControlButtonsDisable(true);
@@ -263,36 +264,39 @@ public class MainController implements Initializable {
         menuOpen.setDisable(!writable);
     }
 
+    private void startProgram() {
+        state = AppState.STARTED;
+        mainThread = new MainThread(this);
+        grammar = getGrammar();
+        mainThread.setGrammar(grammar);
+        StepController.getInstance().setMainThread(mainThread);
+
+        stateAutomaton = mainThread.getStateAutomaton();
+        parsingView.setStateAutomaton(stateAutomaton);
+
+        List<TerminalSymbol> terminalSymbols = grammar.getTerminalSymbols();
+        List<MetaSymbol> metaSymbols = grammar.getMetaSymbols();
+        parsingView.initGrammar(grammar);
+
+        parsingView.initParseTable(terminalSymbols, metaSymbols);
+        analysisTableView.init(terminalSymbols, metaSymbols);
+
+        parsingParent.setVvalue(0); // scroll to top
+        tabPane.getSelectionModel().select(1);
+
+
+        stackDrawer = new StackDrawer(stackPane);
+        StepController.getInstance().start();
+
+        setControlButtonsDisable(false);
+        continueButton.requestFocus();
+    }
+
     @FXML
-    private void handleStartStopButtonAction(ActionEvent actionEvent) {
+    private void handleStartButtonAction(ActionEvent actionEvent) {
         if(state == AppState.NOT_STARTED) {
-            state = AppState.STARTED;
-            mainThread = new MainThread(this);
-            grammar = getGrammar();
-            mainThread.setGrammar(grammar);
-            StepController.getInstance().setMainThread(mainThread);
-            setGrammarWritable(false);
-
-            stateAutomaton = mainThread.getStateAutomaton();
-
-            List<TerminalSymbol> terminalSymbols = grammar.getTerminalSymbols();
-            List<MetaSymbol> metaSymbols = grammar.getMetaSymbols();
-            parsingView.initGrammar(grammar);
-
-            parsingView.initParseTable(terminalSymbols, metaSymbols);
-            analysisTableView.init(terminalSymbols, metaSymbols);
-
-            tabPane.getSelectionModel().select(1);
-
-            parsingView.setStateAutomaton(stateAutomaton);
-
-            stackDrawer = new StackDrawer(stackPane);
-            StepController.getInstance().start();
-            startStopButton.setText("Reset to Start");
-
-            continueButton.requestFocus();
+            startProgram();
         } else {
-            mainThread.cancel();
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Reset Confirmation");
             alert.setHeaderText("All results will be lost if you choose to reset parsing");
@@ -300,12 +304,13 @@ public class MainController implements Initializable {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK){
-                parsingView.clearGraph();
-                startStopButton.setText("Start Parsing");
-                tabPane.getSelectionModel().select(0);
-                setGrammarWritable(true);
+                StepController.getInstance().killMainThread();
+                parsingView.reset();
+                analysisTableView.reset();
+                StepController.getInstance().clearSteps();
+                state = AppState.NOT_STARTED;
+                startProgram();
             }
-            state = AppState.NOT_STARTED;
         }
     }
 

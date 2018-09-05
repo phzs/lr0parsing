@@ -9,6 +9,7 @@ public class StepController {
 
     private static StepController INSTANCE;
 
+    private Thread threadInstance;
     private MainThread mainThread;
 
     private MainController mainController;
@@ -25,6 +26,10 @@ public class StepController {
 
     public SimpleBooleanProperty runningProperty() {
         return running;
+    }
+
+    public void clearSteps() {
+        steps.clear();
     }
 
     private static class Step {
@@ -77,10 +82,18 @@ public class StepController {
     }
 
     private void startMainThread() {
-        Thread th = new Thread(mainThread);
-        th.setDaemon(true);
-        th.start();
+        threadInstance = new Thread(mainThread);
+        threadInstance.setDaemon(true);
+        threadInstance.start();
         hasStarted = true;
+    }
+
+    public void killMainThread() {
+        threadInstance.interrupt();
+        mainThread.cancel();
+        threadInstance.stop();
+        mutex = new Object();
+        hasStarted = false;
     }
 
     public void stop() {

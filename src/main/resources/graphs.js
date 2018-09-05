@@ -1,8 +1,15 @@
 // Create a new directed graph
-var g = new dagreD3.graphlib.Graph().setGraph({nodesep: 70});
+var g, svg, inner;
 
 var states = [];
 var stateNumRectSize = 30;
+
+function initGraph() {
+    g = new dagreD3.graphlib.Graph().setGraph({nodesep: 70});
+    svg = d3.select("svg"),
+        inner = svg.select("g");
+}
+initGraph();
 
 // Automatically label each of the nodes
 states.forEach(function(state) { g.setNode(state, { label: state }); });
@@ -17,9 +24,6 @@ g.nodes().forEach(function(v) {
 // Add some custom colors based on state
 //g.node('CLOSED').style = "fill: #f77";
 //g.node('ESTAB').style = "fill: #7f7";
-
-var svg = d3.select("svg"),
-    inner = svg.select("g");
 
 // Set up zoom support
 var zoom = d3.zoom().on("zoom", function() {
@@ -136,11 +140,7 @@ function renameNode(from, to) {
 }
 
 function clearGraph() {
-    var toRemove = [];
-    states.forEach(function(stateId) {
-       toRemove.push(stateId);
-    });
-    toRemove.forEach(function(stateId) {
-       removeNode(stateId);
-    });
+    states = [];
+    $('#graph > g').empty();
+    initGraph();
 }

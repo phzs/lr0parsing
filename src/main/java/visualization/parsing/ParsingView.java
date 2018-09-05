@@ -70,7 +70,7 @@ public class ParsingView {
         webEngine = webView.getEngine();
         //webEngine.setUserStyleSheetLocation("data:,body { font: 12px Arial; }");
         webEngine.load(this.getClass().getResource("/webview.html").toExternalForm());
-        JSObject window = (JSObject) webEngine.executeScript("window");
+        JSObject window = (JSObject) executeScript("window");
         window.setMember("app", this);
     }
 
@@ -84,7 +84,7 @@ public class ParsingView {
                 + state.toString().replace("\n", "\\n")
                 + "\"";
 
-        webEngine.executeScript("addNode("+state.getNumber()+", "+content+")");
+        executeScript("addNode("+state.getNumber()+", "+content+")");
     }
 
     private void drawTransition(StateTransition transition) {
@@ -94,7 +94,7 @@ public class ParsingView {
         String transitionLabel = "\""
                 + transition.getSymbol().toString()
                 + "\"";
-        webEngine.executeScript("addEdge("+from.getNumber()+","+to.getNumber()+", "+ transitionLabel +")");
+        executeScript("addEdge("+from.getNumber()+","+to.getNumber()+", "+ transitionLabel +")");
     }
 
     /**
@@ -106,16 +106,25 @@ public class ParsingView {
 
     }
     
-    public void clearGraph() {
-        webEngine.executeScript("clearGraph()");
+    public void reset() {
+        executeScript("clearGraph()");
+        executeScript("clearRules()");
+        executeScript("clearParseTable()");
+        setVisibleParsingStep(ParsingStep.One);
+    }
+
+    private Object executeScript(String script) {
+        System.out.println("[ParsingView,"+Thread.currentThread()+"] execute: " + script);
+        return webEngine.executeScript(script);
     }
 
     public void initGrammar(CFGrammar grammar) {
-        webEngine.executeScript("clearRules()");
+        executeScript("clearRules()");
         List<CFProduction> productionList = grammar.getProductionList();
         for(int i = 0; i < productionList.size(); i++) {
             CFProduction production = productionList.get(i);
-            webEngine.executeScript("addRule(" + i + ", \"" + production.getLeft() + "\", \"" + production.getRight()+"\")");
+            String script = "addRule(" + i + ", \"" + production.getLeft() + "\", \"" + production.getRight()+"\")";
+            executeScript(script);
         }
 
         /*
@@ -133,9 +142,8 @@ public class ParsingView {
                                 + ", "
                                 + "\'" + production.getRight() + "\'"
                                 + ")";
-                        webEngine.executeScript(script);
-                        webEngine.executeScript("highlightRule(0)");
-                        System.out.println(script);
+                        executeScript(script);
+                        executeScript("highlightRule(0)");
                     });
                 }
             }
@@ -161,7 +169,7 @@ public class ParsingView {
                 + ", "
                 + listToJsArray(metaSymbols)
                 +")";
-        webEngine.executeScript(script);
+        executeScript(script);
     }
 
     public void addParseTableEntryListener(int stateId, ObservableMap<Symbol, ParseTable.TableEntry> entryObservableMap) {
@@ -174,7 +182,7 @@ public class ParsingView {
                         + "\'" + change.getValueAdded() + "\'"  // entry
                         + ")";
                 Platform.runLater(() -> {
-                    webEngine.executeScript(script);
+                    executeScript(script);
                 });
             }
         });
@@ -188,7 +196,7 @@ public class ParsingView {
             else if (step == ParsingStep.Three) script += 3;
             else if (step == ParsingStep.Results) script += 4;
             script += ")";
-            webEngine.executeScript(script);
+            executeScript(script);
         });
     }
 }
