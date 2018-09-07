@@ -152,11 +152,8 @@ public class ParsingView {
 
     private String listToJsArray(List<? extends Symbol> list) {
         String result = "[";
-        ListIterator<Symbol> iter = (ListIterator<Symbol>) list.iterator();
-        for(Symbol symbol = iter.next(); iter.hasNext(); symbol = iter.next()) {
-            result += ('\"' + symbol.toString() + '\"');
-            if(iter.hasNext())
-                result += ",";
+        for(Symbol symbol : list) {
+            result += ("\"" + symbol.toString() + "\", ");
         }
         result += "]";
         return result;
