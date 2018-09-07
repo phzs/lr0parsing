@@ -19,6 +19,19 @@ public class StepController {
     private SimpleBooleanProperty running;
     private boolean hasStarted;
     private TreeMap<String, Step> steps;
+    private Command lastCommand;
+
+    public enum Command {
+        None,
+        Continue,
+        Next,
+        Previous
+
+    }
+
+    public Command getLastCommand() {
+        return lastCommand;
+    }
 
     public boolean isRunning() {
         return running.get();
@@ -59,6 +72,7 @@ public class StepController {
         steps = new TreeMap<>();
         hasStarted = false;
         mutex = new Object();
+        lastCommand = Command.None;
     }
 
     public Object getMutex() {
@@ -101,7 +115,16 @@ public class StepController {
         mainController.setFocusToContinue();
     }
 
+    public void doContinue() {
+        lastCommand = Command.Continue;
+        running.set(true);
+        synchronized (mutex) {
+            mutex.notify();
+        }
+    }
+
     public void nextStep() {
+        lastCommand = Command.Next;
         synchronized (mutex) {
             mutex.notify();
         }

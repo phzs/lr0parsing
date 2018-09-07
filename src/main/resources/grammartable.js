@@ -60,7 +60,7 @@ function clearRules() {
 function highlight(selector) {
     var element = $(selector);
     if (element != null) {
-        element.css('background-color', 'hsl(46,100%,50%');
+        element.css('background-color', 'hsl(46,100%,50%)');
         element.css('border-color', 'hsl(46,100%,50%)');
         element.css('border-style', 'solid');
         element.css('border-width', "5px 0px");

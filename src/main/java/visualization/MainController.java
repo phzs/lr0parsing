@@ -328,8 +328,7 @@ public class MainController implements Initializable {
 
     @FXML
     public void handleContinueButton(ActionEvent actionEvent) {
-        StepController.getInstance().runningProperty().set(true);
-        StepController.getInstance().nextStep();
+        StepController.getInstance().doContinue();
     }
 
     @FXML

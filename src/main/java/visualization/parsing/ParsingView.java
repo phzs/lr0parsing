@@ -13,6 +13,7 @@ import parsing.ParseTable;
 import parsing.State;
 import parsing.StateAutomaton;
 import parsing.StateTransition;
+import visualization.StepController;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -27,6 +28,9 @@ public class ParsingView {
     private StateAutomaton automaton;
     private double nextX = paddingLeft;
     private double nextY = paddingTop;
+
+    private State highlightedState;
+    private StateTransition highlightedTransition;
 
     public ParsingView(WebView targetWebView) {
         this.webView = targetWebView;
@@ -85,6 +89,12 @@ public class ParsingView {
                 + "\"";
 
         executeScript("addNode("+state.getNumber()+", "+content+")");
+
+        if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
+            resetHighlightedState();
+            executeScript("highlightNode("+state.getNumber()+")");
+            highlightedState = state;
+        }
     }
 
     private void drawTransition(StateTransition transition) {
@@ -95,6 +105,26 @@ public class ParsingView {
                 + transition.getSymbol().toString()
                 + "\"";
         executeScript("addEdge("+from.getNumber()+","+to.getNumber()+", "+ transitionLabel +")");
+
+        if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
+            resetHighlightedTransition();
+            executeScript("highlightEdge("+transition.getFromState()+","+transition.getToState()+")");
+            highlightedTransition = transition;
+        }
+    }
+
+    private void resetHighlightedState() {
+        if(highlightedState != null) {
+            executeScript("unhighlightNode(" + highlightedState.getNumber() + ")");
+            highlightedState = null;
+        }
+    }
+
+    private void resetHighlightedTransition() {
+        if(highlightedTransition != null) {
+            executeScript("unhighlightEdge(" + highlightedTransition.getFromState() + "," + highlightedTransition.getToState() + ")");
+            highlightedTransition = null;
+        }
     }
 
     /**
@@ -187,6 +217,9 @@ public class ParsingView {
 
     public void setVisibleParsingStep(ParsingStep step) {
         Platform.runLater(() -> {
+            if(step == ParsingStep.Three || step == ParsingStep.Results)
+                resetHighlighting();
+
             String script = "setStep(";
             if (step == ParsingStep.One) script += 1;
             else if (step == ParsingStep.Two) script += 2;
@@ -195,5 +228,10 @@ public class ParsingView {
             script += ")";
             executeScript(script);
         });
+    }
+
+    private void resetHighlighting() {
+        resetHighlightedState();
+        resetHighlightedTransition();
     }
 }
