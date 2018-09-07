@@ -4,10 +4,13 @@ var g, svg, inner;
 var states = [];
 var stateNumRectSize = 30;
 
+var highlightFill = "hsl(46,100%,50%)";
+var stateNumRectFill = "#f7f7f7";
+
 function initGraph() {
     g = new dagreD3.graphlib.Graph().setGraph({nodesep: 70});
-    svg = d3.select("svg"),
-        inner = svg.select("g");
+    svg = d3.select("svg");
+    inner = svg.select("g");
 }
 initGraph();
 
@@ -50,6 +53,18 @@ function calcYoffset(height) {
     }
 }
 
+function getNodeRectId(nodeId) {
+    return "nodeRect" + (nodeId || 0);
+}
+
+function getStateNumRectId(nodeId) {
+    return "stateNumRect" + (nodeId || 0);
+}
+
+function getEdgeId(from, to) {
+    return "edge"+(from || 0)+"-"+(to || 0);
+}
+
 function drawGraph() {
 
     render(inner, g);
@@ -62,6 +77,9 @@ function drawGraph() {
     var offset = 16;
     d3.selectAll(".node > rect") // '>' to select only the first rect in <g class="node">...</g>
         .data(states)
+        .attr("id", function(d) {
+            return getNodeRectId(d.id);
+        })
         .attr("width", function(d) {
             var node_height, node_width;
             node_width = Number(d3.select(this).attr("width"));
@@ -74,9 +92,13 @@ function drawGraph() {
                     return "translate("+((node_width/2) - (stateNumRectSize) + offset)+","+calcYoffset(node_height)+")";
                 });
             g.append("rect")
+                .attr("id", function() {
+                    // this must be in a function (or "this" will work differently)
+                    return getStateNumRectId(this.parentNode.parentNode.id)
+                })
                 .attr("width", stateNumRectSize)
                 .attr("height", stateNumRectSize)
-                .style("fill", "#f7f7f7");
+                .style("fill", stateNumRectFill);
             g.append("g")
                 .attr("class", "label")
                 .attr("transform", function() {
@@ -125,7 +147,7 @@ function removeNode(id) {
     drawGraph();
 }
 function addEdge(from, to, label) {
-    g.setEdge(from, to, {label: label});
+    g.setEdge(from, to, {id: getEdgeId(from, to), label: label});
 
     drawGraph();
 }
@@ -143,4 +165,37 @@ function clearGraph() {
     states = [];
     $('#graph > g').empty();
     initGraph();
+}
+
+function highlightNode(id) {
+    d3.select('#'+getNodeRectId(id))
+        .style("fill", highlightFill);
+    d3.select('#'+getStateNumRectId(id))
+        .style("fill", highlightFill);
+}
+
+function unhighlightNode(id) {
+    d3.select('#'+getNodeRectId(id))
+        .style("stroke", "")
+        .style("fill", "");
+    d3.select('#'+getStateNumRectId(id))
+        .style("stroke", "")
+        .style("fill", stateNumRectFill);
+}
+
+function highlightEdge(from, to) {
+    d3.select('#'+getEdgeId(from, to)+" > path")
+        .style("stroke", highlightFill)
+        .style("stroke-width", 3);
+    d3.select('#'+getEdgeId(from, to)+" > defs > marker > path")
+        .style("stroke", highlightFill)
+        .style("fill", highlightFill);
+}
+function unhighlightEdge(from,to) {
+    d3.select('#'+getEdgeId(from, to)+" > path")
+        .style("stroke", "")
+        .style("stroke-width", "");
+    d3.select('#'+getEdgeId(from, to)+" > defs > marker > path")
+        .style("stroke", "")
+        .style("fill", "");
 }
