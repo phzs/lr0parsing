@@ -165,6 +165,9 @@ public class MainController implements Initializable {
             addProduction(production);
         }
         startSymbolChoiceBox.setValue(grammar.getStartSymbol().getRepresentation());
+        prodNum = this.grammar.getProductionList().size();
+        if(prodNum > 0)
+            startStopButton.setDisable(false);
     }
 
     public CFGrammar getGrammar() {
@@ -337,11 +340,14 @@ public class MainController implements Initializable {
         startSymbolChoiceBox.getItems().clear();
         grammar = new CFGrammar();
         prodNum = 0;
+        startStopButton.setDisable(true);
     }
 
     @FXML
     private void handleAddRuleButtonAction(ActionEvent actionEvent) {
         grammarTable.getItems().add(new GrammarTableData(prodNum++));
+        if(prodNum > 0)
+            startStopButton.setDisable(false);
     }
 
     @FXML
@@ -349,6 +355,8 @@ public class MainController implements Initializable {
         if(grammarTable.getItems().size() > 0) {
             grammarTable.getItems().remove(grammarTable.getItems().size() - 1);
             prodNum--;
+            if(prodNum < 1)
+                startStopButton.setDisable(true);
         }
     }
 
