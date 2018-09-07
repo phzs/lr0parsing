@@ -7,9 +7,10 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.web.WebView?>
 <?import visualization.parseTable.ParseTableView?>
-<StackPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.MainController">
+
+<StackPane minHeight="800.0" minWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.MainController">
    <children>
-      <BorderPane minHeight="800.0" minWidth="600.0">
+      <BorderPane>
          <center>
               <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
                 <tabs>
@@ -118,7 +119,7 @@
                   -->
          </center>
          <top>
-            <MenuBar BorderPane.alignment="TOP_CENTER">
+            <MenuBar minHeight="29.0" BorderPane.alignment="TOP_CENTER">
               <menus>
                 <Menu mnemonicParsing="false" text="File">
                   <items>
