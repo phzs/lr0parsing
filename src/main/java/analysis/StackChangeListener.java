@@ -1,10 +1,5 @@
 package analysis;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
-import javafx.collections.MapChangeListener;
-
 public interface StackChangeListener<T> {
 
     void onChanged(Change change);
