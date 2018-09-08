@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static parsing.ParserAction.Null;
+
 public class ParseTable {
 
     private ObservableMap<Integer, ObservableMap<Symbol, TableEntry>> table; // stateNumber -> symbol -> (Entry)
@@ -39,7 +41,7 @@ public class ParseTable {
 
         @Override
         public String toString() {
-            if(action == null) {
+            if(action == Null) {
                 return "" + number;
             }
             String result;
@@ -78,11 +80,9 @@ public class ParseTable {
             table.put(stateNum, new SimpleMapProperty<>(FXCollections.observableHashMap()));
         Map<Symbol, TableEntry> tableRow = table.get(stateNum);
         TableEntry entry;
-        boolean notInTable = false;
-        if(tableRow.get(symbol) == null) {
+        if(tableRow.get(symbol) == null)
             entry = new TableEntry();
-            notInTable = true;
-        } else
+        else
             entry = tableRow.get(symbol);
         if(entry.action != null) {
             if(entry.action == ParserAction.Shift && parserAction == ParserAction.Shift) {
@@ -94,15 +94,20 @@ public class ParseTable {
             } else if(entry.action == ParserAction.Reduce && parserAction == ParserAction.Reduce)  {
                 entry.action = ParserAction.ReduceRecudeConflict;
                 entry.secondaryNumber = entry.number;
-            } else if(entry.action != ParserAction.Null)
+            } else if(entry.action != Null)
                 throw new IllegalArgumentException(
                         "A parse table entry with action " + entry.action + " may not be overwritten by action " + parserAction + ".");
         } else {
             entry.action = parserAction;
         }
         entry.number = targetState;
-        if(notInTable)
-            tableRow.put(symbol, entry);
+
+        // to trigger a change event this has to be a new object
+        TableEntry newEntry = new TableEntry();
+        newEntry.action = entry.action;
+        newEntry.number = entry.number;
+        newEntry.secondaryNumber = entry.secondaryNumber;
+        tableRow.put(symbol, newEntry);
     }
 
     public TableEntry getEntry(int state, Symbol symbol) {
