@@ -17,7 +17,7 @@ function tspans(ruleId, str) {
 function generateTableRowHtml(ruleId, left, right) {
     return '<tr id="rule'+ruleId+'">'
     + '<td>' + ruleId + '</td>'
-    + '<td>' + left + '&rarr;' + tspans(ruleId, right) + '</td>'
+    + '<td>' + left + ' &rarr; ' + tspans(ruleId, right) + '</td>'
     + '</tr>';
 }
 
