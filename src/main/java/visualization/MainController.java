@@ -301,9 +301,9 @@ public class MainController implements Initializable {
             startProgram();
         } else {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Reset Confirmation");
-            alert.setHeaderText("All results will be lost if you choose to reset parsing");
-            alert.setContentText("Do you want to reset the parsing progress?");
+            alert.setTitle("Restart Parsing");
+            alert.setHeaderText("All results will be lost if you choose to restart parsing");
+            alert.setContentText("Do you want to restart the parsing progress?");
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK){
