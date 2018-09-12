@@ -48,52 +48,57 @@ public class MainThread extends Task<Void> {
 
     @Override
     protected Void call() throws Exception {
-        System.out.println("MainThread call");
-        int i = 0;
+        try {
+            System.out.println("MainThread call");
+            int i = 0;
 
-        // phase 1: grammar -> stateAutomaton
-        parser.setStateAutomaton(stateAutomaton);
-        grammar.addListener(new CFGrammarListener() {
-            /*
-                There must be another ChangeListener on the grammar here, because this thread needs to be paused
-                when the grammar changes.
-                The other one in ParseView can not do this - otherwise the GUI-Thread will freeze.
-             */
-            @Override
-            public void onChanged(Change change) {
-                if(change.getType() == ChangeType.startProductionAdded) {
-                    StepController.getInstance().registerStep("parse:prepared", "Step 1 (adding a new start production) finished", true);
-                    mainController.parsingPreparationFinished();
+            // phase 1: grammar -> stateAutomaton
+            parser.setStateAutomaton(stateAutomaton);
+            grammar.addListener(new CFGrammarListener() {
+                /*
+                    There must be another ChangeListener on the grammar here, because this thread needs to be paused
+                    when the grammar changes.
+                    The other one in ParseView can not do this - otherwise the GUI-Thread will freeze.
+                 */
+                @Override
+                public void onChanged(Change change) {
+                    if (change.getType() == ChangeType.startProductionAdded) {
+                        StepController.getInstance().registerStep("parse:prepared", "Step 1 (adding a new start production) finished", true);
+                        mainController.parsingPreparationFinished();
+                    }
                 }
-            }
-        });
-        parser.parse(grammar);
-        grammar.removeAllListeners();
-        mainController.stateAutomatonFinished();
+            });
+            parser.parse(grammar);
+            grammar.removeAllListeners();
+            mainController.stateAutomatonFinished();
 
-        // phase 2: stateAutomaton -> parseTable
-        parser.setParseTable(parseTable);
-        parseTable.addChangeListener(new MapChangeListener<Integer, ObservableMap<Symbol, ParseTable.TableEntry>>() {
-            @Override
-            public void onChanged(Change<? extends Integer, ? extends ObservableMap<Symbol, ParseTable.TableEntry>> change) {
+            // phase 2: stateAutomaton -> parseTable
+            parser.setParseTable(parseTable);
+            parseTable.addChangeListener(new MapChangeListener<Integer, ObservableMap<Symbol, ParseTable.TableEntry>>() {
+                @Override
+                public void onChanged(Change<? extends Integer, ? extends ObservableMap<Symbol, ParseTable.TableEntry>> change) {
                     mainController.addParseTableRow(change.getKey(), change.getValueAdded());
+                }
+            });
+            parser.generateTable(grammar, stateAutomaton);
+            mainController.parseTableFinished();
+
+            // phase 3
+            analyzerStack = analyzer.getStack();
+            mainController.getStackDrawer().setStack(analyzerStack);
+            analyzer.setResult(analyzerResult);
+            mainController.bindAnalyzerInput(analyzerInput);
+            while (!isCancelled()) {
+                StepController.getInstance().registerStep("mainThread:readyToAnalyze", "Waiting for user input to analyze", true);
+                analyzer.analyze(grammar, parseTable, analyzerInput.getValue());
+                mainController.displayAnalyzerResult(analyzerResult);
             }
-        });
-        parser.generateTable(grammar, stateAutomaton);
-        mainController.parseTableFinished();
 
-        // phase 3
-        analyzerStack = analyzer.getStack();
-        mainController.getStackDrawer().setStack(analyzerStack);
-        analyzer.setResult(analyzerResult);
-        mainController.bindAnalyzerInput(analyzerInput);
-        while(!isCancelled()) {
-            StepController.getInstance().registerStep("mainThread:readyToAnalyze", "Waiting for user input to analyze", true);
-            analyzer.analyze(grammar, parseTable, analyzerInput.getValue());
-            mainController.displayAnalyzerResult(analyzerResult);
+            System.out.println("MainThread finished");
+        } catch(Throwable t) {
+            System.err.println("Throwable occured in MainThread: "+t);
+            t.printStackTrace();
         }
-
-        System.out.println("MainThread finished");
         return null;
     }
 

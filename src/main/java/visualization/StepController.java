@@ -98,6 +98,7 @@ public class StepController {
     private void startMainThread() {
         threadInstance = new Thread(mainThread);
         threadInstance.setDaemon(true);
+        threadInstance.setUncaughtExceptionHandler((t, e) -> System.err.println("Uncaught Exception in "+t+": "+e));
         threadInstance.start();
         hasStarted = true;
     }
