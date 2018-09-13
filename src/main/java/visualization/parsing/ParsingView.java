@@ -273,7 +273,7 @@ public class ParsingView {
 
     public void setVisibleParsingStep(ParsingStep step) {
         Platform.runLater(() -> {
-            resetHighlighting();
+            cleanForContinue();
 
             String script = "setStep(";
             if (step == ParsingStep.One) script += 1;
@@ -293,6 +293,6 @@ public class ParsingView {
 
     public void cleanForContinue() {
         resetHighlighting();
-        executeScript("fadeElement(\"#gcTableRow\", false)");
+        executeScript("fadeElement(\"#gcRow\", false)");
     }
 }
