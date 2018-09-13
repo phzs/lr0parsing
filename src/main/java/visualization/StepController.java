@@ -142,6 +142,7 @@ public class StepController {
     }
 
     public void registerStep(String id, String description) {
+        if(mainController == null) return; // for test cases (headless)
 
         Step currentStep = steps.get(id);
         if(currentStep == null) {
