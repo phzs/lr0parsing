@@ -61,9 +61,9 @@ function highlight(selector) {
     var element = $(selector);
     if (element != null) {
         element.css('background-color', 'hsl(46,100%,50%)');
-        element.css('border-color', 'hsl(46,100%,50%)');
-        element.css('border-style', 'solid');
-        element.css('border-width', "5px 0px");
+        //element.css('border-color', 'hsl(46,100%,50%)');
+        //element.css('border-style', 'solid');
+        //element.css('border-width', "5px 0px");
     }
     else console.error("element to highlight not found");
 }
@@ -71,17 +71,8 @@ function highlight(selector) {
 function unhighlight(selector) {
     var element = $(selector);
     if (element != null) {
-        var d = 1000;
-        for (var i = 50; i <= 100; i = i + 0.5) { //i represents the lightness
-            d += 10;
-            (function (ii, dd) {
-                setTimeout(function () {
-                    element.css('background-color', 'hsl(46,100%,' + ii + '%)');
-                    element.css('border-color', 'hsl(46,100%,' + ii + '%)');
-                    if (ii >= 99) element.css('border', '');
-                }, dd);
-            })(i, d);
-        }
+        element.css('background-color', '#fff');
+        //element.css('border', '0px solid #fff');
     }
     else console.error("element to unhighlight not found");
 }
