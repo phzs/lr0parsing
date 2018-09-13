@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import parsing.LR0Element;
+import visualization.StepController;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,10 +47,20 @@ public class CFGrammar {
         // step 1: add the element itself
         closure.addAll(elements);
 
+        CFGrammarListener.Change enterClosureChange = new CFGrammarListener.Change();
+        enterClosureChange.setType(CFGrammarListener.ChangeType.enterCLOSURE);
+        enterClosureChange.setClosureStartSet(elements);
+        propagateChange(enterClosureChange);
+
+        StepController.getInstance().registerStep("parse:closure", "Starting to calulate CLOSURE with given set of elements");
+
         // step 2: process all MetaSymbols that occur right of the marker in any
         //   element inside closure (repeat this step until nothing changes)
         boolean hasChanged;
         do {
+            CFGrammarListener.Change closureChange = new CFGrammarListener.Change();
+            closureChange.setType(CFGrammarListener.ChangeType.addCLOSURE);
+
             hasChanged = false;
             Set<LR0Element> elementsToAdd = new HashSet<>();
             for (LR0Element el : closure) {
@@ -58,30 +69,47 @@ public class CFGrammar {
                     MetaSymbol metaSymbol = (MetaSymbol) symbolRightOfMarker;
                     for (CFProduction cfProduction : productionsByLeft.get(metaSymbol)) {
                         LR0Element newElement = cfProduction.getLR0Element(0);
-                        if(!closure.contains(newElement))
+                        if(!closure.contains(newElement)) {
                             elementsToAdd.add(newElement);
+
+                            closureChange.addClosureNewElement(metaSymbol, newElement);
+                        }
                     }
                 }
             }
             if(elementsToAdd.size() > 0) {
                 closure.addAll(elementsToAdd);
                 hasChanged = true;
+
+                propagateChange(closureChange);
+
+                StepController.getInstance().registerStep("parse:closure:add", "Added new element(s) to the CLOSURE");
             }
         } while(hasChanged);
+
+        CFGrammarListener.Change closureEndChange = new CFGrammarListener.Change();
+        closureEndChange.setType(CFGrammarListener.ChangeType.endCLOSURE);
+        propagateChange(closureEndChange);
 
         return closure;
     }
 
     @JsonIgnore
-    public Set<LR0Element> getGOTO(Set<LR0Element> elements, Symbol readSymbol) {
+    public Set<LR0Element> getGOTO(int stateId, Set<LR0Element> elements, Symbol readSymbol) {
         Set<LR0Element> closureInput = new HashSet<>();
         for(LR0Element el : elements) {
             Symbol rightOfMarker = el.getSymbolRightOfMarker();
             if(rightOfMarker != null && rightOfMarker.equals(readSymbol)) {
                 closureInput.add(new LR0Element(el, 1));
             }
-        }
 
+            // callback for visualisation
+            CFGrammarListener.Change enterGotoChange = new CFGrammarListener.Change();
+            enterGotoChange.setType(CFGrammarListener.ChangeType.enterGOTO);
+            enterGotoChange.setGotoSymbol(readSymbol);
+            propagateChange(enterGotoChange);
+        }
+        StepController.getInstance().registerStep("parse:goto", "Calculate GOTO for the Symbol " + readSymbol + " and the given set of elements");
         return getCLOSURE(closureInput);
     }
 

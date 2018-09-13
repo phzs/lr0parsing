@@ -46,13 +46,12 @@ public class LR0Parser implements Parser {
             int stateId = statesToProcess.iterator().next();
             Set<Symbol> symbolsToProcess = stateAutomaton.getState(stateId).getFollowingSymbols();
             for (Symbol symbol : symbolsToProcess) {
-                Set<LR0Element> symbolGOTO = grammar.getGOTO(stateAutomaton.getState(stateId).getElements(), symbol);
+                Set<LR0Element> symbolGOTO = grammar.getGOTO(stateId, stateAutomaton.getState(stateId).getElements(), symbol);
                 int newStateId = stateAutomaton.registerState(symbolGOTO);
-                StepController.getInstance().registerStep("parse:StateCreated", "Added a new state to the state automaton");
                 if(!statesProcessed.contains(newStateId))
                     statesToProcess.add(newStateId);
                 stateAutomaton.addTransition(stateId, newStateId, symbol);
-                StepController.getInstance().registerStep("parse:TransitionCreated", "Added a new transition to the state automaton");
+                StepController.getInstance().registerStep("parse:TransitionCreated", "Added a new state and transition to the state automaton");
             }
             statesProcessed.add(stateId);
             statesToProcess.remove(stateId);

@@ -30,18 +30,30 @@
     </div>
     <div class="row">
         <div class="col" id="grammarCol">
-            <h3 class="text-center">Grammar</h3>
-            <table id="grammarTable" class="table table-sm table-striped">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <!-- to be inserted -->
-                </tbody>
-            </table>
+            <div class="row">
+                <div class="col">
+                    <h4 class="boxTitle">Grammar</h4>
+                    <table id="grammarTable" class="table table-sm">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <!-- to be inserted -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="gcRow" class="row" style="display: none">
+                <div class="col">
+                    <h4 id="gcTitle" class="boxTitle"></h4>
+                    <ul id="gcDisplay">
+                        <!-- to be inserted -->
+                    </ul>
+                </div>
+            </div>
         </div>
         <div id="step1descr" class="col-8">
             <ol class="stepDescription">
@@ -53,11 +65,11 @@
             </ol>
         </div>
         <div id="stateAutomatonCol" class="col" style="visibility: hidden;">
-            <h3 class="text-center">State Automaton</h3>
+            <h4 class="boxTitle">State Automaton</h4>
             <svg id="graph" width="700" height="700" style="border: 1px solid;"><g/></svg>
         </div>
         <div id="parseTableCol" class="col" style="display: none;">
-            <h3 class="text-center">Parse Table</h3>
+            <h4 class="boxTitle">Parse Table</h4>
             <table id="parseTable" class="table table-sm table-striped">
                 <thead>
                 <tr>
@@ -165,5 +177,6 @@
 <script src="graphs.js"></script>
 <script src="grammartable.js"></script>
 <script src="parsetable.js"></script>
+<script src="gcdisplay.js"></script>
 </body>
 </html>

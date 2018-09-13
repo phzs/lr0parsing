@@ -15,12 +15,31 @@ body {
     stroke-width: 1.5px;
 }
 
-.h3 {
-    text-align: center;
-}
-
 .stepDescription {
     font-size: 14pt;
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+.boxTitle {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#gcDisplay {
+    border: 2px solid #333;
+    list-style-type: none;
+    padding: 0;
+    text-align: center;
+    font-size: 20px;
+    margin: 0;
+}
+
+#gcDisplay hr {
+    border: 0;
+    height: 0px;
+    border-bottom: 1px dashed #ccc; background: #999;
+    margin: 0;
+    padding: 0;
+    /* background-image: linear-gradient(to right, #ccc, #333, #ccc); */
 }

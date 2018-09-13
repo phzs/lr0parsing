@@ -4,8 +4,8 @@ var g, svg, inner;
 var states = [];
 var stateNumRectSize = 30;
 
-var highlightFill = "hsl(46,100%,50%)";
-var stateNumRectFill = "#f7f7f7";
+var highlightColor = "hsl(46,100%,50%)";
+var stateNumRectFillColor = "#f7f7f7";
 
 function initGraph() {
     g = new dagreD3.graphlib.Graph().setGraph({nodesep: 70});
@@ -98,7 +98,7 @@ function drawGraph() {
                 })
                 .attr("width", stateNumRectSize)
                 .attr("height", stateNumRectSize)
-                .style("fill", stateNumRectFill);
+                .style("fill", stateNumRectFillColor);
             g.append("g")
                 .attr("class", "label")
                 .attr("transform", function() {
@@ -169,9 +169,9 @@ function clearGraph() {
 
 function highlightNode(id) {
     d3.select('#'+getNodeRectId(id))
-        .style("fill", highlightFill);
+        .style("fill", highlightColor);
     d3.select('#'+getStateNumRectId(id))
-        .style("fill", highlightFill);
+        .style("fill", highlightColor);
 }
 
 function unhighlightNode(id) {
@@ -180,16 +180,16 @@ function unhighlightNode(id) {
         .style("fill", "");
     d3.select('#'+getStateNumRectId(id))
         .style("stroke", "")
-        .style("fill", stateNumRectFill);
+        .style("fill", stateNumRectFillColor);
 }
 
 function highlightEdge(from, to) {
     d3.select('#'+getEdgeId(from, to)+" > path")
-        .style("stroke", highlightFill)
+        .style("stroke", highlightColor)
         .style("stroke-width", 3);
     d3.select('#'+getEdgeId(from, to)+" > defs > marker > path")
-        .style("stroke", highlightFill)
-        .style("fill", highlightFill);
+        .style("stroke", highlightColor)
+        .style("fill", highlightColor);
 }
 function unhighlightEdge(from,to) {
     d3.select('#'+getEdgeId(from, to)+" > path")

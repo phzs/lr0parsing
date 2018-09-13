@@ -9,14 +9,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-import parsing.ParseTable;
-import parsing.State;
-import parsing.StateAutomaton;
-import parsing.StateTransition;
+import parsing.*;
 import visualization.StepController;
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.Set;
 
 public class ParsingView {
     public static final double paddingLeft = 25.0;
@@ -29,12 +27,13 @@ public class ParsingView {
     private double nextX = paddingLeft;
     private double nextY = paddingTop;
 
+    private List<Integer> highlightedProductions;
     private State highlightedState;
     private StateTransition highlightedTransition;
 
     public ParsingView(WebView targetWebView) {
         this.webView = targetWebView;
-
+        highlightedProductions = new LinkedList<>();
         initWebView();
     }
 
@@ -110,7 +109,20 @@ public class ParsingView {
             resetHighlightedTransition();
             executeScript("highlightEdge("+transition.getFromState()+","+transition.getToState()+")");
             highlightedTransition = transition;
+            executeScript("highlightNode("+transition.getToState()+")");
+            highlightedState = new State(null, transition.getToState());
         }
+    }
+
+    private void highlightProduction(int id) {
+        executeScript("highlightRule("+id+")");
+        highlightedProductions.add(id);
+    }
+
+    private void resetHighlightedProductions() {
+        for(int id : highlightedProductions)
+            executeScript("unhighlightRule("+id+")");
+        highlightedProductions.clear();
     }
 
     private void resetHighlightedState() {
@@ -164,7 +176,7 @@ public class ParsingView {
         grammar.addListener(new CFGrammarListener() {
             @Override
             public void onChanged(Change change) {
-                if(change.getType() == ChangeType.startProductionAdded) {
+                if (change.getType() == ChangeType.startProductionAdded) {
                     CFProduction production = change.getNewProduction();
                     Platform.runLater(() -> {
                         String script = "insertFirstRule("
@@ -173,11 +185,55 @@ public class ParsingView {
                                 + "\'" + production.getRight() + "\'"
                                 + ")";
                         executeScript(script);
-                        executeScript("highlightRule(0)");
+                        highlightProduction(0);
                     });
+
+                }
+                if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
+                    if (change.getType() == ChangeType.enterGOTO) {//TODO highlight symbols inside graph state
+                        Platform.runLater(() -> {
+                            executeScript("fadeElement(\"#gcRow\", true)");
+                            executeScript("setGcGOTO(\"" + change.getGotoSymbol() + "\")");
+                        });
+
+                    } else if (change.getType() == ChangeType.enterCLOSURE) {
+                        Platform.runLater(() -> {
+                            webEngine.executeScript("setGcCLOSURE()");
+                            executeScript("fadeElement(\"#gcRow\", true)");
+                            addClosureEntries(change.getClosureStartSet());
+                            executeScript("addGcLine()");
+                            executeScript("highlightAllGcSymbols(highlightColor)");
+                        });
+
+                    } else if (change.getType() == ChangeType.addCLOSURE) {
+                        Platform.runLater(() -> {
+                            List<CFProduction> grammarProductions = grammar.getProductionList();
+                            Set<MetaSymbol> metaSymbols = change.getClosureMetaSymbols();
+                            for(int i = 0; i < grammar.getProductionList().size(); i++) {
+                                if(metaSymbols.contains(grammarProductions.get(i).getLeft()))
+                                    highlightProduction(i+1);
+                            }
+                            addClosureEntries(change.getClosureNewElements());
+                            for(Symbol symbol : metaSymbols)
+                                executeScript("highlightGcSymbols(\'"+symbol+"\', \'#46b83a\')");
+                        });
+
+                    } else if (change.getType() == ChangeType.endCLOSURE) {
+                        Platform.runLater(() -> {
+                            executeScript("fadeElement(\"#gcRow\", false)");
+                            executeScript("clearGc()");
+                            resetHighlightedProductions();
+                        });
+                    }
                 }
             }
         });
+    }
+
+    private void addClosureEntries(Set<LR0Element> elements) {
+        for(LR0Element element : elements) {
+            executeScript("addGcEntry(\"" + element + "\")");
+        }
     }
 
     private String listToJsArray(List<? extends Symbol> list) {
@@ -217,8 +273,7 @@ public class ParsingView {
 
     public void setVisibleParsingStep(ParsingStep step) {
         Platform.runLater(() -> {
-            if(step == ParsingStep.Three || step == ParsingStep.Results)
-                resetHighlighting();
+            resetHighlighting();
 
             String script = "setStep(";
             if (step == ParsingStep.One) script += 1;
@@ -231,7 +286,13 @@ public class ParsingView {
     }
 
     private void resetHighlighting() {
+        resetHighlightedProductions();
         resetHighlightedState();
         resetHighlightedTransition();
+    }
+
+    public void cleanForContinue() {
+        resetHighlighting();
+        executeScript("fadeElement(\"#gcTableRow\", false)");
     }
 }

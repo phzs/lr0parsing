@@ -98,7 +98,7 @@ public class CFGrammarTest {
         expectedResult.add(new LR0Element('A', "aSc", 0));
         expectedResult.add(new LR0Element('A', "a", 0));
         expectedResult.add(new LR0Element('A', "aSb", 0));
-        Set<LR0Element> result = grammar.getGOTO(elements, new TerminalSymbol('b'));
+        Set<LR0Element> result = grammar.getGOTO(0, elements, new TerminalSymbol('b'));
         assertTrue(result.containsAll(expectedResult));
         assertTrue(result.size() == expectedResult.size());
     }
