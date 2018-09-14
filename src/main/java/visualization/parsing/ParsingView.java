@@ -285,5 +285,6 @@ public class ParsingView {
         highlightManager.resetGraphHighlighting();
         highlightManager.resetParseTableHighlighting();
         executeScript("fadeElement(\"#gcRow\", false)");
+        executeScript("clearGc()");
     }
 }
