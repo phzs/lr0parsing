@@ -23,6 +23,7 @@ public interface CFGrammarListener {
 
         // enterGOTO
         private Symbol enterGotoSymbol;
+        private int gotoFromStateId;
 
         // enterCLOSURE
         private Set<LR0Element> closureStartSet;
@@ -91,6 +92,14 @@ public interface CFGrammarListener {
         public void addClosureNewElement(MetaSymbol closureMetaSymbol, LR0Element closeNewElement) {
             closureMetaSymbols.add(closureMetaSymbol);
             closureNewElements.add(closeNewElement);
+        }
+
+        public int getGotoFromStateId() {
+            return gotoFromStateId;
+        }
+
+        public void setGotoFromStateId(int gotoFromStateId) {
+            this.gotoFromStateId = gotoFromStateId;
         }
     }
 }

@@ -12,7 +12,7 @@ import netscape.javascript.JSObject;
 import parsing.*;
 import visualization.StepController;
 
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,13 +27,23 @@ public class ParsingView {
     private double nextX = paddingLeft;
     private double nextY = paddingTop;
 
-    private List<Integer> highlightedProductions;
-    private State highlightedState;
-    private StateTransition highlightedTransition;
+    // highlighting for step 2 (automaton generation)
+    private Set<Integer> highlightedProductions;
+    private Set<Integer> highlightedStates;
+    private Set<StateTransition> highlightedTransitions;
+
+    // highlighting for step 3 (parse table generation)
+    private Set<Integer> highlightedParseTableRows;
+    private Set<Symbol> highlightedParseTableHeaders;
 
     public ParsingView(WebView targetWebView) {
         this.webView = targetWebView;
-        highlightedProductions = new LinkedList<>();
+        highlightedProductions = new HashSet<>();
+        highlightedStates = new HashSet<>();
+        highlightedTransitions = new HashSet<>();
+        highlightedParseTableRows = new HashSet<>();
+        highlightedParseTableHeaders = new HashSet<>();
+
         initWebView();
     }
 
@@ -90,9 +100,8 @@ public class ParsingView {
         executeScript("addNode("+state.getNumber()+", "+content+")");
 
         if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
-            resetHighlightedState();
-            executeScript("highlightNode("+state.getNumber()+")");
-            highlightedState = state;
+            resetHighlightedStates();
+            highlightState(state.getNumber());
         }
     }
 
@@ -106,11 +115,9 @@ public class ParsingView {
         executeScript("addEdge("+from.getNumber()+","+to.getNumber()+", "+ transitionLabel +")");
 
         if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
-            resetHighlightedTransition();
-            executeScript("highlightEdge("+transition.getFromState()+","+transition.getToState()+")");
-            highlightedTransition = transition;
-            executeScript("highlightNode("+transition.getToState()+")");
-            highlightedState = new State(null, transition.getToState());
+            resetHighlightedTransitions();
+            highlightTransition(transition);
+            highlightState(transition.getToState());
         }
     }
 
@@ -119,24 +126,61 @@ public class ParsingView {
         highlightedProductions.add(id);
     }
 
+    private void highlightState(int id) {
+        highlightState(id, "");
+    }
+    private void highlightState(int id, String color) {
+        executeScript("highlightNode("+id+", \""+color+"\")");
+        highlightedStates.add(id);
+    }
+
+    private void highlightTransition(StateTransition transition) {
+        highlightTransition(transition, "");
+    }
+
+    private void highlightTransition(StateTransition transition, String color) {
+        executeScript("highlightEdge(" + transition.getFromState() + "," + transition.getToState() + ", \""+color+"\")");
+        highlightedTransitions.add(transition);
+    }
+
+    private void highlightParseTableRow(int stateId) {
+        executeScript("highlightParseTableRow(" + stateId + ")");
+        highlightedParseTableRows.add(stateId);
+    }
+
+    private void highlightParseTableHeader(Symbol symbol) {
+        executeScript("highlightParseTableHeader(\'" + symbol + "\', \"blue\")");
+        highlightedParseTableHeaders.add(symbol);
+    }
+
     private void resetHighlightedProductions() {
         for(int id : highlightedProductions)
             executeScript("unhighlightRule("+id+")");
         highlightedProductions.clear();
     }
 
-    private void resetHighlightedState() {
-        if(highlightedState != null) {
-            executeScript("unhighlightNode(" + highlightedState.getNumber() + ")");
-            highlightedState = null;
-        }
+    private void resetHighlightedStates() {
+        for(int id : highlightedStates)
+            executeScript("unhighlightNode(" + id + ")");
+        highlightedStates.clear();
     }
 
-    private void resetHighlightedTransition() {
-        if(highlightedTransition != null) {
-            executeScript("unhighlightEdge(" + highlightedTransition.getFromState() + "," + highlightedTransition.getToState() + ")");
-            highlightedTransition = null;
-        }
+    private void resetHighlightedTransitions() {
+        for(StateTransition transition : highlightedTransitions)
+            executeScript("unhighlightEdge(" + transition.getFromState() + "," + transition.getToState() + ")");
+        highlightedTransitions.clear();
+    }
+
+    private void resetHighlightedParseTableRows() {
+        for(int stateId : highlightedParseTableRows)
+            executeScript("unhighlightParseTableRow("+stateId+")");
+        highlightedParseTableRows.clear();
+    }
+
+    private void resetHighlightedParseTableHeaders() {
+        for(Symbol symbol : highlightedParseTableHeaders)
+            executeScript("unhighlightParseTableHeader(\'"+symbol+"\')");
+        highlightedParseTableHeaders.clear();
     }
 
     /**
@@ -194,6 +238,9 @@ public class ParsingView {
                         Platform.runLater(() -> {
                             executeScript("fadeElement(\"#gcRow\", true)");
                             executeScript("setGcGOTO(\"" + change.getGotoSymbol() + "\")");
+                            resetHighlightedTransitions();
+                            resetHighlightedStates();
+                            highlightState(change.getGotoFromStateId());
                         });
 
                     } else if (change.getType() == ChangeType.enterCLOSURE) {
@@ -203,6 +250,7 @@ public class ParsingView {
                             addClosureEntries(change.getClosureStartSet());
                             executeScript("addGcLine()");
                             executeScript("highlightAllGcSymbols(highlightColor)");
+                            resetHighlightedTransitions();
                         });
 
                     } else if (change.getType() == ChangeType.addCLOSURE) {
@@ -259,13 +307,23 @@ public class ParsingView {
         entryObservableMap.addListener(new MapChangeListener<Symbol, ParseTable.TableEntry>() {
             @Override
             public void onChanged(Change<? extends Symbol, ? extends ParseTable.TableEntry> change) {
-                String script = "addParseTableEntry("
-                        + stateId + ","                         // stateId
-                        + "\'" + change.getKey() + "\',"        // symbol
-                        + "\'" + change.getValueAdded() + "\'"  // entry
-                        + ")";
                 Platform.runLater(() -> {
+                    String script = "addParseTableEntry("
+                            + stateId + ","                         // stateId
+                            + "\'" + change.getKey() + "\',"        // symbol
+                            + "\'" + change.getValueAdded() + "\'"  // entry
+                            + ")";
                     executeScript(script);
+
+                    if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
+                        setGraphHighlightedColor("#8fd563");
+                        resetParseTableHighlighting();
+                        highlightState(stateId);
+                        highlightTransition(new StateTransition(stateId, change.getValueAdded().getNumber(), null), "#3f96d7");
+
+                        highlightParseTableRow(stateId);
+                        highlightParseTableHeader(change.getKey());
+                    }
                 });
             }
         });
@@ -285,14 +343,26 @@ public class ParsingView {
         });
     }
 
-    private void resetHighlighting() {
+    private void setGraphHighlightedColor(String color) {
+        for(StateTransition transition : highlightedTransitions)
+            highlightTransition(transition, color);
+        for(Integer stateId : highlightedStates)
+            highlightState(stateId, color);
+    }
+
+    private void resetGraphHighlighting() {
         resetHighlightedProductions();
-        resetHighlightedState();
-        resetHighlightedTransition();
+        resetHighlightedStates();
+        resetHighlightedTransitions();
+    }
+    private void resetParseTableHighlighting() {
+        resetHighlightedParseTableRows();
+        resetHighlightedParseTableHeaders();
     }
 
     public void cleanForContinue() {
-        resetHighlighting();
+        resetGraphHighlighting();
+        resetParseTableHighlighting();
         executeScript("fadeElement(\"#gcRow\", false)");
     }
 }

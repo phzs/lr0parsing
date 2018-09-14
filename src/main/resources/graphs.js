@@ -167,11 +167,12 @@ function clearGraph() {
     initGraph();
 }
 
-function highlightNode(id) {
+function highlightNode(id, color) {
+    var color = color || highlightColor
     d3.select('#'+getNodeRectId(id))
-        .style("fill", highlightColor);
+        .style("fill", color);
     d3.select('#'+getStateNumRectId(id))
-        .style("fill", highlightColor);
+        .style("fill", color);
 }
 
 function unhighlightNode(id) {
@@ -183,13 +184,14 @@ function unhighlightNode(id) {
         .style("fill", stateNumRectFillColor);
 }
 
-function highlightEdge(from, to) {
+function highlightEdge(from, to, color) {
+    var color = color || highlightColor;
     d3.select('#'+getEdgeId(from, to)+" > path")
-        .style("stroke", highlightColor)
+        .style("stroke", color)
         .style("stroke-width", 3);
     d3.select('#'+getEdgeId(from, to)+" > defs > marker > path")
-        .style("stroke", highlightColor)
-        .style("fill", highlightColor);
+        .style("stroke", color)
+        .style("fill", color);
 }
 function unhighlightEdge(from,to) {
     d3.select('#'+getEdgeId(from, to)+" > path")

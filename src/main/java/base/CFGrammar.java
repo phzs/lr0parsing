@@ -107,6 +107,7 @@ public class CFGrammar {
             CFGrammarListener.Change enterGotoChange = new CFGrammarListener.Change();
             enterGotoChange.setType(CFGrammarListener.ChangeType.enterGOTO);
             enterGotoChange.setGotoSymbol(readSymbol);
+            enterGotoChange.setGotoFromStateId(stateId);
             propagateChange(enterGotoChange);
         }
         StepController.getInstance().registerStep("parse:goto", "Calculate GOTO for the Symbol " + readSymbol + " and the given set of elements");
