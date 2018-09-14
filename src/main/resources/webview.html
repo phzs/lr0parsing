@@ -69,22 +69,56 @@
             <svg id="graph" width="700" height="700" style="border: 1px solid;"><g/></svg>
         </div>
         <div id="parseTableCol" class="col" style="display: none;">
-            <h4 class="boxTitle">Parse Table</h4>
-            <table id="parseTable" class="table table-sm table-striped">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th id="actionTableHeader">Action Table</th>
-                    <th id="jumpTableHeader">Jump Table</th>
-                </tr>
-                <tr id="tableHead">
-                    <!-- to be inserted -->
-                </tr>
-                </thead>
-                <tbody>
-                <!-- to be insertied -->
-                </tbody>
-            </table>
+            <div id="step3descrInDepth" class="row inDepthDescription">
+                <div class="col">
+                    <ol>
+                        <li id="generateParseTableStepShift">
+                            Shift and jump table entries
+                            <ul>
+                                <li id="generateParseTableStepShift1">
+                                    Insert a <b>shift entry (s)</b> for each state transition labeled by a <u>terminal symbol</u>.
+                                </li>
+                                <li id="generateParseTableStepShift2">
+                                    Insert the number of the following state for each state transition labeled by a <u>meta symbol</u>.
+                                </li>
+                                <li id="generateParseTableStepShift3">
+                                    When the accepting element <span id="accepting_element" class="elementText">?[Z -> S.]?</span> is found,
+                                    insert acc into the '$'-column for this state.
+                                </li>
+                            </ul>
+                        </li>
+                        <li id="generateParseTableStepReduce" class="text-secondary">
+                            Reduce Entries
+                            <ul>
+                                <li>
+                                    For each state containing an element ending with a marker, insert <b>reduce entries (r)</b> for every terminal symbols
+                                    (insert r for reduce plus the corresponding <u>production number</u>).
+                                </li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h4 class="boxTitle">Parse Table</h4>
+                    <table id="parseTable" class="table table-sm table-striped">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th id="actionTableHeader">Action Table</th>
+                            <th id="jumpTableHeader">Jump Table</th>
+                        </tr>
+                        <tr id="tableHead">
+                            <!-- to be inserted -->
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- to be insertied -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -109,11 +143,16 @@
             $(elementId).fadeOut();
     }
 
-    function setDescriptionVisible(stepNum) {
-        var idForStep = function(n) { return '#step'+n+"descr"; }
+    var subStep = 0;
 
+    function setDescriptionVisible(stepNum) {
+        var idForStep = function(n) { return '#step'+n+"descr"; };
+        subStep = 0;
         if(stepNum != null)
             fadeElement(idForStep(stepNum), true);
+        if(stepNum == 3)
+            fadeElement("step3descrInDepth", true);
+        else fadeElement("step3descrInDepth", false);
         for(var i = 1; i <= 3; i++) {
             if(i != stepNum)
                 fadeElement(idForStep(i), false);
@@ -173,6 +212,32 @@
         }
         console.log("document ready");
     });
+
+    function setAcceptingElement(accElem) {
+        $("#accepting_element").html(accElem);
+    }
+
+    function setStep3Substep(substep, bullet) {
+        if(substep == 1) {
+            $("#generateParseTableStepShift").removeClass("text-secondary");
+            $("#generateParseTableStepReduce").removeClass("text-danger");
+            $("#generateParseTableStepReduce").addClass("text-secondary");
+            if(bullet != null)
+                for(var i = 1; i <= 3; i++) {
+                    if(i == bullet)
+                        $("#generateParseTableStepShift"+i).addClass("text-primary");
+                    else
+                        $("#generateParseTableStepShift"+i).removeClass("text-primary");
+            }
+        } else if(substep == 2) {
+            for(var i = 1; i <= 3; i++) {
+                $("#generateParseTableStepShift"+i).removeClass("text-primary");
+            }
+            $("#generateParseTableStepShift").addClass("text-secondary");
+            $("#generateParseTableStepReduce").removeClass("text-secondary");
+            $("#generateParseTableStepReduce").addClass("text-danger");
+        }
+    }
 </script>
 <script src="graphs.js"></script>
 <script src="grammartable.js"></script>

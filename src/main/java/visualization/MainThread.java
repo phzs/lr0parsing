@@ -64,7 +64,7 @@ public class MainThread extends Task<Void> {
                 public void onChanged(Change change) {
                     if (change.getType() == ChangeType.startProductionAdded) {
                         StepController.getInstance().registerStep("parse:prepared", "Step 1 (adding a new start production) finished", true);
-                        mainController.parsingPreparationFinished();
+                        mainController.parsingPreparationFinished(change.getNewProduction());
                     }
                 }
             });

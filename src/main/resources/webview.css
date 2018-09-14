@@ -21,6 +21,14 @@ body {
     margin-bottom: 20px;
 }
 
+.inDepthDescription {
+    font-size: 10pt;
+}
+
+#step3descrInDepth {
+    margin-top: 56px;
+}
+
 .boxTitle {
     margin-top: 20px;
     text-align: center;
@@ -64,3 +72,6 @@ body {
     background-color: rgba(255, 2, 2, 0.6);
 }
 
+elementText {
+    font-style: italic;
+}

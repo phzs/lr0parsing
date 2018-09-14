@@ -22,6 +22,7 @@ import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
+import parsing.LR0Element;
 import parsing.ParseTable;
 import parsing.StateAutomaton;
 import visualization.grammar.GrammarTable;
@@ -195,8 +196,9 @@ public class MainController implements Initializable {
         analysisTableView.getItems().add(valueAdded);
     }
 
-    public void parsingPreparationFinished() {
+    public void parsingPreparationFinished(CFProduction newStartingProduction) {
         parsingView.setVisibleParsingStep(ParsingStep.Two);
+        parsingView.setAcceptingElement(new LR0Element(newStartingProduction, newStartingProduction.getRight().getLength()));
     }
 
     public void stateAutomatonFinished() {

@@ -82,6 +82,12 @@ public class ParsingView {
         System.out.println("Webview is now ready");
     }
 
+    public void setAcceptingElement(LR0Element acceptingElement) {
+        Platform.runLater(() -> {
+            executeScript("setAcceptingElement(\""+acceptingElement+"\")");
+        });
+    }
+
     private void drawState(State state) {
         String content = "\""
                 + state.toString().replace("\n", "\\n")
@@ -236,6 +242,15 @@ public class ParsingView {
             @Override
             public void onChanged(Change<? extends Symbol, ? extends ParseTable.TableEntry> change) {
                 Platform.runLater(() -> {
+                    ParserAction action = change.getValueAdded().getAction();
+                    if(action == ParserAction.Shift)
+                        executeScript("setStep3Substep(1,1)");
+                    else if(action == ParserAction.Null)
+                        executeScript("setStep3Substep(1,2)");
+                    else if(action == ParserAction.Accept)
+                        executeScript("setStep3Substep(1,3)");
+                    else if(action == ParserAction.Reduce)
+                        executeScript("setStep3Substep(2)");
                     String script = "addParseTableEntry("
                             + stateId + ","                         // stateId
                             + "\'" + change.getKey() + "\',"        // symbol
@@ -249,7 +264,7 @@ public class ParsingView {
                         highlightManager.resetParseTableHighlighting();
                         highlightManager.highlightState(stateId);
                         highlightManager.highlightTransition(new StateTransition(stateId, change.getValueAdded().getNumber(), change.getKey()), "#3f96d7");
-                        ParserAction action = change.getValueAdded().getAction();
+
                         if(action == ParserAction.Shift || action == ParserAction.Null) {
                             highlightManager.highlightStateNum(+change.getValueAdded().getNumber(), "rgba(255, 2, 2, 0.6)");
                             highlightManager.highlightParseTableCell(
