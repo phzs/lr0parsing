@@ -88,3 +88,10 @@ function unhighlightParseTableHeader(symbol) {
             return (className.match("^highlighted.*").join(' '));
         });
 }
+
+function highlightParseTableCell(stateId, symbol) {
+    $('#'+getIdForCell(stateId, symbol)).addClass("highlighted-red");
+}
+function unhighlightParseTableCell(stateId, symbol) {
+    $('#'+getIdForCell(stateId, symbol)).removeClass("highlighted-red");
+}

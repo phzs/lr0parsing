@@ -171,17 +171,14 @@ function highlightNode(id, color) {
     var color = color || highlightColor
     d3.select('#'+getNodeRectId(id))
         .style("fill", color);
-    d3.select('#'+getStateNumRectId(id))
-        .style("fill", color);
+    highlightStateNumRect(id, color);
 }
 
 function unhighlightNode(id) {
     d3.select('#'+getNodeRectId(id))
         .style("stroke", "")
         .style("fill", "");
-    d3.select('#'+getStateNumRectId(id))
-        .style("stroke", "")
-        .style("fill", stateNumRectFillColor);
+    unhighlightStateNumRect(id);
 }
 
 function highlightEdge(from, to, color) {
@@ -200,4 +197,17 @@ function unhighlightEdge(from,to) {
     d3.select('#'+getEdgeId(from, to)+" > defs > marker > path")
         .style("stroke", "")
         .style("fill", "");
+}
+
+function highlightStateNumRect(id, color) {
+    var color = color || highlightColor;
+
+    d3.select('#'+getStateNumRectId(id))
+        .style("fill", color);
+}
+
+function unhighlightStateNumRect(id) {
+    d3.select('#'+getStateNumRectId(id))
+        .style("stroke", "")
+        .style("fill", stateNumRectFillColor);
 }
