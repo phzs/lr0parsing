@@ -281,6 +281,7 @@ public class ParsingView implements View {
     public void cleanForContinue() {
         highlightManager.resetGraphHighlighting();
         highlightManager.resetParseTableHighlighting();
+        highlightManager.resetHighlightedStateNumRects();
         executeScript("fadeElement(\"#gcRow\", false)");
         executeScript("clearGc()");
     }
