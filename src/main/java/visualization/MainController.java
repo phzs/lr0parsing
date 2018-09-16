@@ -205,12 +205,17 @@ public class MainController implements Initializable {
             tabPane.getSelectionModel().select(2);
             if(parseTable.hasConflicts()) {
                 analysisStartButton.setDisable(true);
+                setAnalysisInputDisabled(true);
                 analysisView.displayConflicts(parseTable.getCellsWithConflicts());
             } else
                 analysisStartButton.requestFocus();
 
             setControlButtonsDisable(true);
         });
+    }
+
+    private void setAnalysisInputDisabled(boolean disable) {
+        analysisInputTextArea.setDisable(disable);
     }
 
     public void setControlButtonsDisable(boolean disable) {
@@ -299,6 +304,7 @@ public class MainController implements Initializable {
 
         setControlButtonsDisable(false);
         analysisStartButton.setDisable(false);
+        setAnalysisInputDisabled(false);
         continueButton.requestFocus();
     }
 

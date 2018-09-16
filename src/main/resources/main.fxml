@@ -89,7 +89,7 @@
                                                     <HBox VBox.vgrow="NEVER">
                                                         <children>
                                                             <TextField fx:id="analysisInputTextArea" text="baab" HBox.hgrow="ALWAYS" />
-                                                            <Button fx:id="extendAnalysisInputButton" prefWidth="50.0" text="&gt;" HBox.hgrow="NEVER" />
+                                                            <!--<Button fx:id="extendAnalysisInputButton" prefWidth="50.0" text="&gt;" HBox.hgrow="NEVER" />-->
                                                         </children>
                                                         <VBox.margin>
                                                             <Insets left="20.0" right="20.0" />
