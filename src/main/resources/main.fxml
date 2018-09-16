@@ -77,31 +77,35 @@
                         <content>
                             <VBox styleClass="analysisContainer">
                                 <children>
-                                    <HBox alignment="CENTER" maxWidth="800.0">
-                                        <VBox HBox.hgrow="ALWAYS">
-                                            <Label maxWidth="1.7976931348623157E308" text="Syntax Analysis Input:" textAlignment="CENTER" VBox.vgrow="ALWAYS">
-                                             <VBox.margin>
-                                                <Insets left="20.0" right="20.0" top="8.0" />
-                                             </VBox.margin>
-                                            </Label>
-                                            <HBox VBox.vgrow="NEVER">
-                                                <children>
-                                                    <TextField fx:id="analysisInputTextArea" text="baab" HBox.hgrow="ALWAYS" />
-                                                    <Button fx:id="extendAnalysisInputButton" prefWidth="50.0" text="&gt;" HBox.hgrow="NEVER" />
-                                                </children>
-                                                 <VBox.margin>
-                                                    <Insets left="20.0" right="20.0" />
-                                                 </VBox.margin>
+                                    <BorderPane>
+                                        <center>
+                                            <HBox alignment="CENTER" maxWidth="800.0">
+                                                <VBox HBox.hgrow="ALWAYS">
+                                                    <Label maxWidth="1.7976931348623157E308" text="Syntax Analysis Input:" textAlignment="CENTER" VBox.vgrow="ALWAYS">
+                                                        <VBox.margin>
+                                                            <Insets left="20.0" right="20.0" top="8.0" />
+                                                        </VBox.margin>
+                                                    </Label>
+                                                    <HBox VBox.vgrow="NEVER">
+                                                        <children>
+                                                            <TextField fx:id="analysisInputTextArea" text="baab" HBox.hgrow="ALWAYS" />
+                                                            <Button fx:id="extendAnalysisInputButton" prefWidth="50.0" text="&gt;" HBox.hgrow="NEVER" />
+                                                        </children>
+                                                        <VBox.margin>
+                                                            <Insets left="20.0" right="20.0" />
+                                                        </VBox.margin>
+                                                    </HBox>
+                                                </VBox>
+                                                <Button fx:id="analysisStartButton" onAction="#handleAnalysisStartButtonAction" prefHeight="67.0" prefWidth="120.0" text="Start" HBox.hgrow="NEVER" />
+                                                <VBox.margin>
+                                                    <Insets bottom="25.0" top="25.0" />
+                                                </VBox.margin>
                                             </HBox>
-                                    <HBox.margin>
-                                       <Insets />
-                                    </HBox.margin>
-                                        </VBox>
-                                        <Button fx:id="analysisStartButton" onAction="#handleAnalysisStartButtonAction" prefHeight="67.0" prefWidth="240.0" text="Start" />
-                                 <VBox.margin>
-                                    <Insets bottom="25.0" top="25.0" />
-                                 </VBox.margin>
-                                    </HBox>
+                                        </center>
+                                 <padding>
+                                    <Insets bottom="10.0" top="10.0" />
+                                 </padding>
+                                    </BorderPane>
                                     <ScrollPane fx:id="analysisParent" VBox.vgrow="ALWAYS">
                                      <content>
                                         <WebView fx:id="analysisWebView" managed="false" minHeight="400.0" minWidth="400.0" />
