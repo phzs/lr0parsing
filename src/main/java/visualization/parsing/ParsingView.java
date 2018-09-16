@@ -132,6 +132,7 @@ public class ParsingView implements View {
         executeScript("clearGraph()");
         executeScript("clearRules()");
         executeScript("clearParseTable()");
+        executeScript("setStep3Substep(null)");
         setVisibleParsingStep(ParsingStep.One);
     }
 

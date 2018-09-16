@@ -160,27 +160,28 @@
     }
 
     function setStep(n) {
-        if(n == 4) {
+        if(n === 4) {
             // display only the results
             setDescriptionVisible(null);
         } else
             setDescriptionVisible(n);
 
-        if(n == 1) {
+        if(n === 1) {
             fadeElement('#grammarCol', true);
             //fadeElement('#stateAutomatonCol', false);
             $('#stateAutomatonCol').css("visibility", "hidden");
             fadeElement('#parseTableCol', false);
         }
-        if(n == 2) {
+        if(n === 2) {
             fadeElement('#grammarCol', true);
             //fadeElement('#stateAutomatonCol', true);
             $('#stateAutomatonCol').css("visibility", "visible");
             fadeElement('#parseTableCol', false);
-        } else if(n == 3 || n == 4) {
+        } else if(n === 3 || n === 4) {
             $('#stateAutomatonCol').css("visibility", "visible");
             fadeElement('#grammarCol', false);
             fadeElement('#parseTableCol', true);
+            fadeElement('#step3descrInDepth', n === 3);
         }
     }
 
@@ -235,7 +236,14 @@
             }
             $("#generateParseTableStepShift").addClass("text-secondary");
             $("#generateParseTableStepReduce").removeClass("text-secondary");
-            $("#generateParseTableStepReduce").addClass("text-danger");
+            $("#generateParseTableStepReduce").addClass("text-primary");
+        } else {
+            $("#generateParseTableStepShift").removeClass("text-secondary");
+            $("#generateParseTableStepReduce").addClass("text-secondary");
+            $("#generateParseTableStepReduce").removeClass("text-danger");
+            for(var k = 1; k <= 3; k++) {
+                $("#generateParseTableStepShift"+k).remove("text-primary");
+            }
         }
     }
 </script>
