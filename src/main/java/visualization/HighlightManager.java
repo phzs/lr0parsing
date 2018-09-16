@@ -1,4 +1,4 @@
-package visualization.parsing;
+package visualization;
 
 import base.Symbol;
 import parsing.StateTransition;
@@ -8,20 +8,20 @@ import visualization.parseTable.ParseTableCellIdentifier;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ParsingHighlightManager {
+public class HighlightManager {
     private View view;
-    // highlighting for step 2 (automaton generation)
+    // highlighting for parsing step 2 (automaton generation)
     private Set<Integer> highlightedProductions;
     private Set<Integer> highlightedStates;
     private Set<StateTransition> highlightedTransitions;
 
-    // highlighting for step 3 (parse table generation)
+    // highlighting for parsing step 3 (parse table generation)
     private Set<Integer> highlightedParseTableRows;
     private Set<Symbol> highlightedParseTableHeaders;
     private Set<ParseTableCellIdentifier> highlightedParseTableCells;
     private Set<Integer> highlightedStateNumRects;
 
-    public ParsingHighlightManager(View view) {
+    public HighlightManager(View view) {
         this.view = view;
         highlightedProductions = new HashSet<>();
         highlightedStates = new HashSet<>();

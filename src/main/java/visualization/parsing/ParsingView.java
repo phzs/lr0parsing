@@ -11,6 +11,7 @@ import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import parsing.*;
 import visualization.JsUtil;
+import visualization.HighlightManager;
 import visualization.StepController;
 import visualization.View;
 import visualization.parseTable.ParseTableCellIdentifier;
@@ -29,11 +30,11 @@ public class ParsingView implements View {
     private double nextX = paddingLeft;
     private double nextY = paddingTop;
 
-    private ParsingHighlightManager highlightManager;
+    private HighlightManager highlightManager;
 
     public ParsingView(WebView targetWebView) {
         this.webView = targetWebView;
-        this.highlightManager = new ParsingHighlightManager(this);
+        this.highlightManager = new HighlightManager(this);
 
         initWebView();
     }

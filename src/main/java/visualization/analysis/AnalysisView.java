@@ -17,7 +17,7 @@ import visualization.JsUtil;
 import visualization.StepController;
 import visualization.View;
 import visualization.parseTable.ParseTableCellIdentifier;
-import visualization.parsing.ParsingHighlightManager;
+import visualization.HighlightManager;
 
 import java.util.List;
 import java.util.Set;
@@ -26,11 +26,11 @@ public class AnalysisView implements View {
     private WebView webView;
     private WebEngine webEngine;
     private ObservableStack<Character> stack;
-    private ParsingHighlightManager highlightManager;
+    private HighlightManager highlightManager;
 
     public AnalysisView(WebView targetWebView) {
         this.webView = targetWebView;
-        this.highlightManager = new ParsingHighlightManager(this);
+        this.highlightManager = new HighlightManager(this);
 
         initWebView();
     }
