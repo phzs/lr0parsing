@@ -10,14 +10,15 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import parsing.*;
+import visualization.JsUtil;
 import visualization.StepController;
+import visualization.View;
 import visualization.parseTable.ParseTableCellIdentifier;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ParsingView {
+public class ParsingView implements View {
     public static final double paddingLeft = 25.0;
     public static final double paddingTop = 25.0;
 
@@ -133,19 +134,13 @@ public class ParsingView {
         setVisibleParsingStep(ParsingStep.One);
     }
 
-    protected Object executeScript(String script) {
+    public Object executeScript(String script) {
         System.out.println("[ParsingView,"+Thread.currentThread()+"] execute: " + script);
         return webEngine.executeScript(script);
     }
 
     public void initGrammar(CFGrammar grammar) {
-        executeScript("clearRules()");
-        List<CFProduction> productionList = grammar.getProductionList();
-        for(int i = 0; i < productionList.size(); i++) {
-            CFProduction production = productionList.get(i);
-            String script = "addRule(" + i + ", \"" + production.getLeft() + "\", \"" + production.getRight()+"\")";
-            executeScript(script);
-        }
+        JsUtil.initGrammar(this, grammar);
 
         /*
             add listener to get notified about the new production
@@ -218,23 +213,9 @@ public class ParsingView {
         }
     }
 
-    private String listToJsArray(List<? extends Symbol> list) {
-        String result = "[";
-        for(Symbol symbol : list) {
-            result += ("\"" + symbol.toString() + "\", ");
-        }
-        result += "]";
-        return result;
-    }
 
     public void initParseTable(List<TerminalSymbol> terminalSymbols, List<MetaSymbol> metaSymbols) {
-        terminalSymbols.add(new TerminalSymbol('$'));
-        String script = "initParseTable("
-                + listToJsArray(terminalSymbols)
-                + ", "
-                + listToJsArray(metaSymbols)
-                +")";
-        executeScript(script);
+        JsUtil.initParseTable(this, terminalSymbols, metaSymbols);
     }
 
     public void addParseTableEntryListener(int stateId, ObservableMap<Symbol, ParseTable.TableEntry> entryObservableMap) {

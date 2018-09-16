@@ -2,21 +2,19 @@ package parsing;
 
 import base.Symbol;
 import javafx.beans.property.SimpleMapProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
+import visualization.parseTable.ParseTableCellIdentifier;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 import static parsing.ParserAction.Null;
 
 public class ParseTable {
 
     private ObservableMap<Integer, ObservableMap<Symbol, TableEntry>> table; // stateNumber -> symbol -> (Entry)
+    private Set<ParseTableCellIdentifier> cellsWithConflicts;
 
     public static class TableEntry {
         private ParserAction action;
@@ -73,6 +71,7 @@ public class ParseTable {
 
     public ParseTable() {
         table = new SimpleMapProperty<>(FXCollections.observableHashMap());
+        cellsWithConflicts = new HashSet<>();
     }
 
     public void add(Integer stateNum, Symbol symbol, ParserAction parserAction, Integer targetState) {
@@ -88,12 +87,15 @@ public class ParseTable {
             if(entry.action == ParserAction.Shift && parserAction == ParserAction.Shift) {
                 entry.action = ParserAction.ShiftShiftConflict;
                 entry.secondaryNumber = entry.number;
+                cellsWithConflicts.add(new ParseTableCellIdentifier(stateNum, symbol));
             } else if(entry.action == ParserAction.Shift && parserAction == ParserAction.Reduce) {
                 entry.action = ParserAction.ShiftReduceConflict;
                 entry.secondaryNumber = entry.number;
+                cellsWithConflicts.add(new ParseTableCellIdentifier(stateNum, symbol));
             } else if(entry.action == ParserAction.Reduce && parserAction == ParserAction.Reduce)  {
                 entry.action = ParserAction.ReduceRecudeConflict;
                 entry.secondaryNumber = entry.number;
+                cellsWithConflicts.add(new ParseTableCellIdentifier(stateNum, symbol));
             } else if(entry.action != Null)
                 throw new IllegalArgumentException(
                         "A parse table entry with action " + entry.action + " may not be overwritten by action " + parserAction + ".");
@@ -152,5 +154,13 @@ public class ParseTable {
             result.append("\n");
         }
         return result.toString();
+    }
+
+    public boolean hasConflicts() {
+        return cellsWithConflicts.size() != 0;
+    }
+
+    public Set<ParseTableCellIdentifier> getCellsWithConflicts() {
+        return this.cellsWithConflicts;
     }
 }

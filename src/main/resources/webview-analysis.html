@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Syntax analysis visualisation</title>
+    <link rel="stylesheet" href="webview.css">
+    <link rel="stylesheet" href="webview-analysis.css">
+    <link rel="stylesheet" href="bower_components/bootstrap4/dist/css/bootstrap.css">
+</head>
+<body>
+<div class="container">
+    <div id="analyisErrorBox" class="row highlighted-red">
+        <div class="divCenter">
+            Syntax analysis not possible - parse table has conflicts! (see below)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h4 class="boxTitle">Stack</h4>
+            <div id="stackCanvas" class="row">
+                <!-- to be inserted -->
+            </div>
+        </div>
+        <div class="col">
+            <h4 class="boxTitle">Input</h4>
+            <div id="inputCanvas" class="text-center">
+                <span id="inputDeleted" class="text-blurry"></span><span id="inputNext"></span><span id="inputAfter">--</span>
+            </div>
+        </div>
+    </div>
+    <div id="analysisTableRow" class="row">
+        <div id="parseTableCol" class="col-8">
+            <h4 class="boxTitle">Parse Table</h4>
+            <table id="parseTable" class="table table-sm table-striped">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th id="actionTableHeader">Action Table</th>
+                    <th id="jumpTableHeader">Jump Table</th>
+                </tr>
+                <tr id="tableHead">
+                    <!-- to be inserted -->
+                </tr>
+                </thead>
+                <tbody>
+                <!-- to be insertied -->
+                </tbody>
+            </table>
+        </div>
+        <div class="col" id="grammarCol">
+            <div class="row">
+                <div class="col">
+                    <h4 class="boxTitle">Grammar</h4>
+                    <table id="grammarTable" class="table table-sm table-striped">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- to be inserted -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="analysisResultRow" class="row" style="display: none">
+        <div class="col text-center">
+            <h4 class="boxTitle">Analysis Result</h4>
+            <div id="analysisResultBox" class="divCenter resultBox">
+                <!-- to be inserted -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/d3/d3.js"></script>
+<script src="bower_components/lodash/lodash.js"></script>
+<script src="bower_components/graphlib/dist/graphlib.core.js"></script>
+<script src="bower_components/dagre/dist/dagre.core.js"></script>
+<!--<script src="bower_components/dagre-d3/dist/dagre-d3.core.js"></script>-->
+<!--<script src="bower_components/bootstrap4/dist/js/bootstrap.js"></script>-->
+
+<script src="parsetable.js"></script>
+<script src="grammartable.js"></script>
+<script src="analysis.js"></script>
+</body>
+</html>

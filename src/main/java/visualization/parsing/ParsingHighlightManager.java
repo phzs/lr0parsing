@@ -2,13 +2,14 @@ package visualization.parsing;
 
 import base.Symbol;
 import parsing.StateTransition;
+import visualization.View;
 import visualization.parseTable.ParseTableCellIdentifier;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class ParsingHighlightManager {
-    private ParsingView parsingView;
+    private View view;
     // highlighting for step 2 (automaton generation)
     private Set<Integer> highlightedProductions;
     private Set<Integer> highlightedStates;
@@ -20,8 +21,8 @@ public class ParsingHighlightManager {
     private Set<ParseTableCellIdentifier> highlightedParseTableCells;
     private Set<Integer> highlightedStateNumRects;
 
-    public ParsingHighlightManager(ParsingView parsingView) {
-        this.parsingView = parsingView;
+    public ParsingHighlightManager(View view) {
+        this.view = view;
         highlightedProductions = new HashSet<>();
         highlightedStates = new HashSet<>();
 
@@ -33,7 +34,7 @@ public class ParsingHighlightManager {
     }
 
     private void executeScript(String script) {
-        parsingView.executeScript(script);
+        view.executeScript(script);
     }
 
     public void highlightProduction(int id) {

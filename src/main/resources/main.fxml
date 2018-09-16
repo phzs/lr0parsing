@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.web.WebView?>
-<?import visualization.parseTable.ParseTableView?>
 
 <StackPane minHeight="800.0" minWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="visualization.MainController">
    <children>
@@ -60,48 +74,42 @@
                        </content>
                   </Tab>
                     <Tab fx:id="analysisTab" text="Syntax Analysis">
-                      <content>
-                          <VBox>
-                              <children>
-                                  <SplitPane fx:id="analysisAnchorPane" dividerPositions="0.5">
-                                      <items>
-                                          <ParseTableView fx:id="analysisTableView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" opacity="0.9" prefHeight="287.0" prefWidth="300.0" />
-                                          <VBox>
-                                              <children>
-                                                  <TextArea fx:id="analysisInputTextArea" prefHeight="261.0" prefWidth="1699.0" text="baab" />
-                                                  <Button fx:id="analysisStartButton" onAction="#handleAnalysisStartButtonAction" text="Analyze Input" />
-                                              </children>
-                                          </VBox>
-                                      </items>
-                                  </SplitPane>
-                                  <VBox fx:id="analysisVBox">
-                                      <children>
-                                          <Pane fx:id="stackPane" minHeight="50">
-                                              <VBox.margin>
-                                                  <Insets />
-                                              </VBox.margin>
-                                          </Pane>
-                                          <Label fx:id="analysisInputDisplay" text="Input">
-                                              <VBox.margin>
-                                                  <Insets left="50.0" />
-                                              </VBox.margin>
-                                              <font>
-                                                  <Font size="24.0" />
-                                              </font>
-                                          </Label>
-                                          <Label fx:id="analysisResultDisplay" layoutX="60.0" layoutY="160.0" text="Result">
-                                              <font>
-                                                  <Font size="24.0" />
-                                              </font>
-                                              <VBox.margin>
-                                                  <Insets left="50.0" top="50.0" />
-                                              </VBox.margin>
-                                          </Label>
-                                      </children>
-                                  </VBox>
-                              </children>
-                          </VBox>
-                      </content>
+                        <content>
+                            <VBox styleClass="analysisContainer">
+                                <children>
+                                    <HBox alignment="CENTER" maxWidth="800.0">
+                                        <VBox HBox.hgrow="ALWAYS">
+                                            <Label maxWidth="1.7976931348623157E308" text="Syntax Analysis Input:" textAlignment="CENTER" VBox.vgrow="ALWAYS">
+                                             <VBox.margin>
+                                                <Insets left="20.0" right="20.0" top="8.0" />
+                                             </VBox.margin>
+                                            </Label>
+                                            <HBox VBox.vgrow="NEVER">
+                                                <children>
+                                                    <TextField fx:id="analysisInputTextArea" text="baab" HBox.hgrow="ALWAYS" />
+                                                    <Button fx:id="extendAnalysisInputButton" prefWidth="50.0" text="&gt;" HBox.hgrow="NEVER" />
+                                                </children>
+                                                 <VBox.margin>
+                                                    <Insets left="20.0" right="20.0" />
+                                                 </VBox.margin>
+                                            </HBox>
+                                    <HBox.margin>
+                                       <Insets />
+                                    </HBox.margin>
+                                        </VBox>
+                                        <Button fx:id="analysisStartButton" onAction="#handleAnalysisStartButtonAction" prefHeight="67.0" prefWidth="240.0" text="Start" />
+                                 <VBox.margin>
+                                    <Insets bottom="25.0" top="25.0" />
+                                 </VBox.margin>
+                                    </HBox>
+                                    <ScrollPane fx:id="analysisParent" VBox.vgrow="ALWAYS">
+                                     <content>
+                                        <WebView fx:id="analysisWebView" managed="false" minHeight="400.0" minWidth="400.0" />
+                                     </content>
+                                    </ScrollPane>
+                                </children>
+                            </VBox>
+                        </content>
                     </Tab>
                 </tabs>
               </TabPane>

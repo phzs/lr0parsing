@@ -28,7 +28,6 @@ public class MainThread extends Task<Void> {
     private ParseTable parseTable;
     private SimpleStringProperty analyzerInput;
     private ObservableStack<Character> analyzerStack;
-    private Analyzer.AnalyzerResult analyzerResult;
 
     // for output
     private MainController mainController;
@@ -42,7 +41,6 @@ public class MainThread extends Task<Void> {
         parseTable = new ParseTable();
         analyzerInput = new SimpleStringProperty();
         analyzerStack = new ObservableStack<>();
-        analyzerResult = new Analyzer.AnalyzerResult();
         System.out.println("MainThread created");
     }
 
@@ -81,17 +79,16 @@ public class MainThread extends Task<Void> {
                 }
             });
             parser.generateTable(grammar, stateAutomaton);
-            mainController.parseTableFinished();
+            mainController.parseTableFinished(parseTable);
 
             // phase 3
             analyzerStack = analyzer.getStack();
-            mainController.getStackDrawer().setStack(analyzerStack);
-            analyzer.setResult(analyzerResult);
-            mainController.bindAnalyzerInput(analyzerInput);
+            mainController.getAnalysisView().setStack(analyzerStack);
             while (!isCancelled()) {
                 StepController.getInstance().registerStep("mainThread:readyToAnalyze", "Waiting for user input to analyze", true);
                 analyzer.analyze(grammar, parseTable, analyzerInput.getValue());
-                mainController.displayAnalyzerResult(analyzerResult);
+                mainController.displayAnalyzerResult(analyzer.getResult());
+                mainController.setControlButtonsDisable(true);
             }
 
             System.out.println("MainThread finished");

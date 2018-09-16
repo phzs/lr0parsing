@@ -10,15 +10,10 @@ import visualization.StepController;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 public class Analyzer {
     private ObservableStack<Character> stack;
-
-    public void setResult(AnalyzerResult result) {
-        this.result = result;
-    }
 
     private AnalyzerResult result;
 
@@ -109,6 +104,10 @@ public class Analyzer {
         return null;
     }
 
+    public AnalyzerResult getResult() {
+        return result;
+    }
+
     public static class AnalyzerResult {
         private Boolean success;
         private List<CFProduction> usedProductions;
@@ -121,7 +120,7 @@ public class Analyzer {
             this.success = success;
         }
 
-        public boolean getSuccess() {
+        public Boolean getSuccess() {
             return success;
         }
 

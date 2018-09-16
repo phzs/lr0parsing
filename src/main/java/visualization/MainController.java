@@ -4,7 +4,6 @@ import analysis.Analyzer;
 import base.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
@@ -15,7 +14,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -25,12 +23,11 @@ import org.apache.commons.io.FileUtils;
 import parsing.LR0Element;
 import parsing.ParseTable;
 import parsing.StateAutomaton;
+import visualization.analysis.AnalysisView;
 import visualization.grammar.GrammarTable;
 import visualization.grammar.GrammarTableData;
-import visualization.parseTable.ParseTableView;
 import visualization.parsing.ParsingStep;
 import visualization.parsing.ParsingView;
-import visualization.stack.StackDrawer;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,14 +45,11 @@ public class MainController implements Initializable {
     private GrammarTable grammarTable = new GrammarTable(true);
     private File grammarFile;
     private ParsingView parsingView;
-    private StackDrawer stackDrawer;
+    private AnalysisView analysisView;
     private AppState state;
     private StateAutomaton stateAutomaton;
 
-    private WebEngine webEngine;
-
-    @FXML
-    private Pane stackPane;
+    private WebEngine parsingWebEngine;
 
     @FXML
     private TabPane tabPane;
@@ -88,6 +82,9 @@ public class MainController implements Initializable {
     private WebView parsingWebView;
 
     @FXML
+    private WebView analysisWebView;
+
+    @FXML
     private MenuItem menuOpen;
 
     @FXML
@@ -97,16 +94,7 @@ public class MainController implements Initializable {
     private MenuItem menuSaveAs;
 
     @FXML
-    private ParseTableView analysisTableView;
-
-    @FXML
-    private Label analysisInputDisplay;
-
-    @FXML
-    private Label analysisResultDisplay;
-
-    @FXML
-    private TextArea analysisInputTextArea;
+    private TextField analysisInputTextArea;
 
     @FXML
     private Button analysisStartButton;
@@ -116,6 +104,9 @@ public class MainController implements Initializable {
 
     @FXML
     private ScrollPane parsingParent;
+
+    @FXML
+    private ScrollPane analysisParent;
 
     @FXML
     private Label stepControllerLabel;
@@ -193,7 +184,7 @@ public class MainController implements Initializable {
     public void addParseTableRow(int stateId, ObservableMap<Symbol, ParseTable.TableEntry> valueAdded) {
         System.out.println("MainController.addParseTableRow("+stateId+","+valueAdded+")");
         parsingView.addParseTableEntryListener(stateId, valueAdded);
-        analysisTableView.getItems().add(valueAdded);
+        analysisView.addParseTableEntryListener(stateId, valueAdded);
     }
 
     public void parsingPreparationFinished(CFProduction newStartingProduction) {
@@ -206,12 +197,18 @@ public class MainController implements Initializable {
         parsingView.setVisibleParsingStep(ParsingStep.Three);
     }
 
-    public void parseTableFinished() {
+    public void parseTableFinished(ParseTable parseTable) {
         state = AppState.PARSETABLE_GENERATED;
         parsingView.setVisibleParsingStep(ParsingStep.Results);
         StepController.getInstance().registerStep("parse:finished", "Parsing finished", true);
         Platform.runLater(() -> {
             tabPane.getSelectionModel().select(2);
+            if(parseTable.hasConflicts()) {
+                analysisStartButton.setDisable(true);
+                analysisView.displayConflicts(parseTable.getCellsWithConflicts());
+            } else
+                analysisStartButton.requestFocus();
+
             setControlButtonsDisable(true);
         });
     }
@@ -226,9 +223,10 @@ public class MainController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         StepController.getInstance().setMainController(this);
 
-        // initializing the webview needs some time, therefore do it in advance
+        // initializing the webviews needs some time, therefore do it in advance
         parsingView = new ParsingView(parsingWebView);
-        webEngine = parsingWebView.getEngine();
+        analysisView = new AnalysisView(analysisWebView);
+        parsingWebEngine = parsingWebView.getEngine();
 
         initTable();
 
@@ -262,6 +260,12 @@ public class MainController implements Initializable {
         parsingParent.heightProperty().addListener((observable, oldValue, newValue) -> {
             parsingWebView.setPrefHeight((Double) newValue);
         });
+        analysisParent.widthProperty().addListener((observable, oldValue, newValue) -> {
+            analysisWebView.setPrefWidth((Double) newValue);
+        });
+        analysisParent.heightProperty().addListener((observable, oldValue, newValue) -> {
+            analysisWebView.setPrefHeight((Double) newValue);
+        });
     }
 
     private void setGrammarWritable(boolean writable) {
@@ -282,18 +286,19 @@ public class MainController implements Initializable {
         List<TerminalSymbol> terminalSymbols = grammar.getTerminalSymbols();
         List<MetaSymbol> metaSymbols = grammar.getMetaSymbols();
         parsingView.initGrammar(grammar);
+        analysisView.initGrammar(grammar);
 
+        terminalSymbols.add(new TerminalSymbol('$'));
         parsingView.initParseTable(terminalSymbols, metaSymbols);
-        analysisTableView.init(terminalSymbols, metaSymbols);
+        analysisView.initParseTable(terminalSymbols, metaSymbols);
 
         parsingParent.setVvalue(0); // scroll to top
         tabPane.getSelectionModel().select(1);
 
-
-        stackDrawer = new StackDrawer(stackPane);
         StepController.getInstance().start();
 
         setControlButtonsDisable(false);
+        analysisStartButton.setDisable(false);
         continueButton.requestFocus();
     }
 
@@ -311,7 +316,7 @@ public class MainController implements Initializable {
             if (result.get() == ButtonType.OK){
                 StepController.getInstance().killMainThread();
                 parsingView.reset();
-                analysisTableView.reset();
+                analysisView.reset();
                 StepController.getInstance().clearSteps();
                 state = AppState.NOT_STARTED;
                 startProgram();
@@ -365,7 +370,6 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleAnalysisStartButtonAction(ActionEvent actionEvent) {
-        stackDrawer.getStack().clear();
         String input = analysisInputTextArea.getText().replace("\n", "");
         mainThread.pushNextAnalyzerInput(input);
         analysisInputTextArea.setDisable(true);
@@ -454,19 +458,15 @@ public class MainController implements Initializable {
 
     public void displayAnalyzerResult(Analyzer.AnalyzerResult analyzerResult) {
         Platform.runLater(() -> {
-            analysisResultDisplay.setText(analyzerResult.toString());
             analysisInputTextArea.setDisable(false);
             analysisStartButton.setDisable(false);
         });
     }
 
-    public StackDrawer getStackDrawer() {
-        return stackDrawer;
+    public AnalysisView getAnalysisView() {
+        return analysisView;
     }
 
-    public void bindAnalyzerInput(SimpleStringProperty analyzerInput) {
-        Platform.runLater(() -> analysisInputDisplay.textProperty().bind(analyzerInput));
-    }
 
     public void displayStep(String id, String description, int repetition) {
         Platform.runLater(() -> {
