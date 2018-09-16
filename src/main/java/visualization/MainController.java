@@ -190,6 +190,7 @@ public class MainController implements Initializable {
     public void parsingPreparationFinished(CFProduction newStartingProduction) {
         parsingView.setVisibleParsingStep(ParsingStep.Two);
         parsingView.setAcceptingElement(new LR0Element(newStartingProduction, newStartingProduction.getRight().getLength()));
+        analysisView.initGrammar(grammar);
     }
 
     public void stateAutomatonFinished() {
@@ -291,7 +292,6 @@ public class MainController implements Initializable {
         List<TerminalSymbol> terminalSymbols = grammar.getTerminalSymbols();
         List<MetaSymbol> metaSymbols = grammar.getMetaSymbols();
         parsingView.initGrammar(grammar);
-        analysisView.initGrammar(grammar);
 
         terminalSymbols.add(new TerminalSymbol('$'));
         parsingView.initParseTable(terminalSymbols, metaSymbols);

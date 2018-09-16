@@ -11,10 +11,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import parsing.ParseTable;
-import parsing.ParserAction;
-import parsing.StateTransition;
 import visualization.JsUtil;
-import visualization.StepController;
 import visualization.View;
 import visualization.parseTable.ParseTableCellIdentifier;
 import visualization.HighlightManager;
@@ -76,7 +73,9 @@ public class AnalysisView implements View {
     }
 
     public void initGrammar(CFGrammar grammar) {
-        JsUtil.initGrammar(this, grammar);
+        Platform.runLater(() -> {
+            JsUtil.initGrammar(this, grammar);
+        });
     }
 
     public void initParseTable(List<TerminalSymbol> terminalSymbols, List<MetaSymbol> metaSymbols) {

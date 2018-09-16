@@ -147,7 +147,8 @@ public class CFGrammar {
     }
 
     public void addNewStartProduction(CFProduction newStartCfProduction) {
-        addProduction(newStartCfProduction);
+        this.productionList.add(0, newStartCfProduction);
+        addProductionByLeft(newStartCfProduction.getLeft(), newStartCfProduction);
 
         CFGrammarListener.Change change = new CFGrammarListener.Change();
         change.setType(CFGrammarListener.ChangeType.startProductionAdded);
