@@ -133,9 +133,8 @@ function addNode(id, content) {
 
     // label node
     g.setNode(id, {id: id, label: content});
-
-    drawGraph();
 }
+
 function removeNode(id) {
 
     var index = states.indexOf(id);
@@ -148,8 +147,6 @@ function removeNode(id) {
 }
 function addEdge(from, to, label) {
     g.setEdge(from, to, {id: getEdgeId(from, to), label: label});
-
-    drawGraph();
 }
 function renameNode(from, to) {
 

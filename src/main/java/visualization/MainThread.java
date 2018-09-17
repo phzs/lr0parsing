@@ -67,6 +67,9 @@ public class MainThread extends Task<Void> {
                 }
             });
             parser.parse(grammar);
+            if(StepController.getInstance().getLastCommand() == StepController.Command.Continue)
+                mainController.getParsingView().drawGraph();
+            StepController.getInstance().registerStep("parse:finished", "Step 2 (building the state automaton) finished", true);
             grammar.removeAllListeners();
             mainController.stateAutomatonFinished();
 

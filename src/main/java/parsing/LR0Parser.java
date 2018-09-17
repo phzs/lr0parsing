@@ -56,7 +56,6 @@ public class LR0Parser implements Parser {
             statesProcessed.add(stateId);
             statesToProcess.remove(stateId);
         }
-        StepController.getInstance().registerStep("parse:finished", "Step 2 (building the state automaton) finished", true);
     }
 
     @Override

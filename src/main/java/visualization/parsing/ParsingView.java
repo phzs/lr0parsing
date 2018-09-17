@@ -96,6 +96,9 @@ public class ParsingView implements View {
                 + "\"";
 
         executeScript("addNode("+state.getNumber()+", "+content+")");
+        if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
+            executeScript("drawGraph()");
+        }
 
         if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
             highlightManager.resetHighlightedStates();
@@ -111,12 +114,21 @@ public class ParsingView implements View {
                 + transition.getSymbol().toString()
                 + "\"";
         executeScript("addEdge("+from.getNumber()+","+to.getNumber()+", "+ transitionLabel +")");
+        if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
+            executeScript("drawGraph()");
+        }
 
         if(StepController.getInstance().getLastCommand() != StepController.Command.Continue) {
             highlightManager.resetHighlightedTransitions();
             highlightManager.highlightTransition(transition);
             highlightManager.highlightState(transition.getToState());
         }
+    }
+
+    public void drawGraph() {
+        Platform.runLater(() -> {
+            executeScript("drawGraph()");
+        });
     }
 
     /**
