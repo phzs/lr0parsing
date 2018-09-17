@@ -164,8 +164,6 @@ public class MainController implements Initializable {
 
     public CFGrammar getGrammar() {
         grammar = new CFGrammar();
-        if(startSymbolChoiceBox.getValue() != null)
-            grammar.setStartSymbol(new MetaSymbol((char) startSymbolChoiceBox.getValue()));
         for(Object dataRow : grammarTable.getItems()) {
             GrammarTableData grammarTableData = (GrammarTableData) dataRow;
             CFProduction newProduction = new CFProduction(
@@ -173,6 +171,13 @@ public class MainController implements Initializable {
                     grammarTableData.getRight()
                     );
             grammar.addProduction(newProduction);
+        }
+
+        // set start symbol
+        if(startSymbolChoiceBox.getValue() != null)
+            grammar.setStartSymbol(new MetaSymbol((char) startSymbolChoiceBox.getValue()));
+        else if(grammar.getProductionList().size() > 0) {
+            grammar.setStartSymbol(grammar.getProductionList().get(0).getLeft());
         }
         return grammar;
     }
