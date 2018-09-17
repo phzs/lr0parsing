@@ -8,13 +8,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableMap;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -299,6 +296,8 @@ public class MainController implements Initializable {
         parsingView.initParseTable(terminalSymbols, metaSymbols);
         analysisView.initParseTable(terminalSymbols, metaSymbols);
 
+        analysisView.setAnalyzer(mainThread.getAnalyzer());
+
         parsingParent.setVvalue(0); // scroll to top
         tabPane.getSelectionModel().select(1);
 
@@ -325,6 +324,7 @@ public class MainController implements Initializable {
                 StepController.getInstance().killMainThread();
                 parsingView.reset();
                 analysisView.reset();
+                analysisInputTextArea.setText("");
                 StepController.getInstance().clearSteps();
                 state = AppState.NOT_STARTED;
                 startProgram();
@@ -380,7 +380,7 @@ public class MainController implements Initializable {
     private void handleAnalysisStartButtonAction(ActionEvent actionEvent) {
         String input = analysisInputTextArea.getText().replace("\n", "");
         mainThread.pushNextAnalyzerInput(input);
-        analysisInputTextArea.setDisable(true);
+        setAnalysisInputDisabled(true);
         analysisStartButton.setDisable(true);
         setControlButtonsDisable(false);
         StepController.getInstance().nextStep();
@@ -474,6 +474,7 @@ public class MainController implements Initializable {
         Platform.runLater(() -> {
             analysisInputTextArea.setDisable(false);
             analysisStartButton.setDisable(false);
+            analysisView.displayResult(analyzerResult);
         });
     }
 

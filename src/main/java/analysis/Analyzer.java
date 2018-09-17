@@ -17,9 +17,12 @@ public class Analyzer {
 
     private AnalyzerResult result;
 
+    private List<AnalyzerListener> listeners;
+
     public Analyzer() {
         this.stack = new ObservableStack<>();
         this.result = new AnalyzerResult();
+        this.listeners = new LinkedList<>();
     }
 
     public ObservableStack<Character> getStack() {
@@ -53,6 +56,7 @@ public class Analyzer {
             ParseTable.TableEntry tableEntry = parseTable.getEntry(stateNum, symbol);
             if(tableEntry == null) {
                 System.out.println("Error: No entry found for " + stateNum + " and " + symbol + ".");
+                result.setSuccess(false);
                 return null;
             }
             ParserAction action = tableEntry.getAction();
@@ -64,6 +68,7 @@ public class Analyzer {
             switch (action) {
                 case Shift:
                     sequence.removeFirst();
+                    changeRemoveFirst();
                     stack.push(symbol.getRepresentation());
                     System.out.println("\t adding to stack: " + symbol.getRepresentation());
                     stack.push(Character.forDigit(newState, 10));
@@ -154,4 +159,20 @@ public class Analyzer {
             return result;
         }
     }
+
+    private void propagateChange(AnalyzerListener.Change change) {
+        for(AnalyzerListener listener : listeners)
+            listener.onChanged(change);
+    }
+
+    private void changeRemoveFirst() {
+        AnalyzerListener.Change change = new AnalyzerListener.Change();
+        change.setType(AnalyzerListener.ChangeType.Consume);
+        propagateChange(change);
+    }
+
+    public void addListener(AnalyzerListener listener) {
+        listeners.add(listener);
+    }
+
 }

@@ -1,6 +1,7 @@
 package visualization.analysis;
 
 import analysis.Analyzer;
+import analysis.AnalyzerListener;
 import analysis.ObservableStack;
 import analysis.StackChangeListener;
 import base.*;
@@ -43,10 +44,6 @@ public class AnalysisView implements View {
     public Object executeScript(String script) {
         System.out.println("[ParsingView,"+Thread.currentThread()+"] execute: " + script);
         return webEngine.executeScript(script);
-    }
-
-    public void setAnalysisResult(String result) {
-        //TODO
     }
 
     public ObservableStack<Character> getStack() {
@@ -98,6 +95,16 @@ public class AnalysisView implements View {
         });
     }
 
+    public void setAnalyzer(Analyzer analyzer) {
+        analyzer.addListener(change -> {
+            if(change.getType() == AnalyzerListener.ChangeType.Consume) {
+                Platform.runLater(() -> {
+                    executeScript("moveInputSymbol()");
+                });
+            }
+        });
+    }
+
     public void displayResult(Analyzer.AnalyzerResult result) {
         String resultStr = "Unknown";
         int resultMode = 1;
@@ -123,5 +130,12 @@ public class AnalysisView implements View {
         executeScript("clearRules()");
         executeScript("clearParseTable()");
         executeScript("resetAnalysis() ");
+        executeScript("setInput(\"\")");
+    }
+
+    public void setAnalysisInput(String input) {
+        Platform.runLater(() -> {
+            executeScript("setInput(\""+input+"\")");
+        });
     }
 }
