@@ -178,6 +178,7 @@ public class MainController implements Initializable {
 
     private void clearProductions() {
         grammarTable.getItems().clear();
+        prodNum = 0;
     }
 
     public void addParseTableRow(int stateId, ObservableMap<Symbol, ParseTable.TableEntry> valueAdded) {
@@ -352,10 +353,9 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleClearRulesButtonAction(ActionEvent actionEvent) {
-        grammarTable.getItems().clear();
+        clearProductions();
         startSymbolChoiceBox.getItems().clear();
         grammar = new CFGrammar();
-        prodNum = 0;
         startStopButton.setDisable(true);
     }
 
