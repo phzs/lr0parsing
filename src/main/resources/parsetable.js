@@ -57,12 +57,14 @@ function clearParseTable() {
     parseTableRows = {};
 }
 
-function highlightParseTableRow(stateId) {
-    $('#row'+stateId+" > td:first").addClass('highlighted');
+function highlightParseTableRow(stateId, styleClass) {
+    var styleClass = styleClass || "highlighted";
+    $('#row'+stateId+" > td:first").addClass(styleClass);
+
 }
 
 function unhighlightParseTableRow(stateId) {
-    $('#row'+stateId+" > td:first").removeClass('highlighted');
+    $('#row'+stateId+" > td:first").removeClassPrefix("highlighted");
 }
 
 function highlightParseTableHeader(symbol, _color) {
@@ -78,20 +80,15 @@ function highlightParseTableHeader(symbol, _color) {
 
 function unhighlightParseTableHeader(symbol) {
     if(jumpTableHeaders.indexOf(symbol) !== -1)
-        $('#'+getIdForParseTableHeader("jumpTableHeader",symbol)).removeClass(function (index, className) {
-            console.log("removeClass", index, className, className.match("^highlighted").join(' '));
-            return (className.match("^highlighted.*").join(' '));
-        });
+        $('#'+getIdForParseTableHeader("jumpTableHeader",symbol)).removeClassPrefix("highlighted");
     else if(actionTableHeaders.indexOf(symbol) !== -1)
-        $('#'+getIdForParseTableHeader("actionTableHeader",symbol)).removeClass(function (index, className) {
-            console.log("removeClass", index, className, className.match("^highlighted"));
-            return (className.match("^highlighted.*").join(' '));
-        });
+        $('#'+getIdForParseTableHeader("actionTableHeader",symbol)).removeClassPrefix("highlighted");
 }
 
-function highlightParseTableCell(stateId, symbol) {
-    $('#'+getIdForCell(stateId, symbol)).addClass("highlighted-red");
+function highlightParseTableCell(stateId, symbol, styleClass) {
+    var styleClass = styleClass || "highlighted-red";
+    $('#'+getIdForCell(stateId, symbol)).addClass(styleClass);
 }
 function unhighlightParseTableCell(stateId, symbol) {
-    $('#'+getIdForCell(stateId, symbol)).removeClass("highlighted-red");
+    $('#'+getIdForCell(stateId, symbol)).removeClassPrefix("highlighted");
 }
