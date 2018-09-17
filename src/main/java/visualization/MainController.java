@@ -64,9 +64,6 @@ public class MainController implements Initializable {
     private ChoiceBox startSymbolChoiceBox;
 
     @FXML
-    private VBox alertBox;
-
-    @FXML
     private Button clearRulesButton;
 
     @FXML
@@ -400,7 +397,7 @@ public class MainController implements Initializable {
             grammar = CFGrammar.fromFile(file);
             loadGrammar(grammar);
         } catch (IOException e) {
-            alert("Error! File could not be opened: " + e.getLocalizedMessage());
+            errorDialog("Error","Unable to load a grammar from the specified file.", e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -422,15 +419,21 @@ public class MainController implements Initializable {
         Platform.exit();
     }
 
-    private void alert(String message) {
-        AlertMessage newAlertMessage = new AlertMessage(message);
-        newAlertMessage.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                alertBox.getChildren().remove(newAlertMessage);
-            }
-        });
-        alertBox.getChildren().add(newAlertMessage);
+    private void errorDialog(String title, String header, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(message);
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            StepController.getInstance().killMainThread();
+            parsingView.reset();
+            analysisView.reset();
+            StepController.getInstance().clearSteps();
+            state = AppState.NOT_STARTED;
+            startProgram();
+        }
     }
 
     private FileChooser getFileChooser(String title) {
@@ -454,10 +457,10 @@ public class MainController implements Initializable {
             try {
                 FileUtils.writeStringToFile(grammarFile, getGrammar().toJSON());
             } catch (JsonProcessingException e) {
-                alert("Could not save grammar: " + e.getLocalizedMessage());
+                errorDialog("Error","Unable to save the grammar to the specified location.", e.getLocalizedMessage());
                 e.printStackTrace();
             } catch (IOException e) {
-                alert("Could not save grammar: " + e.getLocalizedMessage());
+                errorDialog("Error","Unable to save the grammar to the specified location.", e.getLocalizedMessage());
                 e.printStackTrace();
             }
         }
