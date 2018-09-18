@@ -31,6 +31,8 @@ function getIdForCell(stateId, symbol) {
 }
 
 function addParseTableEntry(stateId, symbol, entry) {
+    if(stateId > 0 && parseTableRows[stateId-1] == null)
+        addParseTableEntry(stateId-1, actionTableHeaders[0], "");
     if(!(parseTableRows[stateId] != null)) {
         var cells = "<td>"+stateId+"</td>";
         actionTableHeaders.forEach(function(tsym) {
