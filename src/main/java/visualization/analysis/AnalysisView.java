@@ -26,6 +26,7 @@ public class AnalysisView implements View {
     private WebEngine webEngine;
     private ObservableStack<Character> stack;
     private HighlightManager highlightManager;
+    private CFGrammar grammar;
 
     public AnalysisView(WebView targetWebView) {
         this.webView = targetWebView;
@@ -71,6 +72,7 @@ public class AnalysisView implements View {
     }
 
     public void initGrammar(CFGrammar grammar) {
+        this.grammar = grammar;
         Platform.runLater(() -> {
             JsUtil.initGrammar(this, grammar);
         });
@@ -148,7 +150,11 @@ public class AnalysisView implements View {
                             "</ul>");
                     for(int i = 0; i < change.getReducePopAmount(); i++)
                         highlightManager.highlightStackItems(i, "highlighted-red");
-                    highlightManager.highlightProduction(change.getMarkedProduction());
+                    int productionNumber = change.getMarkedProduction();
+                    highlightManager.highlightProduction(productionNumber);
+
+                    String fromSequence = grammar.getProductionList().get(productionNumber).getLeft() + change.getSequence().toString();
+                    executeScript("addDerivation("+productionNumber+", \""+fromSequence+"\")");
                 });
             } else if(change.getType() == AnalyzerListener.ChangeType.Reduce2) {
                 Platform.runLater(() -> {
@@ -197,6 +203,7 @@ public class AnalysisView implements View {
                             new ParseTableCellIdentifier(change.getMarkedStateNum(), change.getMarkedSymbol()),
                             "highlighted-green");
                     setAnalysisStepDescription("Sequence accepted");
+                    executeScript("finishDerivation()");
                 });
             } else if(change.getType() == AnalyzerListener.ChangeType.Error) {
                 Platform.runLater(() -> {

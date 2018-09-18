@@ -54,12 +54,14 @@ function setInput(input) {
     $('#inputDeleted').html("");
     $('#inputNext').html(input.charAt(0));
     $('#inputAfter').html(input.substring(1));
+    initDerivation(input.replace("$", ""));
 }
 
 function resetInput() {
     $('#inputDeleted').html("");
     $('#inputNext').html("");
     $('#inputAfter').html("");
+    resetDerivation();
 }
 
 function moveInputSymbol() {
@@ -102,4 +104,31 @@ function unhighlightStackItems() {
     stackItems.forEach(function(d, i) {
        $('#'+getIdForStackItem(i)).removeClassPrefix("highlighted");
     });
+}
+
+var unknown = "? &rarr; ";
+
+function addDerivation(prodNum, fromSequence) {
+    var div = $('#analysisDerivationSpan');
+    var previous = div.html();
+    if(previous.startsWith('?'))
+        previous = previous.substring(4);
+    div.html(unknown + fromSequence + "&rarr;<sub>" + prodNum + "</sub> " + previous);
+}
+
+function finishDerivation() {
+    var span = $('#analysisDerivationSpan');
+    var derivation = span.html();
+    if(derivation.startsWith('?')) {
+        derivation = derivation.substring(4);
+        span.html(derivation);
+    }
+}
+
+function initDerivation(end) {
+    $('#analysisDerivationSpan').html(unknown + end);
+}
+
+function resetDerivation() {
+    $('#analysisDerivationSpan').empty();
 }

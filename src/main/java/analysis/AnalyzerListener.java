@@ -1,6 +1,7 @@
 package analysis;
 
 import base.CFGrammarListener;
+import base.Sequence;
 import base.Symbol;
 import parsing.ParseTable;
 
@@ -25,6 +26,7 @@ public interface AnalyzerListener {
         private int markedProduction;
         private ParseTable.TableEntry lookupResult;
         private int reducePopAmount;
+        private Sequence sequence;
 
         public AnalyzerListener.ChangeType getType() {
             return type;
@@ -72,6 +74,14 @@ public interface AnalyzerListener {
 
         public void setReducePopAmount(int reducePopAmount) {
             this.reducePopAmount = reducePopAmount;
+        }
+
+        public Sequence getSequence() {
+            return sequence;
+        }
+
+        public void setSequence(Sequence sequence) {
+            this.sequence = sequence;
         }
     }
 }

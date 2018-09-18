@@ -53,6 +53,6 @@
     line-height: 50px; /* same as height! */
 }
 
-#analysisResultRow, #analyisErrorBox {
+#analysisResultRow, #analyisErrorBox, #analysisDerivationRow {
     margin-top: 25px;
 }

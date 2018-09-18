@@ -82,7 +82,7 @@ public class Analyzer {
                         result.addProduction(production);
                         int amount = 2 * production.getRight().size();
 
-                        changeForReduce(prodNum, amount);
+                        changeForReduce(prodNum, amount, sequence);
                         StepController.getInstance().registerStep("analyze:ActionReduce1", "Ready to delete the top "+amount+" elements from stack.");
 
                         for (int j = 0; j < amount; j++) stack.pop();
@@ -204,11 +204,12 @@ public class Analyzer {
         propagateChange(change);
     }
 
-    private void changeForReduce(int prodNum, int amount) {
+    private void changeForReduce(int prodNum, int amount, Sequence sequence) {
         AnalyzerListener.Change change = new AnalyzerListener.Change();
         change.setMarkedProduction(prodNum);
         change.setReducePopAmount(amount);
         change.setType(AnalyzerListener.ChangeType.Reduce);
+        change.setSequence(sequence);
         propagateChange(change);
     }
 

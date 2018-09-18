@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="webview-analysis.css">
     <link rel="stylesheet" href="bower_components/bootstrap4/dist/css/bootstrap.css">
 </head>
-<body>
+<body oncontextmenu="return false;">
 <div class="container">
     <div id="analyisErrorBox" class="row highlighted-red" style="display: none">
         <div class="divCenter">
@@ -34,6 +34,14 @@
             <div id="analysisResultBox" class="divCenter resultBox">
                 <!-- to be inserted -->
             </div>
+        </div>
+    </div>
+    <div id="analysisDerivationRow" class="row">
+        <div class="col text-center">
+            Derivation:<br>
+            <span id="analysisDerivationSpan">
+                <!-- to be inserted -->
+            </span>
         </div>
     </div>
     <div id="analysisTableRow" class="row">
