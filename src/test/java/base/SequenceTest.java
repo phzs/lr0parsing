@@ -57,4 +57,16 @@ public class SequenceTest {
         assertFalse(a.equals(d) || a.hashCode() == d.hashCode());
         assertFalse(a.equals(e) || a.hashCode() == d.hashCode());
     }
+
+    @Test
+    public void validateTest() {
+        Sequence a = new Sequence("AaabBc");
+        assertTrue(a.validate());
+        Sequence b = new Sequence("0aBc");
+        assertFalse(b.validate());
+        Sequence c = new Sequence("");
+        assertTrue(c.validate());
+        Sequence d = new Sequence("aaBbc$kld");
+        assertFalse(c.validate());
+    }
 }

@@ -132,4 +132,24 @@ public class CFGrammarTest {
         assertTrue(getExampleGrammar().getFreeMetaSymbol("Z") == 'Z');
         assertTrue(getExampleGrammar2().getFreeMetaSymbol("Z") != 'Z');
     }
+
+    @Test
+    public void validateTest() {
+        CFGrammar a = new CFGrammar();
+        a.addProduction(new CFProduction('A', "Abc"));
+        assertTrue(a.validate());
+        CFGrammar b = new CFGrammar();
+        b.addProduction(new CFProduction('a', "Abc"));
+        assertFalse(b.validate());
+        CFGrammar c = new CFGrammar();
+        assertFalse(c.validate());
+        CFGrammar d = new CFGrammar();
+        d.addProduction(new CFProduction('S', "Abc"));
+        d.addProduction(new CFProduction('}', "Abc"));
+        assertFalse(d.validate());
+        CFGrammar e = new CFGrammar();
+        e.addProduction(new CFProduction('S', "Abc"));
+        e.addProduction(new CFProduction('0', "d"));
+        assertFalse(e.validate());
+    }
 }

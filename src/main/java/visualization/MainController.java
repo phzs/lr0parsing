@@ -151,16 +151,19 @@ public class MainController implements Initializable {
         for(CFProduction production : grammar.getProductionList()) {
             addProduction(production);
         }
+        grammarTable.updateTextFields();
         startSymbolChoiceBox.setValue(grammar.getStartSymbol().getRepresentation());
         prodNum = this.grammar.getProductionList().size();
         if(prodNum > 0)
             startStopButton.setDisable(false);
     }
 
-    public CFGrammar getGrammar() {
+    public CFGrammar getGrammar() throws IllegalArgumentException {
         grammar = new CFGrammar();
         for(Object dataRow : grammarTable.getItems()) {
             GrammarTableData grammarTableData = (GrammarTableData) dataRow;
+            if(grammarTableData.getLeft().length() == 0)
+                throw new IllegalArgumentException();
             CFProduction newProduction = new CFProduction(
                     grammarTableData.getLeft().charAt(0),
                     grammarTableData.getRight()
@@ -280,10 +283,10 @@ public class MainController implements Initializable {
         menuOpen.setDisable(!writable);
     }
 
-    private void startProgram() {
+    private void startProgram(CFGrammar grammar) {
+        this.grammar = grammar;
         state = AppState.STARTED;
         mainThread = new MainThread(this);
-        grammar = getGrammar();
         mainThread.setGrammar(grammar);
         StepController.getInstance().setMainThread(mainThread);
 
@@ -313,14 +316,22 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleStartButtonAction(ActionEvent actionEvent) {
-        if(!grammarTable.isValid()) {
+        boolean validGrammar = true;
+        try {
+            CFGrammar grammar = getGrammar();
+        } catch(IllegalArgumentException e) {
+            validGrammar = false;
+            System.err.println("Not accepting grammar because of left with length 0");
+        }
+        if(!grammar.validate() || !validGrammar) {
             errorDialog("Invalid input", "Please only insert valid grammar productions",
                     "- The left side must contain exactly one meta symbol (uppercase letter).\n" +
                             "- The right side may contain any number of meta symbols (uppercase letters) or terminal symbols (lowercase letters).\n" +
                             "- Numbers, whitespaces or special characters are not allowed.");
+            grammarTable.updateTextFields();
         } else {
             if (state == AppState.NOT_STARTED) {
-                startProgram();
+                startProgram(grammar);
             } else {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Restart Parsing");
@@ -335,7 +346,7 @@ public class MainController implements Initializable {
                     analysisInputTextField.setText("");
                     StepController.getInstance().clearSteps();
                     state = AppState.NOT_STARTED;
-                    startProgram();
+                    startProgram(grammar);
                 }
             }
         }

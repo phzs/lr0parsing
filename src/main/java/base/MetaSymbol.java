@@ -16,6 +16,10 @@ public class MetaSymbol extends Symbol {
         this.representation = representation;
     }
 
+    public boolean validate() {
+        return (""+representation).matches("^[A-Z]$");
+    }
+
     @Override
     public char getRepresentation() {
         return Character.toUpperCase(this.representation);

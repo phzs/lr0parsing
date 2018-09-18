@@ -282,4 +282,10 @@ public class CFGrammar {
     public void removeAllListeners() {
         changeListeners.clear();
     }
+
+    public boolean validate() {
+        for(CFProduction production : productionList)
+            if(!production.validate()) return false;
+        return true;
+    }
 }

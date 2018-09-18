@@ -64,4 +64,13 @@ public class GrammarTable extends TableView<GrammarTableData> {
         }
         return true;
     }
+
+    public void updateTextFields() {
+        for(GrammarTableTextField textField : textFields) {
+            // trigger onChange to update color/validity
+            String tmp = textField.getText();
+            textField.setText("-");
+            textField.setText(tmp);
+        }
+    }
 }

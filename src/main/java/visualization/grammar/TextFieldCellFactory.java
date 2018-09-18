@@ -33,26 +33,42 @@ public class TextFieldCellFactory
         return textFieldCell;
     }
 
-    public static class TextFieldCell extends TableCell<GrammarTableData,String> {
+    public static class TextFieldCell extends TableCell<GrammarTableData, String> {
         private GrammarTableTextField textField;
         private StringProperty boundToCurrently = null;
 
         public TextFieldCell(Type type) {
-            String strCss;
-            // Padding in Text field cell is not wanted - we want the Textfield itself to "be"
-            // The cell.  Though, this is aesthetic only.  to each his own.  comment out
-            // to revert back.
-            strCss = "-fx-padding: 0;";
-            ;
+            String strCss = "-fx-padding: 0;";
+
+            String strStyleValid = "-fx-background-color: green, -fx-text-box-border, -fx-control-inner-background;" +
+                    "-fx-background-insets: -0.4, 1, 2;" +
+                    "-fx-background-radius: 3.4, 2, 2;";
+            String strStyleInvalid = "-fx-background-color: red, -fx-text-box-border, -fx-control-inner-background;" +
+                    "-fx-background-insets: -0.4, 1, 2;" +
+                    "-fx-background-radius: 3.4, 2, 2;";
+            String strStyleGotFocus = "-fx-background-color: purple, -fx-text-box-border, -fx-control-inner-background;" +
+                    "-fx-background-insets: -0.4, 1, 2;" +
+                    "-fx-background-radius: 3.4, 2, 2;";
+            String strStyleLostFocus = //"-fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;" +
+                    "-fx-background-color: rgba(0,0,0,0);" +
+                    "-fx-background-insets: -0.4, 1, 2;" +
+                    "-fx-background-radius: 3.4, 2, 2;";
 
             this.setStyle(strCss);
 
             textField = new GrammarTableTextField();
+            textField.setStyle(textField.isValid() ? strStyleLostFocus : strStyleInvalid);
             if(type == Type.LeftCol)
                 textField.textProperty().addListener(new ChangeListener<String>() {
                     @Override
                     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                        textField.validProperty().set(newValue.matches("^[A-Z]$"));
+                        String regex = "^[A-Z]$";
+                        if(newValue.length() > 1) {
+                            textField.setText(oldValue);
+                            textField.validProperty().set(oldValue.matches(regex));
+                        } else
+                            textField.validProperty().set(newValue.matches(regex));
+                        textField.setStyle(textField.isValid() ? strStyleLostFocus : strStyleInvalid);
                     }
                 });
             else if(type == Type.RightCol) {
@@ -60,6 +76,7 @@ public class TextFieldCellFactory
                     @Override
                     public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                         textField.validProperty().set(newValue.matches("^[a-zA-Z]*"));
+                        textField.setStyle(textField.isValid() ? strStyleLostFocus : strStyleInvalid);
                     }
                 });
                 textField.setPrefWidth(10.0*textField.getText().length());
@@ -71,7 +88,7 @@ public class TextFieldCellFactory
             // ---trying to produce a text box without borders
             strCss = "" +
                     //"-fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;" +
-                    "-fx-background-color: -fx-control-inner-background;" +
+                    "-fx-background-color: rgba(0,0,0,0);" +
                     //"-fx-background-insets: 0, 1, 2;" +
                     "-fx-background-insets: 0;" +
                     //"-fx-background-radius: 3, 2, 2;" +
@@ -87,19 +104,7 @@ public class TextFieldCellFactory
 
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                     TextField tf = (TextField)getGraphic();
-                    String strStyleValid = "-fx-background-color: green, -fx-text-box-border, -fx-control-inner-background;" +
-                            "-fx-background-insets: -0.4, 1, 2;" +
-                            "-fx-background-radius: 3.4, 2, 2;";
-                    String strStyleInvalid = "-fx-background-color: red, -fx-text-box-border, -fx-control-inner-background;" +
-                            "-fx-background-insets: -0.4, 1, 2;" +
-                            "-fx-background-radius: 3.4, 2, 2;";
-                    String strStyleGotFocus = "-fx-background-color: purple, -fx-text-box-border, -fx-control-inner-background;" +
-                            "-fx-background-insets: -0.4, 1, 2;" +
-                            "-fx-background-radius: 3.4, 2, 2;";
-                    String strStyleLostFocus = //"-fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;" +
-                            "-fx-background-color: -fx-control-inner-background;" +
-                            "-fx-background-insets: -0.4, 1, 2;" +
-                            "-fx-background-radius: 3.4, 2, 2;";
+
                     if(newValue.booleanValue()) {
                         tf.setStyle(textField.isValid() ? strStyleValid : strStyleInvalid);
                     } else

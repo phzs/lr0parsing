@@ -75,4 +75,8 @@ public class CFProduction {
     public LR0Element getLR0Element(int i) {
         return new LR0Element(this, i);
     }
+
+    public boolean validate() {
+        return left.validate() && right.validate();
+    }
 }

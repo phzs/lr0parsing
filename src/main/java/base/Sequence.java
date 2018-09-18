@@ -119,4 +119,9 @@ public class Sequence {
     public int size() {
         return this.symbols.size();
     }
+
+
+    public boolean validate() {
+        return toString().matches("^[a-zA-Z]*");
+    }
 }
