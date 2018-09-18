@@ -312,23 +312,30 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleStartButtonAction(ActionEvent actionEvent) {
-        if(state == AppState.NOT_STARTED) {
-            startProgram();
+        if(!grammarTable.isValid()) {
+            errorDialog("Invalid input", "Please only insert valid grammar productions",
+                    "- The left side must contain exactly one meta symbol (uppercase letter).\n" +
+                            "- The right side may contain any number of meta symbols (uppercase letters) or terminal symbols (lowercase letters).\n" +
+                            "- Numbers, whitespaces or special characters are not allowed.");
         } else {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Restart Parsing");
-            alert.setHeaderText("All results will be lost if you choose to restart parsing");
-            alert.setContentText("Do you want to restart the parsing progress?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                StepController.getInstance().killMainThread();
-                parsingView.reset();
-                analysisView.reset();
-                analysisInputTextArea.setText("");
-                StepController.getInstance().clearSteps();
-                state = AppState.NOT_STARTED;
+            if (state == AppState.NOT_STARTED) {
                 startProgram();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Restart Parsing");
+                alert.setHeaderText("All results will be lost if you choose to restart parsing");
+                alert.setContentText("Do you want to restart the parsing progress?");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    StepController.getInstance().killMainThread();
+                    parsingView.reset();
+                    analysisView.reset();
+                    analysisInputTextField.setText("");
+                    StepController.getInstance().clearSteps();
+                    state = AppState.NOT_STARTED;
+                    startProgram();
+                }
             }
         }
     }

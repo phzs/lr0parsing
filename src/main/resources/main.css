@@ -10,3 +10,6 @@
     -fx-border-width: 0 0 3 0;
     -fx-border-color: #353a3e;
 }
+.table-row-cell {
+    -fx-cell-size: 28px;
+}

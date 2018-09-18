@@ -1,5 +1,6 @@
 package visualization.grammar;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -9,32 +10,61 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
-import visualization.grammar.GrammarTableData;
 
 public class TextFieldCellFactory
         implements Callback<TableColumn<GrammarTableData,String>,TableCell<GrammarTableData,String>> {
 
+    enum Type {
+        LeftCol,
+        RightCol
+    }
+    private Type type;
+    private GrammarTable table;
+
+    public TextFieldCellFactory(GrammarTable table, Type type) {
+        this.type = type;
+        this.table = table;
+    }
+
     @Override
     public TableCell<GrammarTableData, String> call(TableColumn<GrammarTableData, String> param) {
-        TextFieldCell textFieldCell = new TextFieldCell();
+        TextFieldCell textFieldCell = new TextFieldCell(type);
+        table.addTextField(textFieldCell.getTextField());
         return textFieldCell;
     }
 
     public static class TextFieldCell extends TableCell<GrammarTableData,String> {
-        private TextField textField;
+        private GrammarTableTextField textField;
         private StringProperty boundToCurrently = null;
 
-        public TextFieldCell() {
+        public TextFieldCell(Type type) {
             String strCss;
             // Padding in Text field cell is not wanted - we want the Textfield itself to "be"
             // The cell.  Though, this is aesthetic only.  to each his own.  comment out
             // to revert back.
             strCss = "-fx-padding: 0;";
-
+            ;
 
             this.setStyle(strCss);
 
-            textField = new TextField();
+            textField = new GrammarTableTextField();
+            if(type == Type.LeftCol)
+                textField.textProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        textField.validProperty().set(newValue.matches("^[A-Z]$"));
+                    }
+                });
+            else if(type == Type.RightCol) {
+                textField.textProperty().addListener(new ChangeListener<String>() {
+                    @Override
+                    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                        textField.validProperty().set(newValue.matches("^[a-zA-Z]*"));
+                    }
+                });
+                textField.setPrefWidth(10.0*textField.getText().length());
+            }
+            textField.prefWidthProperty().bind(textField.textProperty().length());
 
             //
             // Default style pulled from caspian.css. Used to play around with the inset background colors
@@ -57,59 +87,23 @@ public class TextFieldCellFactory
 
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                     TextField tf = (TextField)getGraphic();
+                    String strStyleValid = "-fx-background-color: green, -fx-text-box-border, -fx-control-inner-background;" +
+                            "-fx-background-insets: -0.4, 1, 2;" +
+                            "-fx-background-radius: 3.4, 2, 2;";
+                    String strStyleInvalid = "-fx-background-color: red, -fx-text-box-border, -fx-control-inner-background;" +
+                            "-fx-background-insets: -0.4, 1, 2;" +
+                            "-fx-background-radius: 3.4, 2, 2;";
                     String strStyleGotFocus = "-fx-background-color: purple, -fx-text-box-border, -fx-control-inner-background;" +
                             "-fx-background-insets: -0.4, 1, 2;" +
                             "-fx-background-radius: 3.4, 2, 2;";
                     String strStyleLostFocus = //"-fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;" +
                             "-fx-background-color: -fx-control-inner-background;" +
-                                    //"-fx-background-insets: 0, 1, 2;" +
-                                    "-fx-background-insets: 0;" +
-                                    //"-fx-background-radius: 3, 2, 2;" +
-                                    "-fx-background-radius: 0;" +
-                                    "-fx-padding: 3 5 3 5;" +   /**/
-                                    //"-fx-padding: 0 0 0 0;" +
-                                    "-fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);" +
-                                    "-fx-cursor: text;" +
-                                    "";
-                    if(newValue.booleanValue())
-                        tf.setStyle(strStyleGotFocus);
-                    else
-                        tf.setStyle(strStyleLostFocus);
-                }
-            });
-            textField.hoverProperty().addListener(new ChangeListener<Boolean>() {
-
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    TextField tf = (TextField)getGraphic();
-                    String strStyleGotHover = "-fx-background-color: derive(purple,90%), -fx-text-box-border, derive(-fx-control-inner-background, 10%);" +
-                            "-fx-background-insets: 1, 2.8, 3.8;" +
-                            "-fx-background-radius: 3.4, 2, 2;";
-                    String strStyleLostHover = //"-fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;" +
-                            "-fx-background-color: -fx-control-inner-background;" +
-                                    //"-fx-background-insets: 0, 1, 2;" +
-                                    "-fx-background-insets: 0;" +
-                                    //"-fx-background-radius: 3, 2, 2;" +
-                                    "-fx-background-radius: 0;" +
-                                    "-fx-padding: 3 5 3 5;" +   /**/
-                                    //"-fx-padding: 0 0 0 0;" +
-                                    "-fx-prompt-text-fill: derive(-fx-control-inner-background,-30%);" +
-                                    "-fx-cursor: text;" +
-                                    "";
-                    String strStyleHasFocus = "-fx-background-color: purple, -fx-text-box-border, -fx-control-inner-background;" +
                             "-fx-background-insets: -0.4, 1, 2;" +
                             "-fx-background-radius: 3.4, 2, 2;";
                     if(newValue.booleanValue()) {
-                        tf.setStyle(strStyleGotHover);
-                    }
-                    else {
-                        if(!tf.focusedProperty().get()) {
-                            tf.setStyle(strStyleLostHover);
-                        }
-                        else {
-                            tf.setStyle(strStyleHasFocus);
-                        }
-                    }
-
+                        tf.setStyle(textField.isValid() ? strStyleValid : strStyleInvalid);
+                    } else
+                        tf.setStyle(textField.isValid() ? strStyleLostFocus : strStyleInvalid);
                 }
             });
             textField.setStyle(strCss);
@@ -145,6 +139,10 @@ public class TextFieldCellFactory
             else {
                 this.setContentDisplay(ContentDisplay.TEXT_ONLY);
             }
+        }
+
+        public GrammarTableTextField getTextField() {
+            return textField;
         }
 
     }
