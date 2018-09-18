@@ -115,6 +115,7 @@ public class MainThread extends Task<Void> {
     }
 
     public void pushNextAnalyzerInput(String input) {
+        input += "$";
         mainController.getAnalysisView().setAnalysisInput(input);
         this.analyzerInput.setValue(input);
     }

@@ -1,9 +1,6 @@
 package analysis;
 
-import base.CFGrammar;
-import base.CFProduction;
-import base.Sequence;
-import base.Symbol;
+import base.*;
 import parsing.ParseTable;
 import parsing.ParserAction;
 import visualization.StepController;
@@ -32,6 +29,7 @@ public class Analyzer {
 
     public Void analyze(CFGrammar grammar, ParseTable parseTable, String sequenceInput) {
         this.stack.clear();
+        this.result = new AnalyzerResult();
 
         Sequence sequence = new Sequence(sequenceInput);
 
@@ -39,13 +37,12 @@ public class Analyzer {
         stack.push('0');
 
         int size = sequence.size();
-        for(int i = 0; i < size; i++) {
+        while(result.getSuccess() == null) {
             // 1. take top element of stack
             Character top = stack.peek(); //pop?
             if(!Character.isDigit(top))
                 throw new InternalError("Expected digit on top of the stack.");
             int stateNum = Character.getNumericValue(top.charValue());
-            int prodNum = stateNum;
 
             // 2. read next symbol of input
             Symbol symbol = sequence.get(0);
@@ -60,13 +57,13 @@ public class Analyzer {
                 return null;
             }
             ParserAction action = tableEntry.getAction();
-            int newState = tableEntry.getNumber();
             System.out.println("-> found " + tableEntry + " in SAT");
 
             // 4. process action
             System.out.println("Processing " + action.toString().toUpperCase());
             switch (action) {
                 case Shift:
+                    int newState = tableEntry.getNumber();
                     sequence.removeFirst();
                     changeRemoveFirst();
                     stack.push(symbol.getRepresentation());
@@ -76,6 +73,7 @@ public class Analyzer {
                     StepController.getInstance().registerStep("analyze:ActionShift", "Shift action");
                     break;
                 case Reduce:
+                    int prodNum = tableEntry.getNumber();
                     if(prodNum >= 0 && prodNum < grammar.getProductionList().size()) {
                         CFProduction production = grammar.getProductionList().get(prodNum);
                         result.addProduction(production);
