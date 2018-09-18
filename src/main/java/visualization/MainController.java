@@ -404,7 +404,8 @@ public class MainController implements Initializable {
         File file = getFileChooser("Open Grammar File").showOpenDialog(new Stage());
         setGrammarFile(file);
         tabPane.getSelectionModel().select(0);
-
+        if(file == null)
+            return;
         try {
             grammar = CFGrammar.fromFile(file);
             loadGrammar(grammar);
