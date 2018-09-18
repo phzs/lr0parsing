@@ -392,6 +392,7 @@ public class MainController implements Initializable {
     private void handleMenuOpenAction(ActionEvent actionEvent) {
         File file = getFileChooser("Open Grammar File").showOpenDialog(new Stage());
         setGrammarFile(file);
+        tabPane.getSelectionModel().select(0);
 
         try {
             grammar = CFGrammar.fromFile(file);
