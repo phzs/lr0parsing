@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -437,16 +438,8 @@ public class MainController implements Initializable {
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(message);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
-            StepController.getInstance().killMainThread();
-            parsingView.reset();
-            analysisView.reset();
-            StepController.getInstance().clearSteps();
-            state = AppState.NOT_STARTED;
-            startProgram();
-        }
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.showAndWait();
     }
 
     private FileChooser getFileChooser(String title) {
