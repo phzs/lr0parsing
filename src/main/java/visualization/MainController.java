@@ -88,7 +88,7 @@ public class MainController implements Initializable {
     private MenuItem menuSaveAs;
 
     @FXML
-    private TextField analysisInputTextArea;
+    private TextField analysisInputTextField;
 
     @FXML
     private Button analysisStartButton;
@@ -216,7 +216,7 @@ public class MainController implements Initializable {
     }
 
     private void setAnalysisInputDisabled(boolean disable) {
-        analysisInputTextArea.setDisable(disable);
+        analysisInputTextField.setDisable(disable);
     }
 
     public void setControlButtonsDisable(boolean disable) {
@@ -385,14 +385,18 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleAnalysisStartButtonAction(ActionEvent actionEvent) {
-        String input = analysisInputTextArea.getText().replace("\n", "");
-        mainThread.pushNextAnalyzerInput(input);
-        setAnalysisInputDisabled(true);
-        analysisStartButton.setDisable(true);
-        setControlButtonsDisable(false);
-        StepController.getInstance().nextStep();
+        String input = analysisInputTextField.getText().replace("\n", "");
+        if(!input.matches("[a-z]*")) {
+            errorDialog("Invalid input", "The input may only contain valid terminal symbols", "");
+        } else {
+            mainThread.pushNextAnalyzerInput(input);
+            setAnalysisInputDisabled(true);
+            analysisStartButton.setDisable(true);
+            setControlButtonsDisable(false);
+            StepController.getInstance().nextStep();
 
-        continueButton.requestFocus();
+            continueButton.requestFocus();
+        }
     }
 
     @FXML
@@ -480,7 +484,7 @@ public class MainController implements Initializable {
 
     public void displayAnalyzerResult(Analyzer.AnalyzerResult analyzerResult) {
         Platform.runLater(() -> {
-            analysisInputTextArea.setDisable(false);
+            analysisInputTextField.setDisable(false);
             analysisStartButton.setDisable(false);
             analysisView.displayResult(analyzerResult);
         });
