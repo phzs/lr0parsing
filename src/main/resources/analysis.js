@@ -1,5 +1,6 @@
 var stackItems = [];
 var nextStackId = 0;
+var highlightColor = "hsl(46,100%,50%)";
 
 function getIdForStackItem(id) {
     return "stackItem"+id;
@@ -32,7 +33,6 @@ function setResult(result, mode) {
     else if(mode === 1) styleClass = "highlighted";
     else if(mode === 2) styleClass = "highlighted-red";
     resultBox.addClass(styleClass);
-    $('#analysisTableRow').hide();
     $('#analysisResultRow').show();
 }
 function resetResult() {
@@ -80,10 +80,26 @@ function moveInputSymbol() {
 function showAnalysisError() {
     $('#analyisErrorBox').show();
 }
+function setAnalysisStepDescription(text) {
+    $('#analysisStepDescription').html(text);
+}
 
-function highlightInputNext() {
-    $('#inputNext').addClass("highlighted");
+function highlightInputNext(styleClass) {
+    $('#inputNext').addClass(styleClass);
 }
 function unhighlightInputNext() {
-    $('#inputNext').removeClass("highlighted");
+    $('#inputNext').removeClassPrefix("highlighted");
+}
+function highlightStackItem(j, styleClass) {
+    var styleClass = styleClass || "highlighted";
+    var id = (stackItems.length-1)-j;
+    if(id >= 0) {
+        $('#'+getIdForStackItem(id)).addClass(styleClass);
+    }
+}
+
+function unhighlightStackItems() {
+    stackItems.forEach(function(d, i) {
+       $('#'+getIdForStackItem(i)).removeClassPrefix("highlighted");
+    });
 }

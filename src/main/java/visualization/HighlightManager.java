@@ -54,10 +54,10 @@ public class HighlightManager {
         highlightedStateNumRects.add(id);
     }
 
-    public void highlightParseTableCell(ParseTableCellIdentifier id, String color) {
+    public void highlightParseTableCell(ParseTableCellIdentifier id, String styleClass) {
         executeScript("highlightParseTableCell("
                 + id.stateId
-                + ",\""+ id.symbol +"\")");
+                + ",\""+ id.symbol +"\", \""+styleClass+"\")");
         highlightedParseTableCells.add(id);
     }
 
@@ -124,6 +124,19 @@ public class HighlightManager {
         for(Symbol symbol : highlightedParseTableHeaders)
             executeScript("unhighlightParseTableHeader(\'"+symbol+"\')");
         highlightedParseTableHeaders.clear();
+    }
+
+    public void highlightStackItems(int j, String styleClass) {
+        executeScript("highlightStackItem("+j+", \""+styleClass+"\")");
+    }
+    public void resetHighlightedStackItems() {
+        executeScript("unhighlightStackItems()");
+    }
+    public void highlightAnalysisInputNextSymbol(String styleClass) {
+        executeScript("highlightInputNext(\""+styleClass+"\")");
+    }
+    public void resetHighlightedAnalysisInputNextSymbol() {
+        executeScript("unhighlightInputNext()");
     }
 
     public void setGraphHighlightedColor(String color) {

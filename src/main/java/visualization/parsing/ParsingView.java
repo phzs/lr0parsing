@@ -266,7 +266,7 @@ public class ParsingView implements View {
                                     new ParseTableCellIdentifier(
                                             stateId,
                                             change.getKey()),
-                                    "rgba(255, 2, 2, 0.6)");
+                                    "highlighted-red");
                         }
 
                         highlightManager.highlightParseTableRow(stateId);

@@ -12,6 +12,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 import parsing.ParseTable;
+import parsing.ParserAction;
 import visualization.JsUtil;
 import visualization.View;
 import visualization.parseTable.ParseTableCellIdentifier;
@@ -97,12 +98,128 @@ public class AnalysisView implements View {
 
     public void setAnalyzer(Analyzer analyzer) {
         analyzer.addListener(change -> {
-            if(change.getType() == AnalyzerListener.ChangeType.Consume) {
+            if(change.getType() != AnalyzerListener.ChangeType.Reduce)
+                Platform.runLater(() -> {highlightManager.resetHighlightedProductions();});
+
+            if(change.getType() == AnalyzerListener.ChangeType.Shift) {
                 Platform.runLater(() -> {
+                    highlightManager.resetHighlightedAnalysisInputNextSymbol();
+                    highlightManager.resetParseTableHighlighting();
+                    highlightManager.resetHighlightedStackItems();
                     executeScript("moveInputSymbol()");
+                    setAnalysisStepDescription("Action Shift: Pushed symbol and next state id to the stack; Removed first symbol from input");
+                    highlightManager.highlightStackItems(0, "highlighted-green");
+                    highlightManager.highlightStackItems(1, "highlighted-green");
+                });
+            } else if(change.getType() == AnalyzerListener.ChangeType.Lookup) {
+                Platform.runLater(() -> {
+                    highlightManager.resetParseTableHighlighting();
+                    highlightManager.resetHighlightedStackItems();
+
+                    Symbol mSymbol = change.getMarkedSymbol();
+                    int mState = change.getMarkedStateNum();
+                    highlightManager.highlightStackItems(0, "highlighted");
+                    highlightManager.highlightAnalysisInputNextSymbol("highlighted-blue");
+                    highlightManager.highlightParseTableHeader(mSymbol);
+                    highlightManager.highlightParseTableRow(mState);
+                    highlightManager.highlightParseTableCell(new ParseTableCellIdentifier(mState, mSymbol), "highlighted-grey");
+
+                    ParseTable.TableEntry lookupResult = change.getLookupResult();
+                    String description = "Lookup the next action in the parse table. Found: \"" + lookupResult + "\" - ";
+                    if(lookupResult.getAction() == ParserAction.Shift)
+                        description += "The next action will be Shift";
+                    else if(lookupResult.getAction() == ParserAction.Reduce)
+                        description += "The next action will be Reduce";
+                    else if(lookupResult.getAction() == ParserAction.Accept)
+                        description += "The next action will be Accept";
+                    else description += lookupResult.getAction().toString();
+                    setAnalysisStepDescription(description);
+                });
+            } else if(change.getType() == AnalyzerListener.ChangeType.Reduce) {
+                Platform.runLater(() -> {
+                    highlightManager.resetParseTableHighlighting();
+                    highlightManager.resetHighlightedAnalysisInputNextSymbol();
+                    setAnalysisStepDescription("Action reduce n: " +
+                            "<ul>" +
+                            "<li class=\"text-danger\">Remove the top x elements from the stack, where" +
+                            "<ul><li>x is 2 times the number of symbols on the right side of the production with number n</li></ul>" +
+                            "</li>" +
+                            "<li>Add the meta symbol of the production (left side) to the stack</li>" +
+                            "</ul>");
+                    for(int i = 0; i < change.getReducePopAmount(); i++)
+                        highlightManager.highlightStackItems(i, "highlighted-red");
+                    highlightManager.highlightProduction(change.getMarkedProduction());
+                });
+            } else if(change.getType() == AnalyzerListener.ChangeType.Reduce2) {
+                Platform.runLater(() -> {
+                    highlightManager.highlightProduction(change.getMarkedProduction()); // should already be highlighted, just to make sure
+                    highlightManager.highlightStackItems(0, "highlighted");
+                    setAnalysisStepDescription("Action reduce n (part 2): " +
+                            "<ul>" +
+                            "<li>Added the meta symbol of the production (left side) to the stack</li>" +
+                            "<li>Now looking up the entry in the parse table matching the last two stack entries</li>" +
+                            "</ul>");
+                });
+            } else if(change.getType() == AnalyzerListener.ChangeType.ReduceLookup) {
+                Platform.runLater(() -> {
+                    highlightManager.resetHighlightedStackItems();
+
+                    int mStateNum = change.getMarkedStateNum();
+                    Symbol mSymbol = change.getMarkedSymbol();
+
+                    highlightManager.highlightStackItems(0, "highlighted-blue");
+                    highlightManager.highlightStackItems(1, "highlighted");
+
+                    highlightManager.highlightParseTableRow(mStateNum);
+                    highlightManager.highlightParseTableHeader(mSymbol);
+                    highlightManager.highlightParseTableCell(
+                            new ParseTableCellIdentifier(mStateNum, mSymbol),
+                            "highlighted-green"
+                    );
+                    setAnalysisStepDescription("Action reduce n (part 3): " +
+                            "<ul>" +
+                            "<li>Looked up the entry in the parse table matching the last two stack entries - Found " +
+                            change.getLookupResult().getNumber() +
+                            "</li>" +
+                            "<li> Adding this number to the stack" +
+                            "</ul>");
+                });
+            } else if(change.getType() == AnalyzerListener.ChangeType.ReduceFinal) {
+                Platform.runLater(() -> {
+                    highlightManager.resetParseTableHighlighting();
+                    highlightManager.resetHighlightedStackItems();
+                    highlightManager.highlightStackItems(0, "highlighted-green");
+                });
+            } else if(change.getType() == AnalyzerListener.ChangeType.Accept) {
+                Platform.runLater(() -> {
+                    highlightManager.resetHighlightedParseTableCells();
+                    highlightManager.highlightParseTableCell(
+                            new ParseTableCellIdentifier(change.getMarkedStateNum(), change.getMarkedSymbol()),
+                            "highlighted-green");
+                    setAnalysisStepDescription("Sequence accepted");
+                });
+            } else if(change.getType() == AnalyzerListener.ChangeType.Error) {
+                Platform.runLater(() -> {
+                    highlightManager.resetHighlightedStackItems();
+                    highlightManager.resetParseTableHighlighting();
+                    highlightManager.resetHighlightedProductions();
+                    Symbol mSymbol = change.getMarkedSymbol();
+                    int mState = change.getMarkedStateNum();
+                    highlightManager.highlightParseTableHeader(mSymbol);
+                    highlightManager.highlightParseTableRow(mState);
+                    highlightManager.highlightStackItems(0, "highlighted");
+                    highlightManager.highlightAnalysisInputNextSymbol("highlighted-blue");
+                    highlightManager.highlightParseTableCell(
+                            new ParseTableCellIdentifier(change.getMarkedStateNum(), change.getMarkedSymbol()),
+                            "highlighted-red");
+                    setAnalysisStepDescription("Sequence not accepted");
                 });
             }
         });
+    }
+
+    private void setAnalysisStepDescription(String text) {
+        executeScript("setAnalysisStepDescription(\'"+text+"\')");
     }
 
     public void displayResult(Analyzer.AnalyzerResult result) {
@@ -135,6 +252,11 @@ public class AnalysisView implements View {
 
     public void setAnalysisInput(String input) {
         Platform.runLater(() -> {
+            highlightManager.resetParseTableHighlighting();
+            highlightManager.resetHighlightedAnalysisInputNextSymbol();
+            highlightManager.resetHighlightedProductions();
+            highlightManager.resetHighlightedStackItems();
+            executeScript("resetResult()");
             executeScript("setInput(\""+input+"\")");
         });
     }

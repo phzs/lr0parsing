@@ -30,9 +30,10 @@
     padding-top: 25px;
 }
 
-.text-blurry {
+.text-deleted {
     color: transparent;
-    text-shadow: 0 0 0.5px rgba(0,0,0,0.5);
+    text-shadow: 0 0 0.3px rgba(0,0,0,0.3);
+    text-decoration: line-through;
 }
 
 .resultBox {

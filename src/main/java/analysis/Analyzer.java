@@ -47,15 +47,18 @@ public class Analyzer {
             // 2. read next symbol of input
             Symbol symbol = sequence.get(0);
 
-            StepController.getInstance().registerStep("analyze:LookupParseTable", "Popped from stack, looking up in parse table");
 
             // 3. lookup both in parseTable
             ParseTable.TableEntry tableEntry = parseTable.getEntry(stateNum, symbol);
             if(tableEntry == null) {
                 System.out.println("Error: No entry found for " + stateNum + " and " + symbol + ".");
                 result.setSuccess(false);
+                changeForError(stateNum, symbol);
+                StepController.getInstance().registerStep("Analyze:Final", "Analysis finished");
                 return null;
             }
+            changeForLookup(symbol, stateNum, tableEntry);
+            StepController.getInstance().registerStep("analyze:LookupParseTable", "Looking up in parse table");
             ParserAction action = tableEntry.getAction();
             System.out.println("-> found " + tableEntry + " in SAT");
 
@@ -65,11 +68,11 @@ public class Analyzer {
                 case Shift:
                     int newState = tableEntry.getNumber();
                     sequence.removeFirst();
-                    changeRemoveFirst();
                     stack.push(symbol.getRepresentation());
                     System.out.println("\t adding to stack: " + symbol.getRepresentation());
                     stack.push(Character.forDigit(newState, 10));
                     System.out.println("\t adding to stack: " + Character.forDigit(newState, 10));
+                    changeForShift(symbol, newState);
                     StepController.getInstance().registerStep("analyze:ActionShift", "Shift action");
                     break;
                 case Reduce:
@@ -78,34 +81,55 @@ public class Analyzer {
                         CFProduction production = grammar.getProductionList().get(prodNum);
                         result.addProduction(production);
                         int amount = 2 * production.getRight().size();
+
+                        changeForReduce(prodNum, amount);
+                        StepController.getInstance().registerStep("analyze:ActionReduce1", "Ready to delete the top "+amount+" elements from stack.");
+
                         for (int j = 0; j < amount; j++) stack.pop();
                         int z = Character.getNumericValue(stack.peek().charValue());
                         Symbol reduceSymbol = production.getLeft();
                         stack.push(reduceSymbol.getRepresentation());
                         System.out.println("\t adding to stack: " + reduceSymbol.getRepresentation());
 
+                        changeForReduce2(prodNum, reduceSymbol);
+                        StepController.getInstance().registerStep("analyze:ActionReduce2", "Pushed meta symbol to the stack and looking up table entry for the last two stack entries.");
+
                         ParseTable.TableEntry reduceEntry = parseTable.getEntry(z, reduceSymbol);
+                        changeForReduceLookup(z, reduceSymbol, reduceEntry);
+                        StepController.getInstance().registerStep("analyze:ActionReduce3", "Looked up parse table entry matching the last two stack entries.");
+
                         stack.push(Character.forDigit(reduceEntry.getNumber(), 10));
                         System.out.println("\t adding to stack: " + Character.forDigit(reduceEntry.getNumber(), 10));
+
+                        changeForReduceFinal();
                         StepController.getInstance().registerStep("analyze:ActionReduce", "Reduce action");
+
                     } else {
                         System.out.println("Error: production number not in range: " + prodNum);
                         result.setSuccess(false);
+                        changeForError(stateNum, symbol);
+                        StepController.getInstance().registerStep("Analyze:Final", "Analysis finished");
                         return null;
                     }
                     break;
                 case Accept:
                     result.setSuccess(true);
+                    changeForAccept(stateNum, symbol);
+                    StepController.getInstance().registerStep("Analyze:Final", "Analysis finished");
                     return null;
                 default: //error
                     result.setSuccess(false);
+                    changeForError(stateNum, symbol);
+                    StepController.getInstance().registerStep("Analyze:Final", "Analysis finished");
                     return null;
             }
-
             System.out.println(stack);
         }
+        StepController.getInstance().registerStep("Analyze:Final", "Analysis finished");
         return null;
     }
+
+
 
     public AnalyzerResult getResult() {
         return result;
@@ -163,9 +187,67 @@ public class Analyzer {
             listener.onChanged(change);
     }
 
-    private void changeRemoveFirst() {
+    private void changeForShift(Symbol symbol, int newState) {
         AnalyzerListener.Change change = new AnalyzerListener.Change();
-        change.setType(AnalyzerListener.ChangeType.Consume);
+        change.setMarkedSymbol(symbol);
+        change.setMarkedStateNum(newState);
+        change.setType(AnalyzerListener.ChangeType.Shift);
+        propagateChange(change);
+    }
+
+    private void changeForLookup(Symbol symbol, int newState, ParseTable.TableEntry lookupResult) {
+        AnalyzerListener.Change change = new AnalyzerListener.Change();
+        change.setMarkedSymbol(symbol);
+        change.setMarkedStateNum(newState);
+        change.setType(AnalyzerListener.ChangeType.Lookup);
+        change.setLookupResult(lookupResult);
+        propagateChange(change);
+    }
+
+    private void changeForReduce(int prodNum, int amount) {
+        AnalyzerListener.Change change = new AnalyzerListener.Change();
+        change.setMarkedProduction(prodNum);
+        change.setReducePopAmount(amount);
+        change.setType(AnalyzerListener.ChangeType.Reduce);
+        propagateChange(change);
+    }
+
+    private void changeForReduce2(int prodNum, Symbol metaSymbol) {
+        AnalyzerListener.Change change = new AnalyzerListener.Change();
+        change.setMarkedProduction(prodNum);
+        change.setMarkedSymbol(metaSymbol);
+        change.setType(AnalyzerListener.ChangeType.Reduce2);
+        propagateChange(change);
+    }
+
+    private void changeForReduceLookup(int stateNum, Symbol metaSymbol, ParseTable.TableEntry lookupResult) {
+        AnalyzerListener.Change change = new AnalyzerListener.Change();
+        change.setMarkedStateNum(stateNum);
+        change.setMarkedSymbol(metaSymbol);
+        change.setType(AnalyzerListener.ChangeType.ReduceLookup);
+        change.setLookupResult(lookupResult);
+        propagateChange(change);
+    }
+
+    private void changeForReduceFinal() {
+        AnalyzerListener.Change change = new AnalyzerListener.Change();
+        change.setType(AnalyzerListener.ChangeType.ReduceFinal);
+        propagateChange(change);
+    }
+
+    private void changeForAccept(int stateNum, Symbol symbol) {
+        AnalyzerListener.Change change = new AnalyzerListener.Change();
+        change.setMarkedStateNum(stateNum);
+        change.setMarkedSymbol(symbol);
+        change.setType(AnalyzerListener.ChangeType.Accept);
+        propagateChange(change);
+    }
+
+    private void changeForError(int stateNum, Symbol symbol) {
+        AnalyzerListener.Change change = new AnalyzerListener.Change();
+        change.setMarkedStateNum(stateNum);
+        change.setMarkedSymbol(symbol);
+        change.setType(AnalyzerListener.ChangeType.Error);
         propagateChange(change);
     }
 
