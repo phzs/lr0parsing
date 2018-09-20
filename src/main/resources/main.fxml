@@ -29,19 +29,18 @@
               <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
                 <tabs>
                     <Tab fx:id="inputTab" text="Input Grammar">
-                          <SplitPane dividerPositions="0.5">
-                             <items>
-                                   <ScrollPane fx:id="grammarInputScrollPane" />
-                                <VBox>
+                          <HBox>
+                             <children>
+                                <ScrollPane fx:id="grammarInputScrollPane" HBox.hgrow="ALWAYS"/>
+                                <VBox HBox.hgrow="NEVER">
                                    <children>
                                         <HBox maxWidth="240.0">
                                            <children>
-                                              <Label prefWidth="180.0" text="Start Symbol:" textAlignment="LEFT">
+                                              <Label wrapText="true" text="Start symbol: The start Symbol is always the left symbol of the first production" textAlignment="LEFT">
                                                <padding>
                                                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                </padding>
                                             </Label>
-                                            <ChoiceBox fx:id="startSymbolChoiceBox" prefWidth="60.0" />
                                            </children>
                                         </HBox>
                                       <Button fx:id="clearRulesButton" mnemonicParsing="false" onAction="#handleClearRulesButtonAction" prefHeight="26.0" prefWidth="240.0" text="Clear rules">
@@ -54,8 +53,8 @@
                                       <Button fx:id="startStopButton" mnemonicParsing="false" onAction="#handleStartButtonAction" prefHeight="67.0" prefWidth="240.0" text="Start Parsing" />
                                    </children>
                                 </VBox>
-                             </items>
-                          </SplitPane>
+                             </children>
+                          </HBox>
                     </Tab>
                   <Tab fx:id="parsingTab" text="LR(0)-Parsing">
                        <content>

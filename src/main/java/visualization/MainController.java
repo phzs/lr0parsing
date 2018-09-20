@@ -59,9 +59,6 @@ public class MainController implements Initializable {
     private Button startStopButton;
 
     @FXML
-    private ChoiceBox startSymbolChoiceBox;
-
-    @FXML
     private Button clearRulesButton;
 
     @FXML
@@ -135,14 +132,7 @@ public class MainController implements Initializable {
     }
 
     public void addProduction(CFProduction production) {
-        //TableColumn<CFProduction, String>
         grammarTable.getItems().add(new GrammarTableData(prodNum++, production));
-
-        char left = production.getLeft().getRepresentation();
-        if(!startSymbolChoiceBox.getItems().contains(left))
-        startSymbolChoiceBox.getItems().add(left);
-        if(startSymbolChoiceBox.getValue() == null)
-            startSymbolChoiceBox.setValue(left);
     }
 
     public void loadGrammar(CFGrammar grammar) {
@@ -152,7 +142,6 @@ public class MainController implements Initializable {
             addProduction(production);
         }
         grammarTable.updateTextFields();
-        startSymbolChoiceBox.setValue(grammar.getStartSymbol().getRepresentation());
         prodNum = this.grammar.getProductionList().size();
         if(prodNum > 0)
             startStopButton.setDisable(false);
@@ -172,11 +161,7 @@ public class MainController implements Initializable {
         }
 
         // set start symbol
-        if(startSymbolChoiceBox.getValue() != null)
-            grammar.setStartSymbol(new MetaSymbol((char) startSymbolChoiceBox.getValue()));
-        else if(grammar.getProductionList().size() > 0) {
-            grammar.setStartSymbol(grammar.getProductionList().get(0).getLeft());
-        }
+        grammar.setStartSymbol(grammar.getProductionList().get(0).getLeft());
         return grammar;
     }
 
@@ -373,7 +358,6 @@ public class MainController implements Initializable {
     @FXML
     private void handleClearRulesButtonAction(ActionEvent actionEvent) {
         clearProductions();
-        startSymbolChoiceBox.getItems().clear();
         grammar = new CFGrammar();
         startStopButton.setDisable(true);
     }
