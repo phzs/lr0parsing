@@ -67,12 +67,14 @@ public class CFGrammar {
                 Symbol symbolRightOfMarker =  el.getSymbolRightOfMarker();
                 if(symbolRightOfMarker instanceof MetaSymbol) {
                     MetaSymbol metaSymbol = (MetaSymbol) symbolRightOfMarker;
-                    for (CFProduction cfProduction : productionsByLeft.get(metaSymbol)) {
-                        LR0Element newElement = cfProduction.getLR0Element(0);
-                        if(!closure.contains(newElement)) {
-                            elementsToAdd.add(newElement);
+                    if(productionsByLeft.get(metaSymbol) != null) { // this is only the case if the grammar contains meta symbols which never appear on a left side
+                        for (CFProduction cfProduction : productionsByLeft.get(metaSymbol)) {
+                            LR0Element newElement = cfProduction.getLR0Element(0);
+                            if (!closure.contains(newElement)) {
+                                elementsToAdd.add(newElement);
 
-                            closureChange.addClosureNewElement(metaSymbol, newElement);
+                                closureChange.addClosureNewElement(metaSymbol, newElement);
+                            }
                         }
                     }
                 }
