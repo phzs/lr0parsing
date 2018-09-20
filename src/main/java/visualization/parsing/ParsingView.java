@@ -229,7 +229,9 @@ public class ParsingView implements View {
 
 
     public void initParseTable(List<TerminalSymbol> terminalSymbols, List<MetaSymbol> metaSymbols) {
-        JsUtil.initParseTable(this, terminalSymbols, metaSymbols);
+        Platform.runLater(() -> {
+            JsUtil.initParseTable(this, terminalSymbols, metaSymbols);
+        });
     }
 
     public void addParseTableEntryListener(int stateId, ObservableMap<Symbol, ParseTable.TableEntry> entryObservableMap) {
