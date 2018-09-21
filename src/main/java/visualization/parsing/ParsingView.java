@@ -202,7 +202,7 @@ public class ParsingView implements View {
                             Set<MetaSymbol> metaSymbols = change.getClosureMetaSymbols();
                             for(int i = 0; i < grammar.getProductionList().size(); i++) {
                                 if(metaSymbols.contains(grammarProductions.get(i).getLeft()))
-                                    highlightManager.highlightProduction(i+1);
+                                    highlightManager.highlightProduction(i);
                             }
                             addClosureEntries(change.getClosureNewElements());
                             for(Symbol symbol : metaSymbols)
