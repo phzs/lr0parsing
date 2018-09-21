@@ -27,6 +27,7 @@ import visualization.grammar.GrammarTableData;
 import visualization.parsing.ParsingStep;
 import visualization.parsing.ParsingView;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -421,6 +422,16 @@ public class MainController implements Initializable {
     @FXML
     public void handleMenuQuitAction(ActionEvent actionEvent) {
         Platform.exit();
+    }
+
+    @FXML
+    public void handleMenuAboutAction(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText("LR(0)-Parsing Visualization");
+        alert.setContentText("Author: Philipp Zschumme\n\nFree icons by fontawesome.com were used");
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.showAndWait();
     }
 
     private void errorDialog(String title, String header, String message) {
