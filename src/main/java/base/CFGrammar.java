@@ -288,6 +288,10 @@ public class CFGrammar {
     public boolean validate() {
         for(CFProduction production : productionList)
             if(!production.validate()) return false;
-        return true;
+        if(startSymbol != null)
+            for (CFProduction production : productionList)
+                if (production.getLeft().equals(startSymbol))
+                    return true;
+        return false;
     }
 }
