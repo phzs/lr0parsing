@@ -65,7 +65,7 @@
                                        <Label fx:id="stepControllerLabel" maxHeight="25.0" styleClass="stepDescriptionLabel" text="" textAlignment="CENTER" />
                                    </children>
                                </VBox>
-                               <ScrollPane fx:id="parsingParent" VBox.vgrow="ALWAYS">
+                               <ScrollPane fx:id="parsingParent" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
                                      <WebView fx:id="parsingWebView" managed="false" minHeight="400.0" minWidth="400.0" prefHeight="-1.0" prefWidth="-1.0" />
                                  </ScrollPane>
                            </children>
@@ -105,7 +105,7 @@
                                     <Insets bottom="10.0" top="10.0" />
                                  </padding>
                                     </BorderPane>
-                                    <ScrollPane fx:id="analysisParent" VBox.vgrow="ALWAYS">
+                                    <ScrollPane fx:id="analysisParent" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
                                      <content>
                                         <WebView fx:id="analysisWebView" managed="false" minHeight="400.0" minWidth="400.0" />
                                      </content>
