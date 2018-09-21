@@ -180,13 +180,6 @@
                               </ImageView>
                           </graphic>
                       </Button>
-                      <CheckBox fx:id="stepModeCheckbox" mnemonicParsing="false" text="">
-                     <padding>
-                        <Insets left="5.0" right="5.0" />
-                     </padding>
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin></CheckBox>
                   </children>
                <padding>
                   <Insets top="2.0" />

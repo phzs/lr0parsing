@@ -92,9 +92,6 @@ public class MainController implements Initializable {
     private Button analysisStartButton;
 
     @FXML
-    private CheckBox stepModeCheckbox;
-
-    @FXML
     private ScrollPane parsingParent;
 
     @FXML
@@ -238,16 +235,6 @@ public class MainController implements Initializable {
         initTable();
 
         loadGrammar(getExampleGrammar());
-
-        // bind running property inversed-bidirectional to checkBox
-        stepModeCheckbox.selectedProperty().addListener(
-                (obs, wasSelected, isNowSelected)
-                        -> StepController.getInstance().runningProperty().setValue(!isNowSelected)
-        );
-        StepController.getInstance().runningProperty().addListener(
-                (obs, wasSelected, isNowSelected)
-                        -> stepModeCheckbox.setSelected(!isNowSelected)
-        );
 
         this.state = AppState.NOT_STARTED;
 
