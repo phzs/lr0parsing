@@ -224,6 +224,9 @@ public class MainController implements Initializable {
     private void setAnalysisTabDisabled(boolean disable) {
         tabPane.getTabs().get(2).setDisable(disable);
     }
+    private void setParsingTabDisabled(boolean disable) {
+        tabPane.getTabs().get(1).setDisable(disable);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -235,6 +238,7 @@ public class MainController implements Initializable {
         parsingWebEngine = parsingWebView.getEngine();
 
         setAnalysisTabDisabled(true);
+        setParsingTabDisabled(true);
 
         initTable();
 
@@ -290,6 +294,7 @@ public class MainController implements Initializable {
         analysisView.setAnalyzer(mainThread.getAnalyzer());
 
         parsingParent.setVvalue(0); // scroll to top
+        setParsingTabDisabled(false);
         tabPane.getSelectionModel().select(1);
         setAnalysisTabDisabled(true);
 
