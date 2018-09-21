@@ -110,8 +110,10 @@ public class MainController implements Initializable {
     @FXML
     private Button nextStepButton;
 
+    /*
     @FXML
     private Button previousStepButton;
+    */
 
     public static CFGrammar getExampleGrammar() {
         CFGrammar exampleGrammar = new CFGrammar('S');
@@ -215,7 +217,7 @@ public class MainController implements Initializable {
     public void setControlButtonsDisable(boolean disable) {
         continueButton.setDisable(disable);
         nextStepButton.setDisable(disable);
-        previousStepButton.setDisable(disable);
+        //previousStepButton.setDisable(disable);
     }
 
     private void setAnalysisTabDisabled(boolean disable) {
