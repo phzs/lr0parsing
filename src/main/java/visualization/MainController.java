@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
+import javafx.scene.text.FontSmoothingType;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.FileChooser;
@@ -263,6 +264,9 @@ public class MainController implements Initializable {
         analysisParent.heightProperty().addListener((observable, oldValue, newValue) -> {
             analysisWebView.setPrefHeight((Double) newValue);
         });
+
+        analysisWebView.setFontSmoothingType(FontSmoothingType.GRAY);
+        analysisWebView.setFontSmoothingType(FontSmoothingType.GRAY);
     }
 
     private void setGrammarWritable(boolean writable) {
