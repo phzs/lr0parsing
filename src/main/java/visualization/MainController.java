@@ -193,6 +193,7 @@ public class MainController implements Initializable {
     }
 
     public void parseTableFinished(ParseTable parseTable) {
+        setAnalysisTabDisabled(false);
         state = AppState.PARSETABLE_GENERATED;
         parsingView.setVisibleParsingStep(ParsingStep.Results);
         StepController.getInstance().registerStep("parse:finished", "Parsing finished", true);
@@ -219,6 +220,10 @@ public class MainController implements Initializable {
         previousStepButton.setDisable(disable);
     }
 
+    private void setAnalysisTabDisabled(boolean disable) {
+        tabPane.getTabs().get(2).setDisable(disable);
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         StepController.getInstance().setMainController(this);
@@ -227,6 +232,8 @@ public class MainController implements Initializable {
         parsingView = new ParsingView(parsingWebView);
         analysisView = new AnalysisView(analysisWebView);
         parsingWebEngine = parsingWebView.getEngine();
+
+        setAnalysisTabDisabled(true);
 
         initTable();
 
@@ -290,6 +297,7 @@ public class MainController implements Initializable {
 
         parsingParent.setVvalue(0); // scroll to top
         tabPane.getSelectionModel().select(1);
+        setAnalysisTabDisabled(true);
 
         StepController.getInstance().start();
 
