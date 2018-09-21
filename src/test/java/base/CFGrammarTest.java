@@ -136,6 +136,7 @@ public class CFGrammarTest {
     @Test
     public void validateTest() {
         CFGrammar a = new CFGrammar();
+        a.setStartSymbol(new MetaSymbol('A'));
         a.addProduction(new CFProduction('A', "Abc"));
         assertTrue(a.validate());
         CFGrammar b = new CFGrammar();

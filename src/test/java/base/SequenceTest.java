@@ -67,6 +67,6 @@ public class SequenceTest {
         Sequence c = new Sequence("");
         assertTrue(c.validate());
         Sequence d = new Sequence("aaBbc$kld");
-        assertFalse(c.validate());
+        assertFalse(d.validate());
     }
 }
