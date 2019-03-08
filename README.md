@@ -1,6 +1,6 @@
-# lr0parsing visualization
+# LR0 parsing visualization
 
-A java based tool to visualize the LR0 parsing as described in http://amor.cms.hu-berlin.de/~kunert/papers/lr-analyse/.
+A tool to visualize the LR0 parsing as described in http://amor.cms.hu-berlin.de/~kunert/papers/lr-analyse/.
 See also https://en.wikipedia.org/w/index.php?title=LR_parser&oldid=852499017.
 
 Basic features:
