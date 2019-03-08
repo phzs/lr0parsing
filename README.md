@@ -5,11 +5,13 @@ See also https://en.wikipedia.org/w/index.php?title=LR_parser&oldid=852499017.
 
 Basic features:
 
-* Insert grammars
-* Store and load gramar to/from disk (uses json format)
-* Visualize generation of the state automaton
-* Visualize generation of the parse table
-* Interactive parsing of words using the parse table
+* Full implementation of LR0 parsing
+* Graphical user interface with the features:
+  - Allows to insert, edit and remove rules of the context free grammar
+  - Allows to store and load gramar to/from disk (uses json format)
+  - Visualizes generation of the state automaton
+  - Visualizes generation of the parse table
+  - Interactive syntax analysis of sequences using the generated parse table
 
 Use the continue button to get to the next phase. The step button can be used to see more detailled information about what happens in each phase.
 
